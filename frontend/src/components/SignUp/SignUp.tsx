@@ -8,7 +8,6 @@ import {
   InputLabel,
   OutlinedInput,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import { observer } from "mobx-react";
 import authStore from "../../stores/AuthStore";
 import { useLoader } from "../Loader/Loader";
