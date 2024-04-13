@@ -9,3 +9,9 @@ class DocumentType(Enum):
 class Language(Enum):
     UZ = "Uzbek"
     ENG = "English"
+
+
+class TranslationStatus(Enum):
+    PROCESSING = "Processing"
+    DONE = "Done"
+    FAILED = "Failed"

@@ -1,6 +1,7 @@
 from db_init import db
-from .enums import Language
 from sqlalchemy.dialects.postgresql import ENUM
+
+from .enums import Language
 
 
 class Word(db.Model):
