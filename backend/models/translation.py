@@ -12,6 +12,10 @@ class Translation(db.Model):
     generated_at = db.Column(db.DateTime, nullable=False)
     details_status = db.Column(db.Enum(TranslationStatus), default=TranslationStatus.PROCESSING, nullable=False)
     details_word_count = db.Column(db.Integer, nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    input_document_id = db.Column(db.Integer, db.ForeignKey('Document.id'), nullable=False)
+    output_document_id = db.Column(db.Integer, db.ForeignKey('Document.id'), nullable=False)
+    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id'), nullable=True)
 
     def __repr__(self) -> str:
         return f"{self.language} - {self.generated_at}"

@@ -11,6 +11,7 @@ class User(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id'), nullable=True)
 
     def __repr__(self) -> str:
         return f"{self.email}"

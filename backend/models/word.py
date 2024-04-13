@@ -4,6 +4,13 @@ from sqlalchemy.dialects.postgresql import ENUM
 from .enums import Language
 
 
+word_sense = db.Table(
+    "WordSense",
+    db.Column("word_id", db.String(255), db.ForeignKey("Word.id")),
+    db.Column("sense_id", db.String(100), db.ForeignKey("Sense.id"))
+)
+
+
 class Word(db.Model):
     __tablename__ = 'Word'
 
