@@ -1,33 +1,17 @@
 import React, { useState } from "react";
 import styles from "./SignUp.module.scss";
-import {
-  Button,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-} from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { observer } from "mobx-react";
 import authStore from "../../stores/AuthStore";
 import { useLoader } from "../Loader/Loader";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { VisibilityOff, Visibility } from "@mui/icons-material";
+import { ArrowForwardIos } from "@mui/icons-material";
 
 const SignUp = observer(() => {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -63,52 +47,61 @@ const SignUp = observer(() => {
         </span>
       </div>
       <div className={styles.formInputContainer}>
-        <FormControl variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password *
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-            defaultValue={authStore.data.password}
-            onChange={(event) => (authStore.data.password = event.target.value)}
-          />
-        </FormControl>
-        {error && <div className={styles.formError}>{error}</div>}
-        <Button
-          type="submit"
+        <TextField
+          variant="outlined"
+          margin="normal"
           fullWidth
-          variant="contained"
-          color="primary"
-          style={{ margin: "15px 0" }}
-        >
-          Create account
-        </Button>
-        <Button
-          type="submit"
-          className={styles.backBtn}
-          variant="text"
-          color="primary"
-          style={{ margin: "15px 0" }}
-          startIcon={<ArrowBackIosNewIcon />}
-          onClick={() => navigate("/auth/initial")}
-        >
-          Back
-        </Button>
+          label="Name *"
+          name="name"
+          autoComplete="name"
+          autoFocus
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          label="Surname *"
+          name="surname"
+          autoComplete="surname"
+          autoFocus
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          label="Phone Number *"
+          name="phoneNUmber"
+          autoComplete="phoneNumber"
+          autoFocus
+          // error={!!emailErrorText}
+          // helperText={emailErrorText}
+          // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
+        />
+        {error && <div className={styles.formError}>{error}</div>}
+        <span className={styles.btnsContainer}>
+          <Button
+            type="submit"
+            className={styles.backBtn}
+            variant="text"
+            color="primary"
+            style={{ margin: "15px 0" }}
+            startIcon={<ArrowBackIosNewIcon />}
+            onClick={() => navigate("/auth/initial")}
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            className={styles.backBtn}
+            variant="text"
+            color="primary"
+            style={{ margin: "15px 0" }}
+            endIcon={<ArrowForwardIos />}
+            onClick={() => navigate("/auth/sign-up/pwd")}
+          >
+            Next
+          </Button>
+        </span>
       </div>
     </form>
   );
