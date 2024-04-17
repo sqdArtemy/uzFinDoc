@@ -32,16 +32,31 @@
   .form-input-container {
     display: flex;
     flex-direction: column;
-    // gap: 1rem;
 
-    .btns-container {
+    .fields-container {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-      .back-btn {
-        align-self: flex-start;
+    .back-btn {
+      align-self: flex-start;
+    }
+
+    .pwd-reqs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-top: 1rem;
+      color: #66717f;
+
+      ul {
+        list-style-type: circle;
+        margin: 0;
+        padding: 0;
+        padding-left: 2rem;
+        li {
+        }
       }
     }
   }

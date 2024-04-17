@@ -5,6 +5,7 @@ import { LoaderProvider } from "./components/Loader/Loader";
 import AuthLayout from "./components/AuthLayout/AuthLayout";
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
+import SignUpPwd from "./components/SignUpPwd/SignUpPwd";
 
 function App() {
   return (
@@ -16,7 +17,14 @@ function App() {
             <Route index element={<Navigate to="/auth/initial" replace />} />
             <Route path="initial" element={<AuthInitial />} />
             <Route path="sign-in" element={<SignIn />} />
-            <Route path="sign-up" element={<SignUp />} />
+            <Route path="sign-up/*">
+              <Route
+                index
+                element={<Navigate to="/auth/sign-up/details" replace />}
+              />
+              <Route path="details" element={<SignUp />} />
+              <Route path="pwd" element={<SignUpPwd />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
