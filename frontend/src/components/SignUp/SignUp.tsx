@@ -46,9 +46,10 @@ const SignUp = observer(() => {
       setError("");
       hideLoader();
       authStore.data.password = password;
+      // auth logic
       navigate("/auth/sign-up");
     } catch (error) {
-      setError("Invalid password.");
+      setError("Some error occurred.");
       hideLoader();
     }
   };

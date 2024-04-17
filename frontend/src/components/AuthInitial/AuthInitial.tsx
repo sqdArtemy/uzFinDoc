@@ -4,35 +4,25 @@ import { Button, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
 import { observer } from "mobx-react";
 import authStore from "../../stores/AuthStore";
-import { useLoader } from "../Loader/Loader";
 import { useNavigate } from "react-router-dom";
+import { validateEmail } from "../../utils";
 
 const AuthInitial = observer(() => {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState("");
+  const [inputErrorText, setInputErrorText] = useState<string>("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (inputErrorText) return;
     const data = new FormData(event.currentTarget);
     const email: string = data.get("email") as string;
-    console.log({
-      email: email,
-    });
     if (!email) {
       return setError("This is required information.");
     }
-
-    showLoader();
-    try {
-      setError("");
-      hideLoader();
-      authStore.data.email = email;
-      navigate("/auth/sign-up");
-    } catch (error) {
-      setError("Invalid email.");
-      hideLoader();
-    }
+    setError("");
+    authStore.data.email = email;
+    navigate("/auth/sign-up");
   };
 
   return (
@@ -52,11 +42,14 @@ const AuthInitial = observer(() => {
           variant="outlined"
           margin="normal"
           fullWidth
-          label="Email"
+          label="Email *"
           name="email"
           autoComplete="email"
           autoFocus
           defaultValue={authStore.data.email}
+          onChange={(e) => validateEmail(e.target.value, setInputErrorText)}
+          helperText={inputErrorText}
+          error={!!inputErrorText}
         />
         {error && <div className={styles.formError}>{error}</div>}
         <Button

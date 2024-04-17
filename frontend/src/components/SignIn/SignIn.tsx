@@ -16,12 +16,14 @@ import { useLoader } from "../Loader/Loader";
 import { useNavigate } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { validateEmail } from "../../utils";
 
 const SignIn = observer(() => {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailErrorText, setEmailErrorText] = useState<string>("");
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -50,6 +52,7 @@ const SignIn = observer(() => {
       hideLoader();
       authStore.data.email = email;
       authStore.data.password = password;
+      // some auth check with api
       navigate("/auth/sign-up");
     } catch (error) {
       setError("Invalid email or password.");
@@ -77,6 +80,9 @@ const SignIn = observer(() => {
           name="email"
           autoComplete="email"
           autoFocus
+          error={!!emailErrorText}
+          helperText={emailErrorText}
+          onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
         />
         <FormControl variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">
