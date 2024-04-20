@@ -14,6 +14,7 @@ def get_env_variable(name: str) -> str | EnvVariableError:
 
 class Config:
     # App settings:
+    JSON_SORT_KEYS = False
     TESTING = False
     DEBUG = False
     CSRF_ENABLED = True
@@ -21,7 +22,6 @@ class Config:
     JWT_SECRET_KEY = get_env_variable("JWT_SECRET_KEY")
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
-    JSON_SORT_KEYS = False
     ROOT_FOLDER = os.path.abspath(os.path.dirname(__name__))
     UPLOAD_FOLDER = os.path.join(ROOT_FOLDER, "media/uploads")
 
