@@ -15,7 +15,7 @@ def is_password_valid(password: str) -> bool:
 
 
 def is_phone_valid(phone: str) -> bool:
-    phone_regexp = r'^\d{15,}$'
+    phone_regexp = r'^\d{6,15}$'
     return re.match(phone_regexp, phone) is not None
 
 

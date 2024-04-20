@@ -2,7 +2,6 @@ from marshmallow import fields, post_load, validates, ValidationError, EXCLUDE
 from werkzeug.security import generate_password_hash
 
 from models import User, Organization
-from schemas import OrganizationGetSchema
 from utilities.validators import is_name_valid, is_email_valid, is_password_valid, is_phone_valid
 from app_init import ma
 from db_init import db
@@ -55,15 +54,14 @@ class UserGetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         fields = (
-           "id", "email", "name_first_name", "name_last_name", "name_middle_name", "phone", "password",
-           "organization"
+            "id", "email", "name_first_name", "name_last_name", "name_middle_name", "phone", "organization"
         )
         ordered = True
         include_relationships = True
         load_instance = True
         sqla_session = db.session
 
-    organization = fields.Nested(OrganizationGetSchema(exclude=["owner"]), data_key="organization")
+    organization = fields.Nested("schemas.OrganizationGetSchema", exclude=["owner"], data_key="organization")
 
 
 class UserUpdateSchema(ma.SQLAlchemyAutoSchema, UserSchemaMixin):
@@ -74,7 +72,6 @@ class UserUpdateSchema(ma.SQLAlchemyAutoSchema, UserSchemaMixin):
         )
         unknown = EXCLUDE
         include_relationships = True
-        load_instance = True
 
     name_first_name = fields.Str(required=False, validate=is_name_valid)
     name_middle_name = fields.Str(required=False, validate=is_name_valid)

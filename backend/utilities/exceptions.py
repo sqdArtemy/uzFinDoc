@@ -9,3 +9,11 @@ class EnvVariableError(Exception):
 
     def __str__(self) -> str:
         return f"Environment variable '{self.env_name}' is not defined."
+
+
+class JWTExpiredError(Exception):
+    def __init__(self):
+        self.message = "Provided JWT has expired."
+
+    def __str__(self) -> str:
+        return self.message

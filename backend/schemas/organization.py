@@ -1,7 +1,6 @@
 from marshmallow import fields, post_load, validates, ValidationError, EXCLUDE
 
 from models import Organization
-from schemas import UserGetSchema
 from utilities.validators import is_name_valid
 from app_init import ma
 from db_init import db
@@ -16,4 +15,4 @@ class OrganizationGetSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         sqla_session = db.session
 
-    owner = fields.Nested(UserGetSchema(exclude=["organization"]), data_key="owner")
+    owner = fields.Nested("schemas.UserGetSchema", exclude=["organization"], data_key="owner")
