@@ -9,6 +9,7 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(function (config) {
     config.data = camelToSnake(config.data);
+    config.headers['Content-Type'] = 'multipart/form-data';
     const token = localStorage.getItem('accessToken'); //getTokenFromSomewhere();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -32,7 +33,7 @@ axiosInstance.interceptors.response.use(function (response) {
         }
     }
 
-    error.response.data = getErrorMessage(error.response.data);
     console.log(error.response.data);
+    error.response.data = getErrorMessage(error.response.data);
     return Promise.reject(error);
 });

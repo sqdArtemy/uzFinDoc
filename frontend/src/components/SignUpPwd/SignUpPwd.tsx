@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { validatePwd, validateVerifyPwd } from "../../utils";
+import {authService} from "../../api/services/authService.ts";
 
 const SignUpPwd = observer(() => {
   const navigate = useNavigate();
@@ -52,14 +53,14 @@ const SignUpPwd = observer(() => {
       setError("");
       hideLoader();
       authStore.data.password = password;
-      // await authApi.registerApi({
-      //   email: authStore.data.email!,
-      //   phone: authStore.data.phoneNumber!,
-      //   password: authStore.data.password!,
-      //   nameFirstName: authStore.data.name!,
-      //   nameLastName: authStore.data.surname!,
-      //   nameMiddleName: authStore.data.surname!,
-      // });
+      await authService.register({
+        email: authStore.data.email!,
+        phone: authStore.data.phoneNumber!,
+        password: authStore.data.password!,
+        nameFirstName: authStore.data.name!,
+        nameLastName: authStore.data.surname!,
+        nameMiddleName: authStore.data.surname!,
+      });
       // auth logic
       navigate("/profile");
     } catch (error) {
