@@ -52,6 +52,14 @@ const SignUpPwd = observer(() => {
       setError("");
       hideLoader();
       authStore.data.password = password;
+      // await authApi.registerApi({
+      //   email: authStore.data.email!,
+      //   phone: authStore.data.phoneNumber!,
+      //   password: authStore.data.password!,
+      //   nameFirstName: authStore.data.name!,
+      //   nameLastName: authStore.data.surname!,
+      //   nameMiddleName: authStore.data.surname!,
+      // });
       // auth logic
       navigate("/profile");
     } catch (error) {

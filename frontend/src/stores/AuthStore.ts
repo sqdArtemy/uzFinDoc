@@ -6,8 +6,6 @@ interface IAuth {
   name?: string;
   surname?: string;
   phoneNumber?: string;
-  accessToken?: string;
-  refreshToken?: string;
 }
 
 class AuthStore {

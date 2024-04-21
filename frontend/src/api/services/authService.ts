@@ -1,17 +1,17 @@
-import { ILoginRequest, IRegisterRequest } from "./interfaces/requests/auth.ts";
-import { IGetUserResponse } from "./interfaces/responses/users.ts";
-import { axiosInstance} from "./axiosInstance.ts";
-import { ILoginResponse, ILogoutResponse } from "./interfaces/responses/auth.ts";
+import { ILoginRequest, IRegisterRequest } from "../interfaces/requests/auth.ts";
+import { IGetUserResponse } from "../interfaces/responses/users.ts";
+import { axiosInstance} from "../axiosInstance.ts";
+import { ILoginResponse, ILogoutResponse } from "../interfaces/responses/auth.ts";
 
-export class AuthApi {
-    public registerApi = async (data: IRegisterRequest): Promise<IGetUserResponse> => {
+export class AuthService {
+    public register = async (data: IRegisterRequest): Promise<IGetUserResponse> => {
         const url = '/user/register';
         const response = await axiosInstance.post(url, data);
 
         return response.data as IGetUserResponse;
     }
 
-    public loginApi = async (data: ILoginRequest): Promise<ILoginResponse> => {
+    public login = async (data: ILoginRequest): Promise<ILoginResponse> => {
         const url = '/user/login';
         const response = await axiosInstance.post(url, data);
 
@@ -30,4 +30,4 @@ export class AuthApi {
     }
 }
 
-export const authApi = new AuthApi();
+export const authService = new AuthService();

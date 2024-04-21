@@ -1,8 +1,8 @@
-import { IGetUserResponse } from "./interfaces/responses/users.ts";
-import { axiosInstance } from "./axiosInstance.ts";
-import { IUpdateUserRequest } from "./interfaces/requests/users.ts";
+import { IGetUserResponse } from "../interfaces/responses/users.ts";
+import { axiosInstance } from "../axiosInstance.ts";
+import { IUpdateUserRequest } from "../interfaces/requests/users.ts";
 
-export class UserApi {
+export class UserService {
     public getCurrentUser = async (): Promise<IGetUserResponse> => {
         const url = '/me';
         const response = await axiosInstance.get(url);
@@ -29,4 +29,4 @@ export class UserApi {
     }
 }
 
-export const userApi = new UserApi();
+export const userService = new UserService();
