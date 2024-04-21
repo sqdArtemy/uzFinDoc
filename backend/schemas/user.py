@@ -78,5 +78,5 @@ class UserUpdateSchema(ma.SQLAlchemyAutoSchema, UserSchemaMixin):
     name_last_name = fields.Str(required=False, validate=is_name_valid)
     phone = fields.Str(required=False, validate=is_phone_valid)
     email = fields.Str(required=False, validate=is_email_valid)
-    password = fields.Str(required=False, validate=is_password_valid)
+    password = fields.Str(required=False, validate=is_password_valid, load_only=True)
     organization_id = fields.Int(required=False)

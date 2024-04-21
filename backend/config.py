@@ -18,6 +18,7 @@ class Config:
     TESTING = False
     DEBUG = False
     CSRF_ENABLED = True
+    PROPAGATE_EXCEPTIONS = True
     SECRET_KEY = get_env_variable("SECRET_KEY")
     JWT_SECRET_KEY = get_env_variable("JWT_SECRET_KEY")
     JWT_BLACKLIST_ENABLED = True
