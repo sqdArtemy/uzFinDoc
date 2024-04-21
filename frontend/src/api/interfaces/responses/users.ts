@@ -1,4 +1,4 @@
-export interface IGetUser {
+export interface IGetUserResponse {
     "id": number;
     "email": string;
     "nameFirstName": string;
