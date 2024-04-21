@@ -5,19 +5,19 @@ from http import HTTPStatus
 from flask import request
 from flask_restful import abort
 from flask_jwt_extended import get_jti
-from jwt import ExpiredSignatureError
+from jwt import ExpiredSignatureError, DecodeError
 
 from db_init import redis_store
 
 
 def check_blacklisted_tokens() -> None:
-    jwt_header = request.headers.get('Authorization')
-
     try:
+        jwt_header = request.headers.get('Authorization')
+
         if jwt_header:
             token = jwt_header.split()[1]
             jti = get_jti(encoded_token=token)
             if redis_store.get(jti):
-                raise ExpiredSignatureError()
-    except ExpiredSignatureError as e:
+                raise ExpiredSignatureError("Token is expired.")
+    except (ExpiredSignatureError, DecodeError) as e:
         abort(HTTPStatus.UNAUTHORIZED, error_message={"message": str(e)})

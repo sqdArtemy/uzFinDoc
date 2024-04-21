@@ -51,24 +51,24 @@ class UserLoginView(Resource):
         login_parser.add_argument("password", location="form")
         data = login_parser.parse_args()
 
+        if 'email' not in data or 'password' not in data:
+            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Missing credentials"})
+
         user_details_query = f"SELECT id, password FROM 'User' WHERE email = {data['email']} "
         user = User.query.filter_by(email=data['email']).first()
 
-        if user:
-            is_password_correct = check_password_hash(user.password, data['password'])
+        if not user or not check_password_hash(user.password, data['password']):
+            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Invalid Credentials."})
 
-            if is_password_correct:
-                access_token = create_access_token(identity=user.id)
-                refresh_token = create_refresh_token(identity=user.id)
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
 
-                response_data = {
-                    "access_token": access_token,
-                    "refresh_token": refresh_token
-                }
+        response_data = {
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        }
 
-                return make_response(jsonify(response_data), HTTPStatus.OK)
-            else:
-                return make_response({"error": "Invalid Credentials."}, HTTPStatus.BAD_REQUEST)
+        return make_response(jsonify(response_data), HTTPStatus.OK)
 
 
 class UserLogOutView(Resource):
@@ -101,12 +101,14 @@ class UserDetailedViewSet(Resource):
     @jwt_required()
     def put(self, user_id: int) -> Response:
         with transaction():
+            if user_id != get_jwt_identity():
+                abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+
             user = "SELECT * FROM 'User' WHERE id=user_id"
             user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
 
             data = parser.parse_args()
             data = {key: value for key, value in data.items() if value}
-
             updated_user_data = self.user_update_schema.load(data)
 
             for key, value in updated_user_data.items():
@@ -119,6 +121,9 @@ class UserDetailedViewSet(Resource):
 
     @jwt_required()
     def delete(self, user_id: int) -> Response:
+        if user_id != get_jwt_identity():
+            abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
         db.session.delete(user)
         db.session.commit()
