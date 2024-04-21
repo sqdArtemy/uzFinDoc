@@ -1,6 +1,7 @@
 from flask_cli import FlaskGroup
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 import views
 from app_init import app
@@ -9,6 +10,7 @@ from utilities.middlewares import check_blacklisted_tokens
 JWTManager(app)
 api = Api(app)
 cli = FlaskGroup(app)
+CORS(app)
 
 import models
 
