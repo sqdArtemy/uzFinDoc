@@ -6,6 +6,7 @@ import AuthLayout from "./components/AuthLayout/AuthLayout";
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
 import SignUpPwd from "./components/SignUpPwd/SignUpPwd";
+import Profile from "./components/Profile/Profile";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="pwd" element={<SignUpPwd />} />
             </Route>
           </Route>
+          <Route path="profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </LoaderProvider>
