@@ -1,7 +1,7 @@
 import { ILoginRequest, IRegisterRequest } from "./interfaces/requests/auth.ts";
 import { IGetUserResponse } from "./interfaces/responses/users.ts";
 import { axiosInstance } from "./axiosInstance.ts";
-import {ILoginResponse, ILogoutResponse} from "./interfaces/responses/auth.ts";
+import { ILoginResponse, ILogoutResponse } from "./interfaces/responses/auth.ts";
 
 export class authApi {
     accessToken: string;
@@ -31,7 +31,11 @@ export class authApi {
 
     public logOut = async (): Promise<ILogoutResponse> => {
         const url = '/user/logout';
-        const response = await axiosInstance.get(url);
+        const response = await axiosInstance.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.accessToken}`
+            }
+        });
 
         this.refreshToken = '';
         this.accessToken = '';
