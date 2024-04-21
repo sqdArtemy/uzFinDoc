@@ -3,6 +3,9 @@ import { makeAutoObservable } from "mobx";
 interface IAuth {
   email?: string;
   password?: string;
+  name?: string;
+  surname?: string;
+  phoneNumber?: string;
 }
 
 class AuthStore {

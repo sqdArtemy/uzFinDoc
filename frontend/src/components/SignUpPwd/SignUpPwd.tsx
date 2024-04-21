@@ -23,9 +23,10 @@ const SignUpPwd = observer(() => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
-  const [pwd, setPwd] = useState("");
   const [pwdErrorText, setPwdErrorText] = useState("");
   const [verifyPwdErrorText, setVerifyPwdErrorText] = useState("");
+  const [pwd, setPwd] = useState("");
+  const [verifyPwd, setVerifyPwd] = useState("");
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -52,7 +53,7 @@ const SignUpPwd = observer(() => {
       hideLoader();
       authStore.data.password = password;
       // auth logic
-      navigate("/auth/sign-up");
+      navigate("/profile");
     } catch (error) {
       setError("Some error occurred.");
       hideLoader();
@@ -81,6 +82,11 @@ const SignUpPwd = observer(() => {
               onChange={(e) => {
                 setPwd(e.target.value);
                 validatePwd(e.target.value, setPwdErrorText);
+                validateVerifyPwd(
+                  e.target.value,
+                  verifyPwd,
+                  setVerifyPwdErrorText
+                );
               }}
               endAdornment={
                 <InputAdornment position="end">
@@ -113,6 +119,7 @@ const SignUpPwd = observer(() => {
               name="verifyPassword"
               error={!!verifyPwdErrorText}
               onChange={(e) => {
+                setVerifyPwd(e.target.value);
                 validateVerifyPwd(pwd, e.target.value, setVerifyPwdErrorText);
               }}
               endAdornment={
@@ -155,7 +162,6 @@ const SignUpPwd = observer(() => {
           Create account
         </Button>
         <Button
-          type="submit"
           className={styles.backBtn}
           variant="text"
           color="primary"

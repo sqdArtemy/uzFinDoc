@@ -3,39 +3,35 @@ import styles from "./SignUp.module.scss";
 import { Button, TextField } from "@mui/material";
 import { observer } from "mobx-react";
 import authStore from "../../stores/AuthStore";
-import { useLoader } from "../Loader/Loader";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { ArrowForwardIos } from "@mui/icons-material";
 
 const SignUp = observer(() => {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const password: string = data.get("password") as string;
+    const name = data.get("name") as string;
+    const surname = data.get("surname") as string;
+    const phoneNumber = data.get("phoneNumber") as string;
     console.log({
       email: authStore.data.email,
-      password: password,
+      name,
+      surname,
+      phoneNumber,
     });
-    if (!password) {
+    if (!name || !surname || !phoneNumber) {
       return setError("This is required information.");
     }
 
-    showLoader();
-    try {
-      setError("");
-      hideLoader();
-      authStore.data.password = password;
-      // auth logic
-      navigate("/auth/sign-up");
-    } catch (error) {
-      setError("Some error occurred.");
-      hideLoader();
-    }
+    authStore.data.name = name;
+    authStore.data.surname = surname;
+    authStore.data.phoneNumber = phoneNumber;
+
+    navigate("/auth/sign-up/pwd");
   };
 
   return (
@@ -55,6 +51,7 @@ const SignUp = observer(() => {
           name="name"
           autoComplete="name"
           autoFocus
+          defaultValue={authStore.data.name}
         />
         <TextField
           variant="outlined"
@@ -64,15 +61,17 @@ const SignUp = observer(() => {
           name="surname"
           autoComplete="surname"
           autoFocus
+          defaultValue={authStore.data.surname}
         />
         <TextField
           variant="outlined"
           margin="normal"
           fullWidth
           label="Phone Number *"
-          name="phoneNUmber"
+          name="phoneNumber"
           autoComplete="phoneNumber"
           autoFocus
+          defaultValue={authStore.data.phoneNumber}
           // error={!!emailErrorText}
           // helperText={emailErrorText}
           // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
@@ -80,7 +79,6 @@ const SignUp = observer(() => {
         {error && <div className={styles.formError}>{error}</div>}
         <span className={styles.btnsContainer}>
           <Button
-            type="submit"
             className={styles.backBtn}
             variant="text"
             color="primary"
@@ -92,12 +90,10 @@ const SignUp = observer(() => {
           </Button>
           <Button
             type="submit"
-            className={styles.backBtn}
             variant="text"
             color="primary"
             style={{ margin: "15px 0" }}
             endIcon={<ArrowForwardIos />}
-            onClick={() => navigate("/auth/sign-up/pwd")}
           >
             Next
           </Button>
