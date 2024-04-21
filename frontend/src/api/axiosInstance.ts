@@ -9,6 +9,11 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(function (config) {
     config.data = camelToSnake(config.data);
+    const token = localStorage.getItem('accessToken'); //getTokenFromSomewhere();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
 }, function (error) {
     return Promise.reject(error);
@@ -17,6 +22,16 @@ axiosInstance.interceptors.request.use(function (config) {
 axiosInstance.interceptors.response.use(function (response) {
     response.data = snakeToCamel(response.data);
     return response;
-}, function (error) {
-    return Promise.reject(getErrorMessage(error));
+}, async function (error) {
+    if (error.response && error.response.status === 401) {
+        const token = ''; //await refreshToken();
+        if (token) {
+            const originalRequest = error.config;
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(originalRequest);
+        }
+    }
+
+    error.response.data = getErrorMessage(error.response.data);
+    return Promise.reject(error);
 });

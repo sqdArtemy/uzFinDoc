@@ -1,15 +1,9 @@
 import { ILoginRequest, IRegisterRequest } from "./interfaces/requests/auth.ts";
 import { IGetUserResponse } from "./interfaces/responses/users.ts";
-import { axiosInstance } from "./axiosInstance.ts";
+import { axiosInstance} from "./axiosInstance.ts";
 import { ILoginResponse, ILogoutResponse } from "./interfaces/responses/auth.ts";
 
-export class authApi {
-    accessToken: string;
-    refreshToken: string;
-    constructor() {
-        this.accessToken = '';
-        this.refreshToken = '';
-    }
+export class AuthApi {
     public registerApi = async (data: IRegisterRequest): Promise<IGetUserResponse> => {
         const url = '/user/register';
         const response = await axiosInstance.post(url, data);
@@ -23,22 +17,17 @@ export class authApi {
 
         const responseData = response.data as ILoginResponse;
 
-        this.accessToken = responseData.accessToken;
-        this.refreshToken = responseData.refreshToken;
-
+        localStorage.setItem('accessToken', responseData.accessToken);
+        localStorage.setItem('refreshToken', responseData.refreshToken);
         return responseData;
     }
 
     public logOut = async (): Promise<ILogoutResponse> => {
         const url = '/user/logout';
-        const response = await axiosInstance.get(url, {
-            headers: {
-                Authorization: `Bearer ${this.accessToken}`
-            }
-        });
+        const response = await axiosInstance.get(url);
 
-        this.refreshToken = '';
-        this.accessToken = '';
         return response.data as ILogoutResponse;
     }
 }
+
+export const authApi = new AuthApi();
