@@ -13,9 +13,9 @@ class Translation(db.Model):
     details_status = db.Column(db.Enum(TranslationStatus), default=TranslationStatus.PROCESSING, nullable=False)
     details_word_count = db.Column(db.Integer, nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
-    input_document_id = db.Column(db.Integer, db.ForeignKey('Document.id'), nullable=False)
+    input_document_id = db.Column(db.Integer, db.ForeignKey('Document.id', ondelete="CASCADE"), nullable=False)
     output_document_id = db.Column(db.Integer, db.ForeignKey('Document.id'), nullable=False)
-    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id'), nullable=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id', ondelete="SET NULL"), nullable=True)
 
     def __repr__(self) -> str:
         return f"{self.language} - {self.generated_at}"

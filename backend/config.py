@@ -1,15 +1,7 @@
 import os
 from dotenv import load_dotenv
-from utilities.exceptions import EnvVariableError
 
-load_dotenv()
-
-
-def get_env_variable(name: str) -> str | EnvVariableError:
-    try:
-        return os.environ[name]
-    except KeyError:
-        EnvVariableError(env_name=name)
+from utilities.functions import get_env_variable
 
 
 class Config:
