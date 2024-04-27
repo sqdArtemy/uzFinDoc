@@ -15,6 +15,7 @@ POSTGRES_DB=""
 REDIS_HOST=""
 REDIS_PORT=""
 REDIS_DB=""
+UZWORDNET_FILE="./media/uzwordnet.json"
 """)
 
 
