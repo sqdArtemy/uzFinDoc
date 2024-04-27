@@ -11,7 +11,15 @@ class User(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id'), nullable=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id', ondelete='SET NULL'), nullable=True)
 
     def __repr__(self) -> str:
         return f"{self.email}"
+
+    organization = db.relationship(
+        "Organization",
+        backref="users",
+        lazy=True,
+        cascade="all, delete",
+        primaryjoin="User.organization_id == Organization.id"
+    )
