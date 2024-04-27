@@ -94,11 +94,11 @@ class OrganizationMembershipView(Resource):
     user_get_schema = UserGetSchema(many=True, exclude=["organization"])
 
     @jwt_required()
-    def post(self, organization_id: int, user_id: int) -> Response:
+    def post(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
         organization = requester.organization
-        user = User.query.filter_by(id=user_id).first()
+        user = User.query.filter_by(email=user_email).first()
 
         if not organization:
             abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
@@ -121,11 +121,11 @@ class OrganizationMembershipView(Resource):
         return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)
 
     @jwt_required()
-    def delete(self, organization_id: int, user_id: int) -> Response:
+    def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
         organization = requester.organization
-        user = User.query.filter_by(id=user_id).first()
+        user = User.query.filter_by(email=user_email).first()
 
         if not organization:
             abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
@@ -139,7 +139,7 @@ class OrganizationMembershipView(Resource):
                 error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", user_id)}
             )
 
-        if user_id == requester_id:
+        if user_email == requester.email:
             abort(
                 HTTPStatus.BAD_REQUEST,
                 error_message={"message": "You cannot leave this organization, you can delete it instead."}
@@ -169,4 +169,4 @@ class OrganizationMembershipListView(Resource):
         if organization and organization.id != organization_id:
             abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
 
-        return make_response(jsonify(self.user_get_schema.dump(organization.users), HTTPStatus.OK))
+        return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)

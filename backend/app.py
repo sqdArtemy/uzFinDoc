@@ -27,8 +27,14 @@ api.add_resource(views.UserMeView, "/me")
 # Organization`s URLs
 api.add_resource(views.OrganizationDetailedView, "/organization/<int:organization_id>")
 api.add_resource(views.OrganizationListView, "/organizations")
-api.add_resource(views.OrganizationMembershipView, "/organization/<int:organization_id>/user/<int:user_id>")
+api.add_resource(views.OrganizationMembershipView, "/organization/<int:organization_id>/user/<string:user_email>")
 api.add_resource(views.OrganizationMembershipListView, "/organization/<int:organization_id>/users")
+
+# Translation`s URLs
+api.add_resource(views.TranslationCreateView, "/translation")
+
+# Document`s URLs
+api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")
 
 
 @app.errorhandler(NoAuthorizationError)
