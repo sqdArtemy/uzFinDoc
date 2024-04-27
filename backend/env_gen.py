@@ -16,6 +16,9 @@ REDIS_HOST=""
 REDIS_PORT=""
 REDIS_DB=""
 UZWORDNET_FILE="./media/uzwordnet.json"
+OPENAI_KEY=""
+OPENAI_MODEL="gpt-4-turbo"
+OPENAI_TEMPERATURE=0.5
 """)
 
 

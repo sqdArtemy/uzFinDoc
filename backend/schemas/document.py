@@ -1,18 +1,24 @@
-from marshmallow import EXCLUDE, fields
+from marshmallow import EXCLUDE, fields, post_dump
 
 from models import Document
 from app_init import ma
 
 
-class DocumentGetSchema(ma.ModelSchema):
+class DocumentGetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Document
         fields = ("id", "name", "format", "text", "uploaded_at", "link", "type", "language")
         load_instance = True
         ordered = True
 
+    @post_dump
+    def enum_formatter(self, data, **kwargs):
+        data["language"] = data["language"].value
+        data["type"] = data["type"].value
+        return data
 
-class DocumentCreateSchema(ma.ModelSchema):
+
+class DocumentCreateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Document
         fields = ("name", "format", "text", "link", "uploaded_at", "type", "language")

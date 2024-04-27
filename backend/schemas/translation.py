@@ -1,8 +1,9 @@
-from marshmallow import fields, validates, ValidationError, EXCLUDE
+from marshmallow import fields, validates, ValidationError, EXCLUDE, post_dump
 
 from models import User, Organization, Document, Translation
 from app_init import ma
 from utilities.enums import Messages
+from db_init import db
 
 
 class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
@@ -12,12 +13,18 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
             "id", "language", "generated_at", "details_status", "details_word_count", "creator",
             "input_document", "output_document", "organization"
         )
-        load_instance = True
         include_relationships = True
+        sqla_session = db.session
         ordered = True
 
+    @post_dump
+    def enum_formatter(self, data, **kwargs):
+        data["language"] = data["language"].value
+        data["details_status"] = data["details_status"].value
+        return data
+
     organization = fields.Nested("schemas.organization.OrganizationGetSchema", data_key="organization")
-    creator = fields.Nested("shemas.user.UserGetSchema", data_key="creator")
+    creator = fields.Nested("schemas.user.UserGetSchema", data_key="creator")
     input_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="input_document")
     output_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="output_document")
 
