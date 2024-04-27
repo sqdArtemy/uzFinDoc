@@ -1,28 +1,28 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx'
 
 interface IAuth {
-  email?: string;
-  password?: string;
-  name?: string;
-  surname?: string;
-  phoneNumber?: string;
+    email?: string
+    password?: string
+    name?: string
+    surname?: string
+    phoneNumber?: string
 }
 
 class AuthStore {
-  storeData: IAuth = {};
+    storeData: IAuth = {}
 
-  constructor() {
-    makeAutoObservable(this);
-  }
+    constructor() {
+        makeAutoObservable(this)
+    }
 
-  set data(data: IAuth) {
-    this.storeData = data;
-  }
+    set data(data: IAuth) {
+        this.storeData = data
+    }
 
-  get data(): IAuth {
-    return this.storeData;
-  }
+    get data(): IAuth {
+        return this.storeData
+    }
 }
 
-const authStore = new AuthStore();
-export default authStore;
+const authStore = new AuthStore()
+export default authStore
