@@ -1,2 +1,3 @@
 from .user import UserRegisterView, UserLoginView, UserLogOutView, UserDetailedViewSet, UserMeView
-from .organization import OrganizationListView, OrganizationDetailedView
+from .organization import (OrganizationListView, OrganizationDetailedView, OrganizationMembershipView,
+                           OrganizationMembershipListView)
