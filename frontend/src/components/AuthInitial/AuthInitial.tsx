@@ -1,33 +1,33 @@
-import { useState } from 'react'
-import styles from './AuthInitial.module.scss'
-import { Button, TextField } from '@mui/material'
-import { Link } from 'react-router-dom'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/AuthStore'
-import { useNavigate } from 'react-router-dom'
-import { validateEmail } from '../../utils'
+import { useState } from 'react';
+import styles from './AuthInitial.module.scss';
+import { Button, TextField } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/AuthStore';
+import { useNavigate } from 'react-router-dom';
+import { validateEmail } from '../../utils';
 
 const AuthInitial = observer(() => {
-    const navigate = useNavigate()
-    const [error, setError] = useState('')
-    const [inputErrorText, setInputErrorText] = useState<string>('')
+    const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [inputErrorText, setInputErrorText] = useState<string>('');
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
-        if (inputErrorText) return
-        const data = new FormData(event.currentTarget)
-        const email: string = data.get('email') as string
+        event.preventDefault();
+        if (inputErrorText) return;
+        const data = new FormData(event.currentTarget);
+        const email: string = data.get('email') as string;
         if (!email) {
-            return setError('This is required information.')
+            return setError('This is required information.');
         }
-        setError('')
+        setError('');
 
         authStore.data = {
-            ...authStore.data,
+            ...authStore.storeData,
             email: email,
-        }
-        navigate('/auth/sign-up')
-    }
+        };
+        navigate('/auth/sign-up');
+    };
 
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -50,7 +50,7 @@ const AuthInitial = observer(() => {
                     name="email"
                     autoComplete="email"
                     autoFocus
-                    defaultValue={authStore.data.email}
+                    defaultValue={authStore.storeData.email}
                     onChange={(e) =>
                         validateEmail(e.target.value, setInputErrorText)
                     }
@@ -69,7 +69,7 @@ const AuthInitial = observer(() => {
                 </Button>
             </div>
         </form>
-    )
-})
+    );
+});
 
-export default AuthInitial
+export default AuthInitial;

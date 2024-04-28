@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import styles from './SignUpPwd.module.scss'
+import { useEffect, useState } from 'react';
+import styles from './SignUpPwd.module.scss';
 import {
     Button,
     FormControl,
@@ -8,71 +8,71 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-} from '@mui/material'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/AuthStore'
-import { useLoader } from '../Loader/Loader'
-import { useNavigate } from 'react-router-dom'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import { VisibilityOff, Visibility } from '@mui/icons-material'
-import { validatePwd, validateVerifyPwd } from '../../utils'
-import { authService } from '../../api/services/authService.ts'
+} from '@mui/material';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/AuthStore';
+import { useLoader } from '../Loader/Loader';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { validatePwd, validateVerifyPwd } from '../../utils';
+import { autorun } from 'mobx';
 
 const SignUpPwd = observer(() => {
-    const navigate = useNavigate()
-    const { showLoader, hideLoader } = useLoader()
-    const [error, setError] = useState('')
-    const [showPassword, setShowPassword] = useState(false)
-    const [showVerifyPassword, setShowVerifyPassword] = useState(false)
-    const [pwdErrorText, setPwdErrorText] = useState('')
-    const [verifyPwdErrorText, setVerifyPwdErrorText] = useState('')
-    const [pwd, setPwd] = useState('')
-    const [verifyPwd, setVerifyPwd] = useState('')
+    const navigate = useNavigate();
+    const { showLoader, hideLoader } = useLoader();
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showVerifyPassword, setShowVerifyPassword] = useState(false);
+    const [pwdErrorText, setPwdErrorText] = useState('');
+    const [verifyPwdErrorText, setVerifyPwdErrorText] = useState('');
+    const [pwd, setPwd] = useState('');
+    const [verifyPwd, setVerifyPwd] = useState('');
 
     const handleMouseDownPassword = (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
-        event.preventDefault()
-    }
+        event.preventDefault();
+    };
 
     const handleClickShowPassword = (setShowPassword) =>
-        setShowPassword((show) => !show)
+        setShowPassword((show) => !show);
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const password: string = data.get('password') as string
-        const verifyPassword: string = data.get('verifyPassword') as string
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const password: string = data.get('password') as string;
+        const verifyPassword: string = data.get('verifyPassword') as string;
 
         if (!password || !verifyPassword) {
-            return setError('Both fields should be filled.')
+            return setError('Both fields should be filled.');
         }
 
-        showLoader()
-        try {
-            setError('')
-            hideLoader()
+        authStore.data.password = password;
+        authStore.register({
+            email: authStore.storeData.email,
+            phone: authStore.storeData.phone,
+            password: password,
+            nameFirstName: authStore.storeData.nameFirstName,
+            nameLastName: authStore.storeData.nameLastName,
+            nameMiddleName: 'something',
+        });
+    };
 
-            authStore.data = {
-                ...authStore.data,
-                password: password,
+    useEffect(() => {
+        autorun(() => {
+            if (authStore.state === 'error') {
+                setError(authStore.errorMessage);
+                hideLoader();
+            } else if (authStore.state === 'success') {
+                navigate('/profile');
+                hideLoader();
+            } else if (authStore.state === 'loading') {
+                setError('');
+                showLoader();
             }
-
-            await authService.register({
-                email: authStore.data.email!,
-                phone: authStore.data.phoneNumber!,
-                password: authStore.data.password!,
-                nameFirstName: authStore.data.name!,
-                nameLastName: authStore.data.surname!,
-                nameMiddleName: authStore.data.surname!,
-            })
-            // auth logic
-            navigate('/profile')
-        } catch (error) {
-            setError('Some error occurred.')
-            hideLoader()
-        }
-    }
+        });
+    }, []);
 
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -94,13 +94,13 @@ const SignUpPwd = observer(() => {
                             name="password"
                             error={!!pwdErrorText}
                             onChange={(e) => {
-                                setPwd(e.target.value)
-                                validatePwd(e.target.value, setPwdErrorText)
+                                setPwd(e.target.value);
+                                validatePwd(e.target.value, setPwdErrorText);
                                 validateVerifyPwd(
                                     e.target.value,
                                     verifyPwd,
                                     setVerifyPwdErrorText
-                                )
+                                );
                             }}
                             endAdornment={
                                 <InputAdornment position="end">
@@ -143,12 +143,12 @@ const SignUpPwd = observer(() => {
                             name="verifyPassword"
                             error={!!verifyPwdErrorText}
                             onChange={(e) => {
-                                setVerifyPwd(e.target.value)
+                                setVerifyPwd(e.target.value);
                                 validateVerifyPwd(
                                     pwd,
                                     e.target.value,
                                     setVerifyPwdErrorText
-                                )
+                                );
                             }}
                             endAdornment={
                                 <InputAdornment position="end">
@@ -209,7 +209,7 @@ const SignUpPwd = observer(() => {
                 </Button>
             </div>
         </form>
-    )
-})
+    );
+});
 
-export default SignUpPwd
+export default SignUpPwd;

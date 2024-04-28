@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import styles from './SignIn.module.scss'
+import React, { useEffect, useState } from 'react';
+import styles from './SignIn.module.scss';
 import {
     Button,
     FormControl,
@@ -8,62 +8,79 @@ import {
     InputLabel,
     OutlinedInput,
     TextField,
-} from '@mui/material'
-import { Link } from 'react-router-dom'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/AuthStore'
-import { useLoader } from '../Loader/Loader'
-import { useNavigate } from 'react-router-dom'
-import Visibility from '@mui/icons-material/Visibility'
-import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { validateEmail } from '../../utils'
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/AuthStore';
+import { useLoader } from '../Loader/Loader';
+import { useNavigate } from 'react-router-dom';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { validateEmail } from '../../utils';
+import { autorun } from 'mobx';
 
 const SignIn = observer(() => {
-    const navigate = useNavigate()
-    const { showLoader, hideLoader } = useLoader()
-    const [error, setError] = useState('')
-    const [showPassword, setShowPassword] = useState(false)
-    const [emailErrorText, setEmailErrorText] = useState<string>('')
+    const navigate = useNavigate();
+    const { showLoader, hideLoader } = useLoader();
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [emailErrorText, setEmailErrorText] = useState<string>('');
+
+    useEffect(
+        () =>
+            autorun(() => {
+                if (authStore.state === 'error') {
+                    setError(authStore.errorMessage);
+                    hideLoader();
+                } else if (authStore.state === 'success') {
+                    navigate('/profile');
+                    hideLoader();
+                } else if (authStore.state === 'loading') {
+                    setError('');
+                    showLoader();
+                }
+            }),
+        []
+    );
 
     const handleMouseDownPassword = (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
-        event.preventDefault()
-    }
+        event.preventDefault();
+    };
 
-    const handleClickShowPassword = () => setShowPassword((show) => !show)
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const email: string = data.get('email') as string
-        const password: string = data.get('password') as string
+        event.preventDefault();
+        if (emailErrorText) return;
+        const data = new FormData(event.currentTarget);
+        const email: string = data.get('email') as string;
+        const password: string = data.get('password') as string;
         console.log({
             email: email,
             password: password,
-        })
+        });
         if (!email || !password) {
-            return setError('Both password and email must be entered.')
+            return setError('Both password and email must be entered.');
         }
 
-        showLoader()
-        try {
-            setError('')
-            hideLoader()
+        authStore.login(email, password);
 
-            authStore.data = {
-                ...authStore.data,
-                email: email,
-                password: password,
-            }
+        // some auth check with api
+        // navigate('/auth/sign-up')
 
-            // some auth check with api
-            navigate('/auth/sign-up')
-        } catch (error) {
-            setError('Invalid email or password.')
-            hideLoader()
-        }
-    }
+        // showLoader()
+        // try {
+        //     authStore.login(email, password);
+        //
+        //     // some auth check with api
+        //     navigate('/auth/sign-up')
+        // } catch (error) {
+        //     setError('Invalid email or password.')
+        //     hideLoader()
+        // }
+    };
 
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -132,7 +149,7 @@ const SignIn = observer(() => {
                 </Button>
             </div>
         </form>
-    )
-})
+    );
+});
 
-export default SignIn
+export default SignIn;

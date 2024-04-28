@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import styles from './Profile.module.scss'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/AuthStore'
-import { useNavigate } from 'react-router-dom'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { useEffect, useState } from 'react';
+import styles from './Profile.module.scss';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/AuthStore';
+import { useNavigate } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     TextField,
     Button,
@@ -13,77 +13,90 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-} from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton'
-import { validatePwd } from '../../utils'
+} from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { validatePwd } from '../../utils';
+import { autorun } from 'mobx';
 
 const Profile = observer(() => {
-    const navigate = useNavigate()
-    const [error, setError] = useState('')
-    const [showPassword, setShowPassword] = useState(false)
-    const [pwdErrorText, setPwdErrorText] = useState('')
-    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [pwdErrorText, setPwdErrorText] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        name: authStore.data.name,
-        surname: authStore.data.surname,
-        phoneNumber: authStore.data.phoneNumber,
+        name: authStore.data.nameFirstName,
+        surname: authStore.data.nameLastName,
+        phoneNumber: authStore.data.phone,
         password: authStore.data.password,
-    })
+    });
 
     const handleMouseDownPassword = (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
-        event.preventDefault()
-    }
+        event.preventDefault();
+    };
 
     const handleClickShowPassword = (setShowPassword) =>
-        setShowPassword((show) => !show)
+        setShowPassword((show) => !show);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const password: string = data.get('password') as string
-        const phoneNumber: string = data.get('phoneNumber') as string
-        const name: string = data.get('name') as string
-        const surname: string = data.get('surname') as string
+    const handleUpdate = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const password: string = data.get('password') as string;
+        const phoneNumber: string = data.get('phoneNumber') as string;
+        const name: string = data.get('name') as string;
+        const surname: string = data.get('surname') as string;
 
         if (pwdErrorText) {
-            return
+            return;
         } else if (!password || !phoneNumber || !name || !surname) {
-            return setError('All fields are required.')
+            return setError('All fields are required.');
         }
 
-        setLoading(true)
-        try {
-            setError('')
-            authStore.data = {
-                ...authStore.data,
-                name,
-                surname,
-                phoneNumber,
-                password,
+        console.log(authStore.data);
+        console.log(phoneNumber, name, surname);
+        authStore.updateUser({
+            phone: phoneNumber,
+            nameFirstName: name,
+            nameLastName: surname,
+        });
+    };
+
+    useEffect(() => {
+        autorun(() => {
+            if (authStore.state === 'error') {
+                setError(authStore.errorMessage);
+                setLoading(false);
+            } else if (authStore.state === 'success') {
+                navigate('/profile');
+                setLoading(false);
+            } else if (authStore.state === 'loading') {
+                setError('');
+                setLoading(true);
             }
-
-            // some update acc logic with api
-            setLoading(false)
-            navigate('/auth') // can be removed later
-        } catch (error) {
-            setError('Some error occurred.')
-            setLoading(false)
-        }
-    }
+            setFormData({
+                name: authStore.data.nameFirstName,
+                surname: authStore.data.nameLastName,
+                phoneNumber: authStore.data.phone,
+                password: authStore.data.password,
+            });
+        });
+    }, []);
 
     const handleCancel = () => {
         setFormData({
-            name: authStore.data.name,
-            surname: authStore.data.surname,
-            phoneNumber: authStore.data.phoneNumber,
+            name: authStore.data.nameFirstName,
+            surname: authStore.data.nameLastName,
+            phoneNumber: authStore.data.phone,
             password: authStore.data.password,
-        })
-    }
+        });
+    };
+
+    useEffect(() => {}, []);
 
     return (
-        <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <form className={styles.formContainer} onSubmit={handleUpdate}>
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>
                     Profile of {authStore.data.email}
@@ -98,10 +111,11 @@ const Profile = observer(() => {
                     name="name"
                     autoComplete="name"
                     autoFocus
-                    value={formData.name}
-                    onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                    }
+                    value={formData.name || ''}
+                    onChange={(e) => {
+                        setError('');
+                        setFormData({ ...formData, name: e.target.value });
+                    }}
                 />
                 <TextField
                     variant="outlined"
@@ -111,10 +125,11 @@ const Profile = observer(() => {
                     name="surname"
                     autoComplete="surname"
                     autoFocus
-                    value={formData.surname}
-                    onChange={(e) =>
-                        setFormData({ ...formData, surname: e.target.value })
-                    }
+                    value={formData.surname || ''}
+                    onChange={(e) => {
+                        setError('');
+                        setFormData({ ...formData, surname: e.target.value });
+                    }}
                 />
                 <TextField
                     variant="outlined"
@@ -124,13 +139,14 @@ const Profile = observer(() => {
                     name="phoneNumber"
                     autoComplete="phoneNumber"
                     autoFocus
-                    value={formData.phoneNumber}
-                    onChange={(e) =>
+                    value={formData.phoneNumber || ''}
+                    onChange={(e) => {
+                        setError('');
                         setFormData({
                             ...formData,
                             phoneNumber: e.target.value,
-                        })
-                    }
+                        });
+                    }}
                     // error={!!emailErrorText}
                     // helperText={emailErrorText}
                     // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
@@ -151,11 +167,12 @@ const Profile = observer(() => {
                         name="password"
                         error={!!pwdErrorText}
                         onChange={(e) => {
-                            validatePwd(e.target.value, setPwdErrorText)
+                            setError('');
+                            validatePwd(e.target.value, setPwdErrorText);
                             setFormData({
                                 ...formData,
                                 password: e.target.value,
-                            })
+                            });
                         }}
                         endAdornment={
                             <InputAdornment position="end">
@@ -176,8 +193,8 @@ const Profile = observer(() => {
                             </InputAdornment>
                         }
                         label="Password"
-                        value={formData.password}
-                        defaultValue={authStore.data.password}
+                        value={formData.password || ''}
+                        defaultValue={formData.password}
                     />
                     {pwdErrorText && (
                         <FormHelperText error>{pwdErrorText}</FormHelperText>
@@ -206,7 +223,7 @@ const Profile = observer(() => {
                 </span>
             </div>
         </form>
-    )
-})
+    );
+});
 
-export default Profile
+export default Profile;

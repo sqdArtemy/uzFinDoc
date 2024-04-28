@@ -1,48 +1,47 @@
-import { useState } from 'react'
-import styles from './SignUp.module.scss'
-import { Button, TextField } from '@mui/material'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/AuthStore'
-import { useNavigate } from 'react-router-dom'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import { ArrowForwardIos } from '@mui/icons-material'
+import { useState } from 'react';
+import styles from './SignUp.module.scss';
+import { Button, TextField } from '@mui/material';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/AuthStore';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { ArrowForwardIos } from '@mui/icons-material';
 
 const SignUp = observer(() => {
-    const navigate = useNavigate()
-    const [error, setError] = useState('')
+    const navigate = useNavigate();
+    const [error, setError] = useState('');
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const name = data.get('name') as string
-        const surname = data.get('surname') as string
-        const phoneNumber = data.get('phoneNumber') as string
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const name = data.get('name') as string;
+        const surname = data.get('surname') as string;
+        const phoneNumber = data.get('phoneNumber') as string;
         console.log({
-            email: authStore.data.email,
+            email: authStore.storeData.email,
             name,
             surname,
             phoneNumber,
-        })
+        });
         if (!name || !surname || !phoneNumber) {
-            return setError('This is required information.')
+            return setError('This is required information.');
         }
 
         authStore.data = {
-            ...authStore.data,
-            name,
-            surname,
-            phoneNumber,
-        }
-
-        navigate('/auth/sign-up/pwd')
-    }
+            ...authStore.storeData,
+            nameFirstName: name,
+            nameLastName: surname,
+            phone: phoneNumber,
+        };
+        navigate('/auth/sign-up/pwd');
+    };
 
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>Sign Up</span>
                 <span className={styles.formTextRegular}>
-                    Welcome, {authStore.data.email}
+                    Welcome, {authStore.storeData.email}
                 </span>
             </div>
             <div className={styles.formInputContainer}>
@@ -54,7 +53,7 @@ const SignUp = observer(() => {
                     name="name"
                     autoComplete="name"
                     autoFocus
-                    defaultValue={authStore.data.name}
+                    defaultValue={authStore.storeData.nameFirstName}
                 />
                 <TextField
                     variant="outlined"
@@ -64,7 +63,7 @@ const SignUp = observer(() => {
                     name="surname"
                     autoComplete="surname"
                     autoFocus
-                    defaultValue={authStore.data.surname}
+                    defaultValue={authStore.storeData.nameLastName}
                 />
                 <TextField
                     variant="outlined"
@@ -74,7 +73,7 @@ const SignUp = observer(() => {
                     name="phoneNumber"
                     autoComplete="phoneNumber"
                     autoFocus
-                    defaultValue={authStore.data.phoneNumber}
+                    defaultValue={authStore.storeData.phone}
                     // error={!!emailErrorText}
                     // helperText={emailErrorText}
                     // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
@@ -103,7 +102,7 @@ const SignUp = observer(() => {
                 </span>
             </div>
         </form>
-    )
-})
+    );
+});
 
-export default SignUp
+export default SignUp;
