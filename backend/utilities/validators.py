@@ -10,7 +10,7 @@ def is_email_valid(email: str) -> bool:
 
 
 def is_password_valid(password: str) -> bool:
-    password_regexp = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+    password_regexp = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$'
     return re.match(password_regexp, password) is not None
 
 

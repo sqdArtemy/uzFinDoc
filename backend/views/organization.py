@@ -4,7 +4,7 @@ from flask import jsonify, make_response, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from db_init import db, transaction
-from models import User
+from models import User, Organization
 from schemas import OrganizationUpdateSchema, OrganizationCreateSchema, OrganizationGetSchema, UserGetSchema
 from utilities.enums import Messages
 
@@ -61,7 +61,7 @@ class OrganizationDetailedView(Resource):
     def delete(self, organization_id: int) -> Response:
         user_id = get_jwt_identity()
         user = User.query.filter_by(id=user_id).first()
-        organization = user.organization
+        organization = Organization.query.filter_by(id=organization_id).first()
 
         if organization and organization.owner_id != user_id or user.organization_id != organization_id:
             abort(HTTPStatus.FORBIDDEN, error_message={"You are not an owner of this organization."})
@@ -73,12 +73,11 @@ class OrganizationDetailedView(Resource):
 
     @jwt_required()
     def put(self, organization_id: int) -> Response:
-        user_id = get_jwt_identity()
-        user = User.query.filter_by(id=user_id).first()
-        organization = user.organization
+        requester_id = get_jwt_identity()
+        organization = Organization.query.filter_by(id=organization_id).first()
 
-        if organization and organization.owner_id != user_id or user.organization_id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User does not have access to that organization"})
+        if organization and organization.owner_id != requester_id:
+            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
 
         data = parser.parse_args()
         for key, value in data.items():
@@ -96,20 +95,19 @@ class OrganizationMembershipView(Resource):
     @jwt_required()
     def post(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
-        requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
+        organization = Organization.query.filter_by(id=organization_id).first()
         user = User.query.filter_by(email=user_email).first()
 
         if not organization:
             abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
 
-        if organization and organization.id != organization_id:
+        if organization and organization.owner_id != requester_id:
             abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
 
         if not user:
             abort(
                 HTTPStatus.BAD_REQUEST,
-                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", user_id)}
+                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("email", user_email)}
             )
 
         if user.organization_id:
@@ -124,19 +122,19 @@ class OrganizationMembershipView(Resource):
     def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
+        organization = Organization.query.filter_by(id=organization_id).first()
         user = User.query.filter_by(email=user_email).first()
 
         if not organization:
             abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
 
-        if organization and organization.id != organization_id:
+        if organization and organization.owner_id != requester_id:
             abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
 
         if not user:
             abort(
                 HTTPStatus.BAD_REQUEST,
-                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", user_id)}
+                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", requester_id)}
             )
 
         if user_email == requester.email:
@@ -160,13 +158,12 @@ class OrganizationMembershipListView(Resource):
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
-        requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
+        organization = User.query.filter_by(id=requester_id).first().organization
 
         if not organization:
             abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
 
-        if organization and organization.id != organization_id:
+        if organization and organization_id != organization_id:
             abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
 
         return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)

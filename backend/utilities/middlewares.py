@@ -12,9 +12,9 @@ from db_init import redis_store
 
 def check_blacklisted_tokens() -> None:
     try:
-        jwt_header = request.headers.get('Authorization')
+        jwt_header = request.headers.get("Authorization")
 
-        if jwt_header:
+        if jwt_header and request.path not in ["/user/login", "/user/register"]:
             token = jwt_header.split()[1]
             jti = get_jti(encoded_token=token)
             if redis_store.get(jti):
