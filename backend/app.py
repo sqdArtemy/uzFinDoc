@@ -9,6 +9,8 @@ from marshmallow import ValidationError
 import views
 from app_init import app
 from utilities.middlewares import check_blacklisted_tokens
+from utilities.exceptions import PermissionDeniedError
+from utilities.enums import Messages
 
 jwt_ = JWTManager(app)
 api = Api(app)
@@ -36,15 +38,23 @@ api.add_resource(views.TranslationCreateView, "/translation")
 # Document`s URLs
 api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")
 
+# Technical URLs
+api.add_resource(views.JWTRefresh, "/token/refresh")
+
 
 @app.errorhandler(NoAuthorizationError)
 def incorrect_jwt(*args, **kwargs):
-    abort(HTTPStatus.UNAUTHORIZED, error_message={"message": "Missing token."})
+    abort(HTTPStatus.UNAUTHORIZED, error_message={"message": Messages.TOKEN_MISSING.value})
 
 
 @app.errorhandler(ValidationError)
 def form_validation_error(*args, **kwargs):
     abort(HTTPStatus.BAD_REQUEST, error_message={"message": str(args[0])})
+
+
+@app.errorhandler(PermissionDeniedError)
+def permission_error_handler(*args, **kwargs):
+    abort(HTTPStatus.FORBIDDEN, error_messafe={"message": str(args[0])})
 
 
 @app.before_request

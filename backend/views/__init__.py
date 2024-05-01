@@ -1,4 +1,4 @@
-from .user import UserRegisterView, UserLoginView, UserLogOutView, UserDetailedViewSet, UserMeView
+from .user import UserRegisterView, UserLoginView, UserLogOutView, UserDetailedViewSet, UserMeView, JWTRefresh
 from .organization import (
     OrganizationListView, OrganizationDetailedView, OrganizationMembershipView, OrganizationMembershipListView
 )

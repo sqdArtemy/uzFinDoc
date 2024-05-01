@@ -17,3 +17,11 @@ class JWTExpiredError(Exception):
 
     def __str__(self) -> str:
         return self.message
+
+
+class PermissionDeniedError(Exception):
+    def __init__(self, message: str = "You do not have permission to perform this action."):
+        self.message = message
+
+    def __str__(self) -> str:
+        return self.message

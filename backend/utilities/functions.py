@@ -1,3 +1,6 @@
+"""
+This file contains all needed special handy functions which are used throughout the project.
+"""
 import os
 import aiofiles
 from typing import BinaryIO

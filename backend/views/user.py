@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, reqparse
 from marshmallow import ValidationError
 from flask import jsonify, make_response, request, Response, redirect
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jti
@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash
 from db_init import db, redis_store, transaction
 from models import User
 from utilities.enums import Messages
+from utilities.exceptions import PermissionDeniedError
 from schemas import UserCreateSchema, UserGetSchema, UserUpdateSchema
 
 parser = reqparse.RequestParser()
@@ -41,7 +42,7 @@ class UserRegisterView(Resource):
 
             return make_response(jsonify(request_data), HTTPStatus.CREATED)
         except ValidationError as e:
-            abort(HTTPStatus.BAD_REQUEST, error_message=e.messages)
+            raise ValidationError(e.messages)
 
 
 class UserLoginView(Resource):
@@ -49,17 +50,14 @@ class UserLoginView(Resource):
 
     def post(self) -> Response:
         login_parser = reqparse.RequestParser()
-        login_parser.add_argument("email", location="form")
-        login_parser.add_argument("password", location="form")
+        login_parser.add_argument("email", location="form", required=True)
+        login_parser.add_argument("password", location="form", required=True)
         data = login_parser.parse_args()
-
-        if 'email' not in data or 'password' not in data:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Missing credentials"})
 
         user = User.query.filter_by(email=data['email']).first()
 
         if not user or not check_password_hash(user.password, data['password']):
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Invalid Credentials."})
+            raise ValidationError(Messages.INVALID_CREDENTIALS.value)
 
         response_data = {
             "user": self.user_get_schema.dump(user),
@@ -92,7 +90,7 @@ class UserDetailedViewSet(Resource):
 
     @jwt_required()
     def get(self, user_id: int) -> Response:
-        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
 
         return make_response(jsonify(self.user_get_schema.dump(user)), HTTPStatus.OK)
 
@@ -100,9 +98,11 @@ class UserDetailedViewSet(Resource):
     def put(self, user_id: int) -> Response:
         with transaction():
             if user_id != get_jwt_identity():
-                abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+                raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-            user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+            user = User.query.get_or_404(
+                user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id)
+            )
 
             data = parser.parse_args()
             data = {key: value for key, value in data.items() if value and getattr(user, key) != value}
@@ -118,10 +118,20 @@ class UserDetailedViewSet(Resource):
     @jwt_required()
     def delete(self, user_id: int) -> Response:
         if user_id != get_jwt_identity():
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+            raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
         db.session.delete(user)
         db.session.commit()
 
-        return make_response({"message": Messages.OBJECT_DELETED.value}, HTTPStatus.NO_CONTENT)
+        return make_response({"message": Messages.OBJECT_DELETED.value.format("User")}, HTTPStatus.NO_CONTENT)
+
+
+class JWTRefresh(Resource):
+    @jwt_required(refresh=True)
+    def get(self):
+        response_data = {
+            "access_token": create_access_token(identity=get_jwt_identity())
+        }
+
+        return make_response(jsonify(response_data), HTTPStatus.OK)
