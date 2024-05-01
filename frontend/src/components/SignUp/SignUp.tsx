@@ -16,6 +16,7 @@ const SignUp = observer(() => {
         const data = new FormData(event.currentTarget);
         const name = data.get('name') as string;
         const surname = data.get('surname') as string;
+        const middleName = data.get('middleName') as string;
         const phoneNumber = data.get('phoneNumber') as string;
         console.log({
             email: authStore.storeData.email,
@@ -32,6 +33,7 @@ const SignUp = observer(() => {
             nameFirstName: name,
             nameLastName: surname,
             phone: phoneNumber,
+            nameMiddleName: middleName,
         };
         navigate('/auth/sign-up/pwd');
     };
@@ -62,6 +64,16 @@ const SignUp = observer(() => {
                     label="Surname *"
                     name="surname"
                     autoComplete="surname"
+                    autoFocus
+                    defaultValue={authStore.storeData.nameLastName}
+                />
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Middle Name *"
+                    name="middleName"
+                    autoComplete="middleName"
                     autoFocus
                     defaultValue={authStore.storeData.nameLastName}
                 />

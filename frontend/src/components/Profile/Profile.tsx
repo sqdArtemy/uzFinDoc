@@ -29,6 +29,7 @@ const Profile = observer(() => {
         surname: authStore.data.nameLastName,
         phoneNumber: authStore.data.phone,
         password: authStore.data.password,
+        middleName: authStore.data.nameMiddleName,
     });
 
     const handleMouseDownPassword = (
@@ -47,6 +48,7 @@ const Profile = observer(() => {
         const phoneNumber: string = data.get('phoneNumber') as string;
         const name: string = data.get('name') as string;
         const surname: string = data.get('surname') as string;
+        const middleName: string = data.get('middleName') as string;
 
         if (pwdErrorText) {
             return;
@@ -60,6 +62,7 @@ const Profile = observer(() => {
             phone: phoneNumber,
             nameFirstName: name,
             nameLastName: surname,
+            nameMiddleName: middleName,
         });
     };
 
@@ -80,6 +83,7 @@ const Profile = observer(() => {
                 surname: authStore.data.nameLastName,
                 phoneNumber: authStore.data.phone,
                 password: authStore.data.password,
+                middleName: authStore.data.nameMiddleName,
             });
         });
     }, []);
@@ -90,6 +94,7 @@ const Profile = observer(() => {
             surname: authStore.data.nameLastName,
             phoneNumber: authStore.data.phone,
             password: authStore.data.password,
+            middleName: authStore.data.nameMiddleName,
         });
     };
 
@@ -129,6 +134,23 @@ const Profile = observer(() => {
                     onChange={(e) => {
                         setError('');
                         setFormData({ ...formData, surname: e.target.value });
+                    }}
+                />
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Middle Name *"
+                    name="middleName"
+                    autoComplete="middleName"
+                    autoFocus
+                    value={formData.middleName || ''}
+                    onChange={(e) => {
+                        setError('');
+                        setFormData({
+                            ...formData,
+                            middleName: e.target.value,
+                        });
                     }}
                 />
                 <TextField
