@@ -126,3 +126,12 @@ class UserDetailedViewSet(Resource):
         db.session.commit()
 
         return make_response({"message": Messages.OBJECT_DELETED.value}, HTTPStatus.NO_CONTENT)
+
+
+class JWTRefresh(Resource):
+    @jwt_required(refresh=True)
+    def get(self):
+        data = {
+            "access_token": create_access_token(identity=get_jwt_identity())
+        }
+        return make_response(jsonify(data), HTTPStatus.OK)

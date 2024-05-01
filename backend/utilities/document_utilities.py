@@ -13,7 +13,7 @@ from utilities.functions import is_file_exists
 
 
 async def get_text_from_pdf(file_path: str) -> str:
-    if is_file_exists(file_path):  # Assuming is_file_exists is defined somewhere
+    if is_file_exists(file_path):
 
         async with aiofiles.open(file_path, 'rb') as pdf_file:
             pdf_bytes = await pdf_file.read()
@@ -21,11 +21,11 @@ async def get_text_from_pdf(file_path: str) -> str:
         def process_pdf(pdf_bytes):
             pdf_stream = BytesIO(pdf_bytes)
             pdf_reader = PyPDF2.PdfReader(pdf_stream)
-            text = ""
+            document_text = ""
             for page_number in range(len(pdf_reader.pages)):
                 page = pdf_reader.pages[page_number]
-                text += page.extract_text()
-            return text
+                document_text += page.extract_text()
+            return document_text
 
         with ThreadPoolExecutor() as executor:
             text = await asyncio.get_running_loop().run_in_executor(executor, process_pdf, pdf_bytes)
@@ -43,10 +43,10 @@ async def get_text_from_docx(file_path: str) -> str:
         def process_docx(docx_bytes):
             docx_stream = BytesIO(docx_bytes)
             docx_reader = Document(docx_stream)
-            text = ""
+            document_text = ""
             for paragraph in docx_reader.paragraphs:
-                text += paragraph.text + "\n"
-            return text
+                document_text += paragraph.text + "\n"
+            return document_text
 
         with ThreadPoolExecutor() as executor:
             text = await asyncio.get_running_loop().run_in_executor(executor, process_docx, docx_bytes)

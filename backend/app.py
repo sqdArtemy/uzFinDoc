@@ -37,6 +37,9 @@ api.add_resource(views.TranslationCreateView, "/translation")
 # Document`s URLs
 api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")
 
+# Technical URLs
+api.add_resource(views.JWTRefresh, "/token/refresh")
+
 
 @app.errorhandler(NoAuthorizationError)
 def incorrect_jwt(*args, **kwargs):

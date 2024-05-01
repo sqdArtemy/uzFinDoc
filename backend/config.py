@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv
+from datetime import timedelta
 
 from utilities.functions import get_env_variable
 
@@ -15,6 +15,8 @@ class Config:
     JWT_SECRET_KEY = get_env_variable("JWT_SECRET_KEY")
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     ROOT_FOLDER = os.path.abspath(os.path.dirname(__name__))
     UPLOAD_FOLDER = os.path.join(ROOT_FOLDER, "media/uploads")
 
