@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, reqparse
 from marshmallow import ValidationError
 from flask import jsonify, make_response, request, Response, redirect
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jti
@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash
 from db_init import db, redis_store, transaction
 from models import User
 from utilities.enums import Messages
+from utilities.exceptions import PermissionDeniedError
 from schemas import UserCreateSchema, UserGetSchema, UserUpdateSchema
 
 parser = reqparse.RequestParser()
@@ -41,7 +42,7 @@ class UserRegisterView(Resource):
 
             return make_response(jsonify(request_data), HTTPStatus.CREATED)
         except ValidationError as e:
-            abort(HTTPStatus.BAD_REQUEST, error_message=e.messages)
+            raise ValidationError(e.messages)
 
 
 class UserLoginView(Resource):
@@ -54,12 +55,12 @@ class UserLoginView(Resource):
         data = login_parser.parse_args()
 
         if 'email' not in data or 'password' not in data:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Missing credentials"})
+            raise ValidationError("Missing credentials.")
 
         user = User.query.filter_by(email=data['email']).first()
 
         if not user or not check_password_hash(user.password, data['password']):
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "Invalid Credentials."})
+            raise ValidationError("Invalid credentials.")
 
         response_data = {
             "user": self.user_get_schema.dump(user),
@@ -100,7 +101,7 @@ class UserDetailedViewSet(Resource):
     def put(self, user_id: int) -> Response:
         with transaction():
             if user_id != get_jwt_identity():
-                abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+                raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
             user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
 
@@ -118,7 +119,7 @@ class UserDetailedViewSet(Resource):
     @jwt_required()
     def delete(self, user_id: int) -> Response:
         if user_id != get_jwt_identity():
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": Messages.FORBIDDEN.value})
+            raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
         db.session.delete(user)

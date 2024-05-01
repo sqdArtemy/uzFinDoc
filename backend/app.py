@@ -9,6 +9,7 @@ from marshmallow import ValidationError
 import views
 from app_init import app
 from utilities.middlewares import check_blacklisted_tokens
+from utilities.exceptions import PermissionDeniedError
 
 jwt_ = JWTManager(app)
 api = Api(app)
@@ -45,6 +46,11 @@ def incorrect_jwt(*args, **kwargs):
 @app.errorhandler(ValidationError)
 def form_validation_error(*args, **kwargs):
     abort(HTTPStatus.BAD_REQUEST, error_message={"message": str(args[0])})
+
+
+@app.errorhandler(PermissionDeniedError)
+def permission_error_handler(*args, **kwargs):
+    abort(HTTPStatus.FORBIDDEN, error_messafe={"message": str(args[0])})
 
 
 @app.before_request

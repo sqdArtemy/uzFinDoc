@@ -1,3 +1,6 @@
+"""
+This file contains all needed enumerators for this project
+"""
 from enum import Enum
 
 
