@@ -1,12 +1,14 @@
 from http import HTTPStatus
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, reqparse
+from marshmallow import ValidationError
 from flask import jsonify, make_response, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from db_init import db, transaction
-from models import User
+from models import User, Organization
 from schemas import OrganizationUpdateSchema, OrganizationCreateSchema, OrganizationGetSchema, UserGetSchema
 from utilities.enums import Messages
+from utilities.exceptions import PermissionDeniedError
 
 
 parser = reqparse.RequestParser()
@@ -23,10 +25,7 @@ class OrganizationListView(Resource):
         user = User.query.filter_by(id=user_id).first()
 
         if user.organization:
-            abort(
-                HTTPStatus.BAD_REQUEST,
-                error_message={"message": f"User with id {user_id} already have organization."}
-            )
+            raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value.format("id", user_id))
 
         data = parser.parse_args()
         data["owner_id"] = user_id
@@ -53,7 +52,7 @@ class OrganizationDetailedView(Resource):
         organization = user.organization
 
         if organization and organization.id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User does not have access to that organization"})
+            raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value.format("id", user_id))
 
         return make_response(jsonify(self.organization_get_schema.dump(organization)), HTTPStatus.OK)
 
@@ -61,26 +60,30 @@ class OrganizationDetailedView(Resource):
     def delete(self, organization_id: int) -> Response:
         user_id = get_jwt_identity()
         user = User.query.filter_by(id=user_id).first()
-        organization = user.organization
+        organization = Organization.query.filter_by(id=organization_id).first()
 
         if organization and organization.owner_id != user_id or user.organization_id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"You are not an owner of this organization."})
+            raise ValidationError(Messages.USER_NOT_OWNER.value)
 
         db.session.delete(organization)
         db.session.commit()
 
-        return make_response(jsonify({"message": "Organization deleted."}), HTTPStatus.NO_CONTENT)
+        return make_response(
+            jsonify({"message": Messages.OBJECT_DELETED.value.format("Organization")}), HTTPStatus.NO_CONTENT
+        )
 
     @jwt_required()
     def put(self, organization_id: int) -> Response:
-        user_id = get_jwt_identity()
-        user = User.query.filter_by(id=user_id).first()
-        organization = user.organization
+        requester_id = get_jwt_identity()
+        organization = Organization.query.filter_by(id=organization_id).first()
 
-        if organization and organization.owner_id != user_id or user.organization_id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User does not have access to that organization"})
+        if organization and organization.owner_id != requester_id:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         data = parser.parse_args()
+        data = {key: value for key, value in data.items() if value and getattr(organization, key) != value}
+        data = self.organization_update_schema.load(data)
+
         for key, value in data.items():
             setattr(organization, key, value)
 
@@ -94,26 +97,21 @@ class OrganizationMembershipView(Resource):
     user_get_schema = UserGetSchema(many=True, exclude=["organization"])
 
     @jwt_required()
-    def post(self, organization_id: int, user_id: int) -> Response:
+    def post(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
-        requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
-        user = User.query.filter_by(id=user_id).first()
+        organization = Organization.query.filter_by(id=organization_id).first()
+        user = User.query.get_or_404(
+            email=user_email, description=Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email)
+        )
 
         if not organization:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
+            raise ValidationError(Messages.USER_HAS_NO_ORG.value)
 
-        if organization and organization.id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
-
-        if not user:
-            abort(
-                HTTPStatus.BAD_REQUEST,
-                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", user_id)}
-            )
+        if organization and organization.owner_id != requester_id:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         if user.organization_id:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User if already a member of organization."})
+            raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value)
 
         user.organization_id = organization_id
         db.session.commit()
@@ -121,32 +119,25 @@ class OrganizationMembershipView(Resource):
         return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)
 
     @jwt_required()
-    def delete(self, organization_id: int, user_id: int) -> Response:
+    def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
-        user = User.query.filter_by(id=user_id).first()
+        organization = Organization.query.filter_by(id=organization_id).first()
+        user = User.query.get_or_404(
+            email=user_email, description=Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email)
+        )
 
         if not organization:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
+            raise ValidationError(Messages.USER_HAS_NO_ORG.value)
 
-        if organization and organization.id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
+        if organization and organization.owner_id != requester_id:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
-        if not user:
-            abort(
-                HTTPStatus.BAD_REQUEST,
-                error_message={"message": Messages.OBJECT_NOT_FOUND.value.format("User", user_id)}
-            )
-
-        if user_id == requester_id:
-            abort(
-                HTTPStatus.BAD_REQUEST,
-                error_message={"message": "You cannot leave this organization, you can delete it instead."}
-            )
+        if user_email == requester.email:
+            raise ValidationError(Messages.OWNER_CANNOT_LEAVE_ORG.value)
 
         if user.organization_id != organization_id:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User is not a member of this organization."})
+            raise ValidationError(Messages.USER_NOT_A_MEMBER.value)
 
         user.organization_id = None
         db.session.commit()
@@ -160,13 +151,12 @@ class OrganizationMembershipListView(Resource):
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
-        requester = User.query.filter_by(id=requester_id).first()
-        organization = requester.organization
+        organization = User.query.filter_by(id=requester_id).first().organization
 
         if not organization:
-            abort(HTTPStatus.BAD_REQUEST, error_message={"message": "User does not have organization."})
+            raise ValidationError(Messages.USER_HAS_NO_ORG.value)
 
-        if organization and organization.id != organization_id:
-            abort(HTTPStatus.FORBIDDEN, error_message={"message": "User is not an owner of this organization."})
+        if organization and organization_id != organization_id:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
-        return make_response(jsonify(self.user_get_schema.dump(organization.users), HTTPStatus.OK))
+        return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)

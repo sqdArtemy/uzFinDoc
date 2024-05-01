@@ -19,3 +19,23 @@ class Translation(db.Model):
 
     def __repr__(self) -> str:
         return f"{self.language} - {self.generated_at}"
+
+    organization = db.relationship("Organization", backref="translations", lazy=True)
+    input_document = db.relationship(
+        "Document",
+        backref="translation_in",
+        primaryjoin="Document.id == Translation.input_document_id",
+        lazy=True
+    )
+    output_document = db.relationship(
+        "Document",
+        backref="translation_out",
+        primaryjoin="Document.id == Translation.output_document_id",
+        lazy=True
+    )
+    creator = db.relationship(
+        "User",
+        backref="translations",
+        primaryjoin="User.id == Translation.creator_id",
+        lazy=True
+    )
