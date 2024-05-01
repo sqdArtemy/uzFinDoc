@@ -10,6 +10,7 @@ import views
 from app_init import app
 from utilities.middlewares import check_blacklisted_tokens
 from utilities.exceptions import PermissionDeniedError
+from utilities.enums import Messages
 
 jwt_ = JWTManager(app)
 api = Api(app)
@@ -43,7 +44,7 @@ api.add_resource(views.JWTRefresh, "/token/refresh")
 
 @app.errorhandler(NoAuthorizationError)
 def incorrect_jwt(*args, **kwargs):
-    abort(HTTPStatus.UNAUTHORIZED, error_message={"message": "Missing token."})
+    abort(HTTPStatus.UNAUTHORIZED, error_message={"message": Messages.TOKEN_MISSING.value})
 
 
 @app.errorhandler(ValidationError)

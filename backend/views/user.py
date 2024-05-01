@@ -50,17 +50,14 @@ class UserLoginView(Resource):
 
     def post(self) -> Response:
         login_parser = reqparse.RequestParser()
-        login_parser.add_argument("email", location="form")
-        login_parser.add_argument("password", location="form")
+        login_parser.add_argument("email", location="form", required=True)
+        login_parser.add_argument("password", location="form", required=True)
         data = login_parser.parse_args()
-
-        if 'email' not in data or 'password' not in data:
-            raise ValidationError("Missing credentials.")
 
         user = User.query.filter_by(email=data['email']).first()
 
         if not user or not check_password_hash(user.password, data['password']):
-            raise ValidationError("Invalid credentials.")
+            raise ValidationError(Messages.INVALID_CREDENTIALS.value)
 
         response_data = {
             "user": self.user_get_schema.dump(user),
@@ -93,7 +90,7 @@ class UserDetailedViewSet(Resource):
 
     @jwt_required()
     def get(self, user_id: int) -> Response:
-        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
 
         return make_response(jsonify(self.user_get_schema.dump(user)), HTTPStatus.OK)
 
@@ -103,7 +100,9 @@ class UserDetailedViewSet(Resource):
             if user_id != get_jwt_identity():
                 raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-            user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+            user = User.query.get_or_404(
+                user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id)
+            )
 
             data = parser.parse_args()
             data = {key: value for key, value in data.items() if value and getattr(user, key) != value}
@@ -121,17 +120,18 @@ class UserDetailedViewSet(Resource):
         if user_id != get_jwt_identity():
             raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("id", user_id))
+        user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
         db.session.delete(user)
         db.session.commit()
 
-        return make_response({"message": Messages.OBJECT_DELETED.value}, HTTPStatus.NO_CONTENT)
+        return make_response({"message": Messages.OBJECT_DELETED.value.format("User")}, HTTPStatus.NO_CONTENT)
 
 
 class JWTRefresh(Resource):
     @jwt_required(refresh=True)
     def get(self):
-        data = {
+        response_data = {
             "access_token": create_access_token(identity=get_jwt_identity())
         }
-        return make_response(jsonify(data), HTTPStatus.OK)
+
+        return make_response(jsonify(response_data), HTTPStatus.OK)

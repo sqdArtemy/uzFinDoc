@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash
 
 from models import User, Organization
 from utilities.validators import is_name_valid, is_email_valid, is_password_valid, is_phone_valid
+from utilities.enums import Messages
 from app_init import ma
 from db_init import db
 
@@ -12,17 +13,17 @@ class UserSchemaMixin:
     @validates('email')
     def validate_email(self, value: str) -> None:
         if User.query.filter_by(email=value).first():
-            raise ValidationError(f"User with email '{value}' already exists.")
+            raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("User", "email", value))
 
     @validates('phone')
     def validate_phone(self, value: str) -> None:
         if User.query.filter_by(phone=value).first():
-            raise ValidationError(f"User with phone +'{value}' already exists.")
+            raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("User", "phone", f"+{value}"))
 
     @validates("organization_id")
     def validate_organization_id(self, value: int) -> None:
         if not Organization.query.filter_by(id=value).first():
-            raise ValidationError(f"Organization with id '{value}' does not exist.")
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", value))
 
     @post_load
     def hash_password(self, data: dict, **kwargs) -> dict:

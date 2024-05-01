@@ -2,6 +2,7 @@ from marshmallow import fields, validates, ValidationError, EXCLUDE
 
 from models import Organization
 from utilities.validators import is_name_valid
+from utilities.enums import Messages
 from app_init import ma
 from db_init import db
 
@@ -31,7 +32,7 @@ class OrganizationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("name")
     def is_name_unique(self, value: str) -> None:
         if Organization.query.filter_by(name=value).first():
-            raise ValidationError(f"Organization with name {value} already exists.")
+            raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
 
     name = fields.Str(required=True, validate=is_name_valid)
     owner_id = fields.Int(required=True)
@@ -48,6 +49,6 @@ class OrganizationUpdateSchema(ma.SQLAlchemyAutoSchema):
     @validates("name")
     def is_name_unique(self, value: str) -> None:
         if Organization.query.filter_by(name=value).first():
-            raise ValidationError(f"Organization with name {value} already exists.")
+            raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
 
     name = fields.Str(required=False, validate=is_name_valid)

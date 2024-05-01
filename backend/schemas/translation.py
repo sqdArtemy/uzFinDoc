@@ -52,19 +52,19 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("creator_id")
     def validate_creator_id(self, value: int) -> None:
         if not User.query.filter_by(id=value).first():
-            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", value))
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", value))
 
     @validates("organization_id")
     def validate_organization_id(self, value: int) -> None:
         if not Organization.query.filter_by(id=value).first():
-            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Organization", value))
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", value))
 
     @validates("input_document_id")
     def validate_input_document_id(self, value: int) -> None:
         if not Document.query.filter_by(id=value).first():
-            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Document", value))
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Document", "id", value))
 
     @validates("output_document_id")
     def validate_document_id(self, value: int) -> None:
         if not Document.query.filter_by(id=value).first():
-            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Document", value))
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Document", "id", value))
