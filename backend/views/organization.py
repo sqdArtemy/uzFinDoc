@@ -100,9 +100,9 @@ class OrganizationMembershipView(Resource):
     def post(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
         organization = Organization.query.filter_by(id=organization_id).first()
-        user = User.query.get_or_404(
-            email=user_email, description=Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email)
-        )
+        user = User.query.filter_by(email=user_email).first()
+        if not user:
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email))
 
         if not organization:
             raise ValidationError(Messages.USER_HAS_NO_ORG.value)
@@ -111,7 +111,7 @@ class OrganizationMembershipView(Resource):
             raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         if user.organization_id:
-            raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value)
+            raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value.format("email", user_email))
 
         user.organization_id = organization_id
         db.session.commit()
@@ -123,17 +123,17 @@ class OrganizationMembershipView(Resource):
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
         organization = Organization.query.filter_by(id=organization_id).first()
-        user = User.query.get_or_404(
-            email=user_email, description=Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email)
-        )
+        user = User.query.filter_by(email=user_email).first()
+        if not user:
+            raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email))
 
         if not organization:
             raise ValidationError(Messages.USER_HAS_NO_ORG.value)
 
-        if organization and organization.owner_id != requester_id:
+        if organization and organization.owner_id != requester_id and requester.email != user_email:
             raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
-        if user_email == requester.email:
+        if user_email == requester.email and organization.owner_id == requester_id:
             raise ValidationError(Messages.OWNER_CANNOT_LEAVE_ORG.value)
 
         if user.organization_id != organization_id:
