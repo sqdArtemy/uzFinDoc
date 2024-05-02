@@ -6,10 +6,10 @@ export interface ITranslationResponse {
     "language": string;
     "generatedAt": string | Date;
     "detailsStatus": string;
-    "details_word_count": number;
+    "detailsWordCount": number;
     "creator": IGetUserResponse,
-    "input_document": IDocumentResponse;
-    "output_document": IDocumentResponse;
+    "inputDocument": IDocumentResponse;
+    "outputDocument": IDocumentResponse;
     "organization": IOrganizationResponse;
 }
 
