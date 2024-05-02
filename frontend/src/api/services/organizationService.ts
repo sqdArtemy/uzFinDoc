@@ -1,7 +1,7 @@
 import { axiosInstance } from '../axiosInstance.ts'
 import { ICreateOrganization } from "../interfaces/requests/organization.ts";
 import { IOrganizationResponse } from "../interfaces/responses/organization.ts";
-import {IGetUserResponse} from "../interfaces/responses/users.ts";
+import { IGetUserResponse } from "../interfaces/responses/users.ts";
 
 export class OrganizationService {
     public createOrganization = async (data: ICreateOrganization) => {

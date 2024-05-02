@@ -5,5 +5,9 @@ export interface IGetUserResponse {
     "nameLastName": string;
     "nameMiddleName": string;
     "phone": string;
-    "organizationId"?: number;
+    "organization"?: {
+        "id": number;
+        "name": string;
+        "createdAt": string | Date;
+    } | null;
 }
