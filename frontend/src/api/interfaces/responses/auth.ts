@@ -19,3 +19,7 @@ export interface ILoginResponse {
 export interface ILogoutResponse {
     "message": string;
 }
+
+export interface IRefreshTokenResponse {
+    accessToken: string;
+}

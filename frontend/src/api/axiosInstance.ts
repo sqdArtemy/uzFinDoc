@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getErrorMessage } from './helpers/getErrorMessage.ts';
 import { snakeToCamel } from './helpers/snakeToCamel.ts';
 import { camelToSnake } from './helpers/camelToSnake.ts';
+import {authService} from "./services/authService.ts";
 
 export const axiosInstance = axios.create({
     baseURL: 'http://127.0.0.1:5000',
@@ -34,11 +35,16 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     async function (error) {
-        if (error.response && error.response.status === 401) {
-            const token = ''; //await refreshToken();
-            if (token) {
+        if (
+            error.response?.status === 401 &&
+            !error.config?.url?.includes("/token/refresh")
+        ) {
+            const refreshToken = localStorage.getItem('refreshToken');
+            const response = await authService.refreshToken(refreshToken!);
+            if (response.data && response.data.accessToken) {
                 const originalRequest = error.config;
-                originalRequest.headers.Authorization = `Bearer ${token}`;
+                originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                localStorage.setItem('accessToken', response.data.accessToken);
                 return axiosInstance(originalRequest);
             }
         }
