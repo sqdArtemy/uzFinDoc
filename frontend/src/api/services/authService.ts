@@ -2,7 +2,6 @@ import {
     ILoginRequest,
     IRegisterRequest,
 } from '../interfaces/requests/auth.ts';
-import { IGetUserResponse } from '../interfaces/responses/users.ts';
 import { axiosInstance } from '../axiosInstance.ts';
 import {
     ILoginResponse,
@@ -12,7 +11,7 @@ import {
 export class AuthService {
     public register = async (data: IRegisterRequest) => {
         const url = '/user/register';
-        return axiosInstance.post<IGetUserResponse>(url, data);
+        return axiosInstance.post<ILoginResponse>(url, data);
     };
 
     public login = async (data: ILoginRequest) => {

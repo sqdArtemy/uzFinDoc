@@ -1,4 +1,17 @@
 export interface ILoginResponse {
+    "user": {
+        "id": number;
+        "email": string;
+        "nameFirstName": string;
+        "nameLastName": string;
+        "nameMiddleName": string;
+        "phone": string;
+        "organization": null | {
+            "id": number;
+            "name": string;
+            "createdAt": string | Date;
+        }
+    },
     "accessToken": string;
     "refreshToken": string;
 }
