@@ -1,7 +1,7 @@
 from marshmallow import fields, validates, ValidationError, EXCLUDE
 
 from models import Organization
-from utilities.validators import is_name_valid
+from utilities.validators import is_name_valid, is_email_valid
 from utilities.enums import Messages
 from app_init import ma
 from db_init import db
@@ -10,7 +10,7 @@ from db_init import db
 class OrganizationGetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Organization
-        fields = ("id", "name", "created_at", "owner")
+        fields = ("id", "name", "email", "created_at", "owner")
         ordered = True
         include_relationships = True
         load_instance = True
@@ -22,7 +22,7 @@ class OrganizationGetSchema(ma.SQLAlchemyAutoSchema):
 class OrganizationCreateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Organization
-        fields = ("name", "owner_id")
+        fields = ("name", "email", "owner_id")
         ordered = True
         include_relationships = True
         load_instance = True
@@ -35,13 +35,14 @@ class OrganizationCreateSchema(ma.SQLAlchemyAutoSchema):
             raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
 
     name = fields.Str(required=True, validate=is_name_valid)
+    email = fields.Str(require=True, validate=is_email_valid)
     owner_id = fields.Int(required=True)
 
 
 class OrganizationUpdateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Organization
-        fields = ("name", )
+        fields = ("name", "email")
         ordered = True
         include_relationships = True
         unknown = EXCLUDE
@@ -50,5 +51,10 @@ class OrganizationUpdateSchema(ma.SQLAlchemyAutoSchema):
     def is_name_unique(self, value: str) -> None:
         if Organization.query.filter_by(name=value).first():
             raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
+
+    @validates("email")
+    def is_name_unique(self, value: str) -> None:
+        if Organization.query.filter_by(email=value).first():
+            raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "email", value))
 
     name = fields.Str(required=False, validate=is_name_valid)
