@@ -38,6 +38,9 @@ api.add_resource(views.TranslationCreateView, "/translation")
 # Document`s URLs
 api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")
 
+# Feedback`s URLs
+api.add_resource(views.FeedbackViewSet, "/translation/<int:translation_id>/feedbacks")
+
 # Technical URLs
 api.add_resource(views.JWTRefresh, "/token/refresh")
 

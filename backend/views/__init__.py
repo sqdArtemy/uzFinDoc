@@ -4,3 +4,4 @@ from .organization import (
 )
 from .translation import TranslationCreateView
 from .document import DocumentDownloadView
+from .feedback import FeedbackViewSet

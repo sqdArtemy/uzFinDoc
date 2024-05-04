@@ -11,7 +11,7 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "id", "generated_at", "details_status", "details_word_count", "creator", "input_document",
-            "output_document", "organization"
+            "output_document", "organization", "feedback"
         )
         include_relationships = True
         sqla_session = db.session
@@ -26,6 +26,7 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
     creator = fields.Nested("schemas.user.UserGetSchema", data_key="creator")
     input_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="input_document")
     output_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="output_document")
+    feedback = fields.Nested("schemas.feedback.FeedbackGetSchema", exclude=["translation"], data_key="feedback")
 
 
 class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
