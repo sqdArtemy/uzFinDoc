@@ -19,6 +19,7 @@ parser.add_argument("review", type=str, location="form")
 
 class FeedbackViewSet(Resource):
     get_feedback_schema = FeedbackGetSchema()
+    get_feedbacks_schema = FeedbackGetSchema(many=True)
     create_feedback_schema = FeedbackCreateSchema()
 
     @jwt_required()
@@ -38,4 +39,13 @@ class FeedbackViewSet(Resource):
 
     @jwt_required()
     def get(self, translation_id: int) -> Response:
-        pass
+        requester_id = get_jwt_identity()
+
+        data = {
+            "translation_id": translation_id,
+            "creator_id": requester_id
+        }
+        self.get_feedback_schema.load(data)
+        translation = Translation.query.filter_by(id=translation_id).first()
+
+        return make_response(jsonify(self.get_feedbacks_schema.dump(translation.feedback)), HTTPStatus.OK)
