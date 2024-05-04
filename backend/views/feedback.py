@@ -1,14 +1,10 @@
 from http import HTTPStatus
 from flask_restful import Resource, reqparse
-from marshmallow import ValidationError
-from flask import jsonify, make_response, request, Response, redirect
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jti
-from werkzeug.security import check_password_hash
+from flask import jsonify, make_response, Response
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from db_init import db, redis_store, transaction
-from models import User, Translation
-from utilities.enums import Messages
-from utilities.exceptions import PermissionDeniedError
+from db_init import db
+from models import Translation
 from schemas import FeedbackCreateSchema, FeedbackGetSchema
 
 
