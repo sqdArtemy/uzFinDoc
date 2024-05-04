@@ -13,6 +13,7 @@ from utilities.exceptions import PermissionDeniedError
 
 parser = reqparse.RequestParser()
 parser.add_argument("name", location="form")
+parser.add_argument("email", location="form")
 
 
 class OrganizationListView(Resource):

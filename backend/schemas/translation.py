@@ -10,8 +10,8 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Translation
         fields = (
-            "id", "language", "generated_at", "details_status", "details_word_count", "creator",
-            "input_document", "output_document", "organization"
+            "id", "generated_at", "details_status", "details_word_count", "creator", "input_document",
+            "output_document", "organization"
         )
         include_relationships = True
         sqla_session = db.session
@@ -19,7 +19,6 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
 
     @post_dump
     def enum_formatter(self, data, **kwargs):
-        data["language"] = data["language"].value
         data["details_status"] = data["details_status"].value
         return data
 
@@ -33,7 +32,7 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Translation
         fields = (
-            "language", "details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id",
+            "details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id",
             "organization_id"
         )
         unknown = EXCLUDE
@@ -41,7 +40,6 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_relationships = True
 
-    language = fields.Str(required=True)
     details_status = fields.Str(required=True)
     details_word_count = fields.Int(required=True)
     creator_id = fields.Int(required=True)

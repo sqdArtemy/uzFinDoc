@@ -27,7 +27,6 @@ class TranslationCreateView(Resource):
     document_create_schema = DocumentCreateSchema()
 
     parser = reqparse.RequestParser()
-    parser.add_argument("language", type=str, required=True, location="form")
     parser.add_argument("input_document", type=FileStorage, location="files", required=True)
     parser.add_argument("output_format", type=str, required=True, location="form")
 
@@ -85,7 +84,6 @@ class TranslationCreateView(Resource):
             db.session.flush()
 
             translation = Translation(
-                language=Language.ENG,
                 details_status=TranslationStatus.DONE,
                 details_word_count=len(document_text.split(' ')),
                 creator_id=user.id,
