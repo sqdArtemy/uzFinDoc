@@ -5,6 +5,9 @@ from enum import Enum
 
 
 class Messages(Enum):
+    # Valued validation
+    VALUE_RANGE = "Value should be in range from {} to {}"
+
     # Object actions
     OBJECT_NOT_FOUND = "{} with {} '{}' does not exist."
     OBJECT_DELETED = "{} has been deleted."
@@ -23,6 +26,10 @@ class Messages(Enum):
     USER_HAS_NO_ORG = "User does not have organization."
     USER_NOT_A_MEMBER = "User is not a member of this organization."
     OWNER_CANNOT_LEAVE_ORG = "Owner cannot leave this organization, he can delete it instead."
+
+    # Translation validation
+    ALREADY_REVIEWED = "This translation already has a feedback."
+    USER_NOT_TRANSLATION_CREATOR = "User is not a creator of this translation."
 
 
 class DocumentFormats(Enum):
