@@ -7,6 +7,7 @@ from enum import Enum
 class Messages(Enum):
     # Valued validation
     VALUE_RANGE = "Value should be in range from {} to {}"
+    VALUE_POSITIVE = "Value should be > 0."
 
     # Object actions
     OBJECT_NOT_FOUND = "{} with {} '{}' does not exist."

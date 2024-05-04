@@ -1,5 +1,6 @@
 import os
 import uuid
+import time
 from http import HTTPStatus
 from flask_restful import Resource, reqparse
 from marshmallow import ValidationError
@@ -66,10 +67,14 @@ class TranslationCreateView(Resource):
             db.session.add(in_document)
             db.session.flush()
 
+            start_time = time.time()
+
             translated_text = await get_text_translation(text=document_text)
             output_path = os.path.join(app.config["UPLOAD_FOLDER"], f"{str(uuid.uuid4())}.{output_format}")
             document_creator = create_pdf_with_text if output_format == "pdf" else create_docx_with_text
             await document_creator(text=translated_text, file_path=output_path)
+
+            end_time = time.time()
 
             out_document = Document(
                 name=f"{document_name}_translated",
@@ -88,6 +93,7 @@ class TranslationCreateView(Resource):
                 details_word_count=len(document_text.split(' ')),
                 creator_id=user.id,
                 input_document_id=in_document.id,
+                process_time=end_time-start_time,
                 generated_at=datetime.now(timezone.utc).isoformat(),
                 output_document_id=out_document.id,
                 organization_id=user.organization_id

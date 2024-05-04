@@ -11,7 +11,7 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "id", "generated_at", "details_status", "details_word_count", "creator", "input_document",
-            "output_document", "organization", "feedback"
+            "output_document", "organization", "feedback", "process_time"
         )
         include_relationships = True
         sqla_session = db.session
@@ -34,7 +34,7 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id",
-            "organization_id"
+            "organization_id", "process_time"
         )
         unknown = EXCLUDE
         ordered = True
@@ -44,9 +44,15 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     details_status = fields.Str(required=True)
     details_word_count = fields.Int(required=True)
     creator_id = fields.Int(required=True)
+    process_time = fields.Int(required=True)
     input_document_id = fields.Int(required=True)
     output_document_id = fields.Int(required=True)
     organization_id = fields.Int(required=True)
+
+    @validates("process_time")
+    def validate_creator_id(self, value: int) -> None:
+        if value < 0:
+            raise ValidationError(Messages.VALUE_POSITIVE.value)
 
     @validates("creator_id")
     def validate_creator_id(self, value: int) -> None:
