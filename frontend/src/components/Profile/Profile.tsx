@@ -108,7 +108,7 @@ const Profile = observer(() => {
                 <span className={styles.profileContainer}>
                     <img className={styles.profileLogo} src={profileLogo}></img>
                     <span className={styles.formTextRegular}>
-                        asdbasjdk@gmail.com
+                        {authStore.data.email ?? 'example@gmail.com'}
                     </span>
                 </span>
             </div>

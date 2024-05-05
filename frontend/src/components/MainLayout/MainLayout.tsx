@@ -23,10 +23,13 @@ const MainLayout = observer(() => {
                     <span className={styles.textLarge}>Organization</span>
                     <span className={styles.textLarge}>History</span>
                 </span>
-                <span className={styles.topProfileContainer}>
+                <span
+                    className={styles.topProfileContainer}
+                    onClick={() => navigate('/main/profile')}
+                >
                     <img src={profileLogo}></img>
                     <span className={styles.textRegular}>
-                        {authStore.data.email ?? 'asdhasjkd@gmail.com'}
+                        {authStore.data.email ?? 'example@gmail.com'}
                     </span>
                 </span>
             </span>

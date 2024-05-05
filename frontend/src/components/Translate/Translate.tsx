@@ -18,10 +18,12 @@ const Translate = observer(() => {
             </div>
             <div className={styles.solidVerticalBar}></div>
             <div className={styles.rightContainer}>
-                <div>
-                    <span>
-                        <span>
-                            <span>Source Language</span>
+                <div className={styles.rightTranslateContainer}>
+                    <span className={styles.rightTranslateHeader}>
+                        <span className={styles.rightTranslateInfo}>
+                            <span className={styles.textLarge}>
+                                Source Language
+                            </span>
                             <TextField
                                 disabled
                                 defaultValue={'Uzbek'}
@@ -29,8 +31,10 @@ const Translate = observer(() => {
                                 size={'small'}
                             ></TextField>
                         </span>
-                        <span>
-                            <span>Target Language</span>
+                        <span className={styles.rightTranslateInfo}>
+                            <span className={styles.textLarge}>
+                                Target Language
+                            </span>
                             <TextField
                                 disabled
                                 defaultValue={'English'}
@@ -39,7 +43,9 @@ const Translate = observer(() => {
                             ></TextField>
                         </span>
                     </span>
-                    <Button variant="contained">Start Translating</Button>
+                    <Button size={'medium'} variant="contained">
+                        Start Translating
+                    </Button>
                 </div>
             </div>
         </div>
