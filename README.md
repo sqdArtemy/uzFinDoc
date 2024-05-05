@@ -60,7 +60,7 @@ Mention out team members contacts:
 - Name: Saidjon Khaydar-Zade
   - LinkedIn: [Saidjon Khaydar-Zade](LinkedIn_URL_here)
   - Telegram: [pyrokko](https://t.me/pyrokko)
-  - Email: Email_here
+  - Email: saidjonzade06@gmail.com
 
 - Name: Pavel Tin
   - LinkedIn: [Pavel Tin](LinkedIn_URL_here)
@@ -80,4 +80,4 @@ Mention out team members contacts:
 WIP - Work In Progress
 
 Improvements:
-*To be fillde out*
+*To be filled out*
