@@ -11,15 +11,22 @@ class Translation(db.Model):
     details_status = db.Column(db.Enum(TranslationStatus), default=TranslationStatus.PROCESSING, nullable=False)
     details_word_count = db.Column(db.Integer, nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    process_time = db.Column(db.Float, nullable=False, default=0)
     input_document_id = db.Column(db.Integer, db.ForeignKey('Document.id', ondelete="CASCADE"), nullable=False)
     output_document_id = db.Column(db.Integer, db.ForeignKey('Document.id'), nullable=False)
     organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id', ondelete="SET NULL"), nullable=True)
 
     def __repr__(self) -> str:
-        return f"{self.language} - {self.generated_at}"
+        return f"{self.id}-{self.generated_at}"
 
     organization = db.relationship("Organization", backref="translations", lazy=True)
-    feedback = db.relationship("Feedback", backref="translation", lazy=True)
+    feedback = db.relationship(
+        "Feedback",
+        backref="translation",
+        primaryjoin="Translation.id==Feedback.translation_id",
+        lazy=True,
+        uselist=False
+    )
     input_document = db.relationship(
         "Document",
         backref="translation_in",

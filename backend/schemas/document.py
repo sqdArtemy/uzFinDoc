@@ -1,6 +1,7 @@
 from marshmallow import EXCLUDE, fields, post_dump
 
 from models import Document
+from schemas.custom_fields import LanguageField, DocumentTypeField
 from app_init import ma
 
 
@@ -30,5 +31,5 @@ class DocumentCreateSchema(ma.SQLAlchemyAutoSchema):
     text = fields.Str(required=True)
     link = fields.Str(required=True)
     uploaded_at = fields.DateTime(required=True)
-    type = fields.Str(required=True)
-    language = fields.Str(required=True)
+    type = DocumentTypeField(required=True)
+    language = LanguageField(required=True)

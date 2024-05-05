@@ -1,4 +1,4 @@
-from marshmallow import EXCLUDE, fields, validates, ValidationError, pre_load
+from marshmallow import EXCLUDE, fields, validates, ValidationError, pre_load, pre_dump, post_dump
 
 from models import Feedback, Translation, User
 from utilities.enums import Messages
@@ -13,6 +13,7 @@ class FeedbackGetSchema(ma.SQLAlchemyAutoSchema):
         fields = ("id", "rating", "review", "creator", "translation", "translation_id", "creator_id")
         load_instance = True
         ordered = True
+        include_relationships = True
         dump_only = ["id", "rating", "review", "creator", "translation"]
         load_only = ["translation_id", "creator_id"]
         sqla_session = db.session

@@ -7,6 +7,7 @@ from enum import Enum
 class Messages(Enum):
     # Valued validation
     VALUE_RANGE = "Value should be in range from {} to {}"
+    VALUE_POSITIVE = "Value should be > 0."
 
     # Object actions
     OBJECT_NOT_FOUND = "{} with {} '{}' does not exist."
@@ -30,6 +31,10 @@ class Messages(Enum):
     # Translation validation
     ALREADY_REVIEWED = "This translation already has a feedback."
     USER_NOT_TRANSLATION_CREATOR = "User is not a creator of this translation."
+
+    # Document validation
+    USER_NOT_UPLOADED_THIS_DOCUMENT = "User is not uploaded this document."
+    DOCUMENT_HAS_NO_TRANSLATIONS = "Document has no translations."
 
 
 class DocumentFormats(Enum):
