@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
 
 from db_init import db, transaction
-from models import User, Document, Translation, Organization
+from models import User, Organization
 from models.enums import DocumentType, Language, TranslationStatus
 from schemas import TranslationGetSchema, TranslationCreateSchema, DocumentCreateSchema
 from utilities.functions import save_file, get_text_translation
@@ -57,15 +57,15 @@ class TranslationCreateView(Resource):
         document_text = await extractor(save_path)
 
         with transaction():
-            in_document = Document(
-                name=document_name,
-                format=document_format,
-                text=document_text,
-                uploaded_at=datetime.now(timezone.utc).isoformat(),
-                link=save_path,
-                type=DocumentType.INPUT_FILE,
-                language=Language.UZ
-            )
+            in_document = self.document_create_schema.load({
+                "name": document_name,
+                "format": document_format,
+                "text": document_text,
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
+                "link": save_path,
+                "type": DocumentType.INPUT_FILE,
+                "language": Language.UZ
+            })
             db.session.add(in_document)
             db.session.flush()
 
@@ -78,29 +78,29 @@ class TranslationCreateView(Resource):
 
             end_time = time.time()
 
-            out_document = Document(
-                name=f"{document_name}_translated",
-                format=output_format,
-                text=translated_text,
-                uploaded_at=datetime.now(timezone.utc).isoformat(),
-                link=output_path,
-                type=DocumentType.OUTPUT_FILE,
-                language=Language.ENG
-            )
+            out_document = self.document_create_schema.load({
+                "name": f"{document_name}_translated",
+                "format": output_format,
+                "text": translated_text,
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
+                "link": output_path,
+                "type": DocumentType.OUTPUT_FILE,
+                "language": Language.ENG
+            })
 
             db.session.add(out_document)
             db.session.flush()
 
-            translation = Translation(
-                details_status=TranslationStatus.DONE,
-                details_word_count=len(document_text.split(' ')),
-                creator_id=user.id,
-                input_document_id=in_document.id,
-                process_time=end_time-start_time,
-                generated_at=datetime.now(timezone.utc).isoformat(),
-                output_document_id=out_document.id,
-                organization_id=user.organization_id
-            )
+            translation = self.translation_create_schema.load({
+                "details_status": TranslationStatus.DONE,
+                "details_word_count": len(document_text.split(' ')),
+                "creator_id": user.id,
+                "input_document_id": in_document.id,
+                "process_time": end_time-start_time,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "output_document_id": out_document.id,
+                "organization_id": user.organization_id
+            })
 
             db.session.add(translation)
 

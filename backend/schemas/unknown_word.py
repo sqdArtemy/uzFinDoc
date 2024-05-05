@@ -33,6 +33,11 @@ class UnknownWordSchema(ma.SQLAlchemyAutoSchema):
         if not document:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Document", "id", document_id))
 
-        if document.translation_in[0].creator_id != reporter_id:
+        document_translations = document.translation_in
+
+        if len(document_translations) == 0:
+            raise ValidationError(Messages.DOCUMENT_HAS_NO_TRANSLATIONS.value)
+
+        if document_translations[0].creator_id != reporter_id:
             raise PermissionDeniedError(Messages.USER_NOT_UPLOADED_THIS_DOCUMENT.value)
 

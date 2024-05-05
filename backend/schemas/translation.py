@@ -4,6 +4,7 @@ from models import User, Organization, Document, Translation
 from app_init import ma
 from utilities.enums import Messages
 from utilities.exceptions import PermissionDeniedError
+from schemas.custom_fields import TranslationStatusField
 from db_init import db
 
 
@@ -59,16 +60,17 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id",
-            "organization_id", "process_time"
+            "organization_id", "process_time", "generated_at"
         )
         unknown = EXCLUDE
         ordered = True
         load_instance = True
         include_relationships = True
 
-    details_status = fields.Str(required=True)
+    details_status = TranslationStatusField(required=True)
     details_word_count = fields.Int(required=True)
     creator_id = fields.Int(required=True)
+    generated_at = fields.DateTime(required=True)
     process_time = fields.Int(required=True)
     input_document_id = fields.Int(required=True)
     output_document_id = fields.Int(required=True)
