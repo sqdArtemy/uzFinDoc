@@ -17,10 +17,16 @@ class Translation(db.Model):
     organization_id = db.Column(db.Integer, db.ForeignKey('Organization.id', ondelete="SET NULL"), nullable=True)
 
     def __repr__(self) -> str:
-        return f"{self.language} - {self.generated_at}"
+        return f"{self.id}-{self.generated_at}"
 
     organization = db.relationship("Organization", backref="translations", lazy=True)
-    feedback = db.relationship("Feedback", backref="translation", lazy=True)
+    feedback = db.relationship(
+        "Feedback",
+        backref="translation",
+        primaryjoin="Translation.id==Feedback.translation_id",
+        lazy=True,
+        uselist=False
+    )
     input_document = db.relationship(
         "Document",
         backref="translation_in",

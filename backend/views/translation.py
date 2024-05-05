@@ -102,3 +102,20 @@ class TranslationCreateView(Resource):
             db.session.add(translation)
 
         return make_response(jsonify(self.translation_get_schema.dump(translation)), HTTPStatus.OK)
+
+
+class DetailedTranslationView(Resource):
+    get_translation_schema = TranslationGetSchema()
+
+    @jwt_required()
+    def get(self, translation_id: int) -> Response:
+        requester_id = get_jwt_identity()
+
+        data = {
+            "requester_id": requester_id,
+            "id": translation_id
+        }
+
+        translation = self.get_translation_schema.load(data)
+
+        return make_response(jsonify(self.get_translation_schema.dump(translation)), HTTPStatus.OK)

@@ -33,7 +33,8 @@ api.add_resource(views.OrganizationMembershipView, "/organization/<int:organizat
 api.add_resource(views.OrganizationMembershipListView, "/organization/<int:organization_id>/users")
 
 # Translation`s URLs
-api.add_resource(views.TranslationCreateView, "/translation")
+api.add_resource(views.TranslationCreateView, "/translations")
+api.add_resource(views.DetailedTranslationView, "/translation/<int:translation_id>")
 
 # Document`s URLs
 api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")

@@ -2,6 +2,6 @@ from .user import UserRegisterView, UserLoginView, UserLogOutView, UserDetailedV
 from .organization import (
     OrganizationListView, OrganizationDetailedView, OrganizationMembershipView, OrganizationMembershipListView
 )
-from .translation import TranslationCreateView
+from .translation import TranslationCreateView, DetailedTranslationView
 from .document import DocumentDownloadView
 from .feedback import FeedbackViewSet
