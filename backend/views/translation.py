@@ -61,6 +61,7 @@ class TranslationCreateView(Resource):
                 name=document_name,
                 format=document_format,
                 text=document_text,
+                uploaded_at=datetime.now(timezone.utc).isoformat(),
                 link=save_path,
                 type=DocumentType.INPUT_FILE,
                 language=Language.UZ
@@ -81,6 +82,7 @@ class TranslationCreateView(Resource):
                 name=f"{document_name}_translated",
                 format=output_format,
                 text=translated_text,
+                uploaded_at=datetime.now(timezone.utc).isoformat(),
                 link=output_path,
                 type=DocumentType.OUTPUT_FILE,
                 language=Language.ENG
