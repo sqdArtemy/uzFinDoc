@@ -11,14 +11,15 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
 
 from db_init import db, transaction
-from models import User, Document, Translation
+from models import User, Document, Translation, Organization
 from models.enums import DocumentType, Language, TranslationStatus
 from schemas import TranslationGetSchema, TranslationCreateSchema, DocumentCreateSchema
 from utilities.functions import save_file, get_text_translation
 from utilities.document_utilities import (
     get_text_from_docx, get_text_from_pdf, create_pdf_with_text, create_docx_with_text
 )
-from utilities.enums import DocumentFormats
+from utilities.exceptions import PermissionDeniedError
+from utilities.enums import DocumentFormats, Messages
 from app_init import app
 
 
@@ -103,6 +104,18 @@ class TranslationCreateView(Resource):
 
         return make_response(jsonify(self.translation_get_schema.dump(translation)), HTTPStatus.OK)
 
+    @jwt_required()
+    def get(self) -> Response:
+        requester_id = get_jwt_identity()
+        requester = User.query.filter_by(id=requester_id).first()
+
+        translations = requester.translations
+
+        return make_response(
+            jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedback"]).dump(translations)),
+            HTTPStatus.OK
+        )
+
 
 class DetailedTranslationView(Resource):
     get_translation_schema = TranslationGetSchema()
@@ -119,3 +132,25 @@ class DetailedTranslationView(Resource):
         translation = self.get_translation_schema.load(data)
 
         return make_response(jsonify(self.get_translation_schema.dump(translation)), HTTPStatus.OK)
+
+
+class OrganizationTranslationsView(Resource):
+    get_translations_schema = TranslationGetSchema(many=True, exclude=["organization", "feedback"])
+
+    @jwt_required()
+    def get(self, organization_id: int) -> Response:
+        requester_id = get_jwt_identity()
+        requester = User.query.filter_by(id=requester_id).first()
+        organization = Organization.query.filter_by(id=organization_id).first()
+
+        if not organization:
+            raise ValidationError(
+                Messages.OBJECT_NOT_FOUND.value.format("Organization", "organization_id", organization_id)
+            )
+
+        if requester.organization_id != organization_id:
+            raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value)
+
+        translations = organization.translations
+
+        return make_response(jsonify(self.get_translations_schema.dump(translations)), HTTPStatus.OK)

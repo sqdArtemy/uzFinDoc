@@ -31,6 +31,7 @@ api.add_resource(views.OrganizationDetailedView, "/organization/<int:organizatio
 api.add_resource(views.OrganizationListView, "/organizations")
 api.add_resource(views.OrganizationMembershipView, "/organization/<int:organization_id>/user/<string:user_email>")
 api.add_resource(views.OrganizationMembershipListView, "/organization/<int:organization_id>/users")
+api.add_resource(views.OrganizationTranslationsView, "/organization/<int:organization_id>/translations")
 
 # Translation`s URLs
 api.add_resource(views.TranslationCreateView, "/translations")
