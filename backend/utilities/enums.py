@@ -32,6 +32,9 @@ class Messages(Enum):
     ALREADY_REVIEWED = "This translation already has a feedback."
     USER_NOT_TRANSLATION_CREATOR = "User is not a creator of this translation."
 
+    # Document validation
+    USER_NOT_UPLOADED_THIS_DOCUMENT = "User is not uploaded this document."
+
 
 class DocumentFormats(Enum):
     DOCX = "docx"

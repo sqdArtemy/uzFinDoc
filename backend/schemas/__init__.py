@@ -3,3 +3,4 @@ from .organization import OrganizationGetSchema, OrganizationCreateSchema, Organ
 from .document import DocumentGetSchema, DocumentCreateSchema
 from .translation import TranslationGetSchema, TranslationCreateSchema
 from .feedback import FeedbackGetSchema, FeedbackCreateSchema
+from .unknown_word import UnknownWordSchema

@@ -5,3 +5,4 @@ from .organization import (
 from .translation import TranslationCreateView, DetailedTranslationView, OrganizationTranslationsView
 from .document import DocumentDownloadView
 from .feedback import FeedbackViewSet
+from .unknown_word import UnknownWordView

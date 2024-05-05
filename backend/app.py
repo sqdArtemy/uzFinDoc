@@ -46,6 +46,9 @@ api.add_resource(views.FeedbackViewSet, "/translation/<int:translation_id>/feedb
 # Technical URLs
 api.add_resource(views.JWTRefresh, "/token/refresh")
 
+# UnknownWord URLs
+api.add_resource(views.UnknownWordView, "/document/<int:document_id>/unknown_word")
+
 
 @app.errorhandler(NoAuthorizationError)
 def incorrect_jwt(*args, **kwargs):
