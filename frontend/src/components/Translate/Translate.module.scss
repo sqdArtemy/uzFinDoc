@@ -1,0 +1,33 @@
+.body-container {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  .left-container {
+    display: flex;
+    width: 50%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+
+    .dropzone-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+  }
+
+  .solid-vertical-bar {
+    width: 1px;
+    height: 100%;
+    background-color: #e5e7eb;
+  }
+
+  .right-container {
+    width: 50%;
+    height: 100%;
+  }
+}
