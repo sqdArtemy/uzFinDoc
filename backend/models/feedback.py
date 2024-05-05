@@ -16,7 +16,7 @@ class Feedback(db.Model):
     creator = db.relationship(
         "User",
         backref="feedbacks",
-        lazy=True,
+        lazy="joined",
         primaryjoin="User.id == Feedback.creator_id"
     )
 

@@ -48,23 +48,21 @@ class OrganizationDetailedView(Resource):
 
     @jwt_required()
     def get(self, organization_id: int) -> Response:
-        user_id = get_jwt_identity()
-        user = User.query.filter_by(id=user_id).first()
-        organization = user.organization
-
-        if organization and organization.id != organization_id:
-            raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value.format("id", user_id))
+        request_data = {
+            "id": organization_id,
+            "requester_id": get_jwt_identity()
+        }
+        organization = self.organization_get_schema.load(request_data)
 
         return make_response(jsonify(self.organization_get_schema.dump(organization)), HTTPStatus.OK)
 
     @jwt_required()
     def delete(self, organization_id: int) -> Response:
-        user_id = get_jwt_identity()
-        user = User.query.filter_by(id=user_id).first()
-        organization = Organization.query.filter_by(id=organization_id).first()
-
-        if organization and organization.owner_id != user_id or user.organization_id != organization_id:
-            raise ValidationError(Messages.USER_NOT_OWNER.value)
+        request_data = {
+            "id": organization_id,
+            "requester_id": get_jwt_identity()
+        }
+        organization = self.organization_get_schema.load(request_data)
 
         db.session.delete(organization)
         db.session.commit()
@@ -75,11 +73,11 @@ class OrganizationDetailedView(Resource):
 
     @jwt_required()
     def put(self, organization_id: int) -> Response:
-        requester_id = get_jwt_identity()
-        organization = Organization.query.filter_by(id=organization_id).first()
-
-        if organization and organization.owner_id != requester_id:
-            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
+        request_data = {
+            "id": organization_id,
+            "requester_id": get_jwt_identity()
+        }
+        organization = self.organization_get_schema.load(request_data)
 
         data = parser.parse_args()
         data = {key: value for key, value in data.items() if value and getattr(organization, key) != value}
@@ -96,20 +94,19 @@ class OrganizationDetailedView(Resource):
 
 class OrganizationMembershipView(Resource):
     user_get_schema = UserGetSchema(many=True, exclude=["organization"])
+    organization_get_schema = OrganizationGetSchema()
 
     @jwt_required()
     def post(self, organization_id: int, user_email: str) -> Response:
-        requester_id = get_jwt_identity()
-        organization = Organization.query.filter_by(id=organization_id).first()
+        request_data = {
+            "id": organization_id,
+            "requester_id": get_jwt_identity()
+        }
+        organization = self.organization_get_schema.load(request_data)
         user = User.query.filter_by(email=user_email).first()
+
         if not user:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email))
-
-        if not organization:
-            raise ValidationError(Messages.USER_HAS_NO_ORG.value)
-
-        if organization and organization.owner_id != requester_id:
-            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         if user.organization_id:
             raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value.format("email", user_email))
@@ -122,17 +119,17 @@ class OrganizationMembershipView(Resource):
     @jwt_required()
     def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
+        request_data = {
+            "id": organization_id,
+            "requester_id": requester_id
+        }
+
+        organization = self.organization_get_schema.load(request_data)
         requester = User.query.filter_by(id=requester_id).first()
-        organization = Organization.query.filter_by(id=organization_id).first()
+
         user = User.query.filter_by(email=user_email).first()
         if not user:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "email", user_email))
-
-        if not organization:
-            raise ValidationError(Messages.USER_HAS_NO_ORG.value)
-
-        if organization and organization.owner_id != requester_id and requester.email != user_email:
-            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         if user_email == requester.email and organization.owner_id == requester_id:
             raise ValidationError(Messages.OWNER_CANNOT_LEAVE_ORG.value)
@@ -157,7 +154,7 @@ class OrganizationMembershipListView(Resource):
         if not organization:
             raise ValidationError(Messages.USER_HAS_NO_ORG.value)
 
-        if organization and organization_id != organization_id:
-            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
+        if organization.id != organization_id:
+            raise PermissionDeniedError(Messages.USER_NOT_A_MEMBER.value)
 
         return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)
