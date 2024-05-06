@@ -11,6 +11,9 @@ import MainLayout from './components/MainLayout/MainLayout.tsx';
 import Translate from './components/Translate/Translate.tsx';
 import Organization from './components/Organization/Organization.tsx';
 import History from './components/History/History.tsx';
+import HistoryPreview from './components/HistoryPreview/HistoryPreview.tsx';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 
 function App() {
     return (
@@ -48,6 +51,10 @@ function App() {
                         <Route path="translate" element={<Translate />} />
                         <Route path="organization" element={<Organization />} />
                         <Route path="history" element={<History />} />
+                        <Route
+                            path="history/preview/:id"
+                            element={<HistoryPreview />}
+                        />
                     </Route>
                 </Routes>
             </BrowserRouter>
