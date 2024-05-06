@@ -20,7 +20,12 @@ const MainLayout = observer(() => {
                     >
                         Translate
                     </span>
-                    <span className={styles.textLarge}>Organization</span>
+                    <span
+                        className={styles.textLarge}
+                        onClick={() => navigate('/main/organization')}
+                    >
+                        Organization
+                    </span>
                     <span className={styles.textLarge}>History</span>
                 </span>
                 <span

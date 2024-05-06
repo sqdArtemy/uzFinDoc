@@ -9,6 +9,7 @@ import SignUpPwd from './components/SignUpPwd/SignUpPwd';
 import Profile from './components/Profile/Profile';
 import MainLayout from './components/MainLayout/MainLayout.tsx';
 import Translate from './components/Translate/Translate.tsx';
+import Organization from './components/Organization/Organization.tsx';
 
 function App() {
     return (
@@ -44,6 +45,7 @@ function App() {
                         />
                         <Route path="profile" element={<Profile />} />
                         <Route path="translate" element={<Translate />} />
+                        <Route path="organization" element={<Organization />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
