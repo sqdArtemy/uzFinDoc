@@ -26,7 +26,12 @@ const MainLayout = observer(() => {
                     >
                         Organization
                     </span>
-                    <span className={styles.textLarge}>History</span>
+                    <span
+                        className={styles.textLarge}
+                        onClick={() => navigate('/main/history')}
+                    >
+                        History
+                    </span>
                 </span>
                 <span
                     className={styles.topProfileContainer}

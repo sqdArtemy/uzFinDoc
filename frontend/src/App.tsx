@@ -10,6 +10,7 @@ import Profile from './components/Profile/Profile';
 import MainLayout from './components/MainLayout/MainLayout.tsx';
 import Translate from './components/Translate/Translate.tsx';
 import Organization from './components/Organization/Organization.tsx';
+import History from './components/History/History.tsx';
 
 function App() {
     return (
@@ -46,6 +47,7 @@ function App() {
                         <Route path="profile" element={<Profile />} />
                         <Route path="translate" element={<Translate />} />
                         <Route path="organization" element={<Organization />} />
+                        <Route path="history" element={<History />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
