@@ -13,5 +13,12 @@ class Feedback(db.Model):
         db.CheckConstraint("rating >= 0 AND rating <= 5", name="check_feedback_rating"),
     )
 
+    creator = db.relationship(
+        "User",
+        backref="feedbacks",
+        lazy="joined",
+        primaryjoin="User.id == Feedback.creator_id"
+    )
+
     def __repr__(self) -> str:
         return f"{self.rating} - {self.review}"

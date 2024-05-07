@@ -31,15 +31,23 @@ api.add_resource(views.OrganizationDetailedView, "/organization/<int:organizatio
 api.add_resource(views.OrganizationListView, "/organizations")
 api.add_resource(views.OrganizationMembershipView, "/organization/<int:organization_id>/user/<string:user_email>")
 api.add_resource(views.OrganizationMembershipListView, "/organization/<int:organization_id>/users")
+api.add_resource(views.OrganizationTranslationsView, "/organization/<int:organization_id>/translations")
 
 # Translation`s URLs
-api.add_resource(views.TranslationCreateView, "/translation")
+api.add_resource(views.TranslationCreateView, "/translations")
+api.add_resource(views.DetailedTranslationView, "/translation/<int:translation_id>")
 
 # Document`s URLs
 api.add_resource(views.DocumentDownloadView, "/document/<int:document_id>/download")
 
+# Feedback`s URLs
+api.add_resource(views.FeedbackViewSet, "/translation/<int:translation_id>/feedbacks")
+
 # Technical URLs
 api.add_resource(views.JWTRefresh, "/token/refresh")
+
+# UnknownWord URLs
+api.add_resource(views.UnknownWordView, "/document/<int:document_id>/unknown_word")
 
 
 @app.errorhandler(NoAuthorizationError)
@@ -54,7 +62,7 @@ def form_validation_error(*args, **kwargs):
 
 @app.errorhandler(PermissionDeniedError)
 def permission_error_handler(*args, **kwargs):
-    abort(HTTPStatus.FORBIDDEN, error_messafe={"message": str(args[0])})
+    abort(HTTPStatus.FORBIDDEN, error_message={"message": str(args[0])})
 
 
 @app.before_request
