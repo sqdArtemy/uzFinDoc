@@ -62,7 +62,7 @@ def form_validation_error(*args, **kwargs):
 
 @app.errorhandler(PermissionDeniedError)
 def permission_error_handler(*args, **kwargs):
-    abort(HTTPStatus.FORBIDDEN, error_messafe={"message": str(args[0])})
+    abort(HTTPStatus.FORBIDDEN, error_message={"message": str(args[0])})
 
 
 @app.before_request

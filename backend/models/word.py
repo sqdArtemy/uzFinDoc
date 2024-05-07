@@ -23,5 +23,5 @@ class Word(db.Model):
         return f"{self.id} - {self.written_form} - {self.part_of_speech}"
 
     senses = db.relationship(
-        "Sense", secondary=word_sense, backref="words"
+        "Sense", secondary=word_sense, backref="words", lazy="joined"
     )

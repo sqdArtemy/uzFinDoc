@@ -24,24 +24,24 @@ class Translation(db.Model):
         "Feedback",
         backref="translation",
         primaryjoin="Translation.id==Feedback.translation_id",
-        lazy=True,
+        lazy="joined",
         uselist=False
     )
     input_document = db.relationship(
         "Document",
         backref="translation_in",
         primaryjoin="Document.id == Translation.input_document_id",
-        lazy=True
+        lazy="joined"
     )
     output_document = db.relationship(
         "Document",
         backref="translation_out",
         primaryjoin="Document.id == Translation.output_document_id",
-        lazy=True
+        lazy="joined"
     )
     creator = db.relationship(
         "User",
         backref="translations",
         primaryjoin="User.id == Translation.creator_id",
-        lazy=True
+        lazy="joined"
     )

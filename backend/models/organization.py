@@ -18,6 +18,6 @@ class Organization(db.Model):
     owner = db.relationship(
         "User",
         backref="owned_organization",
-        lazy=True,
+        lazy="joined",
         primaryjoin="User.id == Organization.owner_id"
     )

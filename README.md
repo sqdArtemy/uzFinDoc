@@ -10,10 +10,10 @@ The main purpose of this relatively small web-app is the creation of an efficien
  are to embrace transparent discussions where all voices heard, active listening to understand diverse views and
  respect for others. We treat this project as communal effort and implement new technologies, methodologies, and
  neutral insights that may benefit Uzbek users. In developing this application, we will utilize an agile framework
- for iterative progress, ensuring code correctness and consistent translations while maintaining high-quality stan
-dards through collective code reviews. The application shall translate Uzbek to English language, comprehending
+ for iterative progress, ensuring code correctness and consistent translations while maintaining high-quality standards 
+ through collective code reviews. The application shall translate Uzbek to English language, comprehending
  context-specific financial terms and expressions semantics. Our aspiration is an application that links all through
- efficient, precise translations with user experience optimized
+ efficient, precise translations with user experience optimized.
 
 ## Visuals
 Preview of the main interface:
@@ -60,7 +60,7 @@ Mention out team members contacts:
 - Name: Saidjon Khaydar-Zade
   - LinkedIn: [Saidjon Khaydar-Zade](LinkedIn_URL_here)
   - Telegram: [pyrokko](https://t.me/pyrokko)
-  - Email: Email_here
+  - Email: saidjonzade06@gmail.com
 
 - Name: Pavel Tin
   - LinkedIn: [Pavel Tin](LinkedIn_URL_here)
@@ -80,4 +80,4 @@ Mention out team members contacts:
 WIP - Work In Progress
 
 Improvements:
-*To be fillde out*
+*To be filled out*

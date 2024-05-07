@@ -127,7 +127,7 @@ class AuthStore {
             .then(this.registerSuccess, this.registerFailure);
     }
 
-    registerSuccess = ({ data }: AxiosResponse<IGetUserResponse>) => {
+    registerSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
         this.data = { ...this.storeData, ...data };
         this.login(this.data.email, this.data.password);
     };

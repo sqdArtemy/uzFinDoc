@@ -19,7 +19,7 @@ class User(db.Model):
     organization = db.relationship(
         "Organization",
         backref="users",
-        lazy=True,
+        lazy="joined",
         cascade="all, delete",
         primaryjoin="User.organization_id == Organization.id"
     )
