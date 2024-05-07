@@ -50,7 +50,7 @@ export function DnD({ setFile }) {
             <input
                 type="file"
                 className={styles.inputFileUpload}
-                accept=".docx,.pdf,.doc"
+                accept=".docx,.pdf"
                 id="input-file-upload"
                 multiple={true}
                 onChange={handleChange}
@@ -64,7 +64,7 @@ export function DnD({ setFile }) {
                 <div className={styles.uploadContentContainer}>
                     <img src={uploadImg} alt="upload" />
                     <span>Upload your file</span>
-                    <span className={styles.textGrey}>.PDF .DOCX .DOC</span>
+                    <span className={styles.textGrey}>.PDF .DOCX</span>
                     <span className={styles.textGrey}>
                         *Max file size 300 MB
                     </span>

@@ -90,9 +90,13 @@ const Organization = observer(() => {
                                         </span>
                                     </span>
                                 </span>
-                                <span className={styles.descriptionText}>
-                                    2024/05/01
-                                </span>
+                                <Button
+                                    size={'large'}
+                                    variant="contained"
+                                    color={'error'}
+                                >
+                                    REMOVE MEMBER
+                                </Button>
                             </span>
                         </div>
                     </>

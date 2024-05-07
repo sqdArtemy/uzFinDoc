@@ -1,9 +1,10 @@
 import styles from './MainLayout.module.scss';
 import projectLogo from '../../assets/project-logo.png';
-import profileLogo from '../../assets/profile-logo.png';
 import { observer } from 'mobx-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import authStore from '../../stores/AuthStore';
+import { Avatar } from '@mui/material';
+import { stringAvatar } from '../../utils.ts';
 
 const MainLayout = observer(() => {
     const navigate = useNavigate();
@@ -37,10 +38,16 @@ const MainLayout = observer(() => {
                     className={styles.topProfileContainer}
                     onClick={() => navigate('/main/profile')}
                 >
-                    <img src={profileLogo}></img>
                     <span className={styles.textRegular}>
-                        {authStore.data.email ?? 'example@gmail.com'}
+                        {authStore.data.nameFirstName +
+                            ' ' +
+                            authStore.data.nameLastName ?? 'example@gmail.com'}
                     </span>
+                    <Avatar
+                        {...stringAvatar(
+                            `${authStore.data.nameFirstName} ${authStore.data.nameLastName}`
+                        )}
+                    />
                 </span>
             </span>
             <div className={styles.mainContainer}>

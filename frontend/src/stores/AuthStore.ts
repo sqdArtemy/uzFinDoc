@@ -7,7 +7,7 @@ import { IGetUserResponse } from '../api/interfaces/responses/users.ts';
 import { IUpdateUserRequest } from '../api/interfaces/requests/users.ts';
 import { IRegisterRequest } from '../api/interfaces/requests/auth.ts';
 
-type CurrentUserData = IGetUserResponse & { password: string };
+type CurrentUserData = ILoginResponse['user'] & { password: string };
 
 class AuthStore {
     storeData: CurrentUserData = {} as CurrentUserData;
@@ -61,7 +61,12 @@ class AuthStore {
     loginSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
-        this.fetchCurrentUser();
+        // this.fetchCurrentUser();
+        this.data = {
+            ...this.storeData,
+            ...data.user,
+        };
+        this.currentState = 'success';
     };
 
     loginFailure = ({ response }: AxiosError<string>) => {

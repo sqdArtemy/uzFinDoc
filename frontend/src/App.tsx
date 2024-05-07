@@ -14,51 +14,64 @@ import History from './components/History/History.tsx';
 import HistoryPreview from './components/HistoryPreview/HistoryPreview.tsx';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import { ErrorModalProvider } from './components/Error/Error.tsx';
 
 function App() {
     return (
-        <LoaderProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/auth" replace />} />
-                    <Route path="/auth/*" element={<AuthLayout />}>
+        <ErrorModalProvider>
+            <LoaderProvider>
+                <BrowserRouter>
+                    <Routes>
                         <Route
-                            index
-                            element={<Navigate to="/auth/initial" replace />}
+                            path="/"
+                            element={<Navigate to="/auth" replace />}
                         />
-                        <Route path="initial" element={<AuthInitial />} />
-                        <Route path="sign-in" element={<SignIn />} />
-                        <Route path="sign-up/*">
+                        <Route path="/auth/*" element={<AuthLayout />}>
                             <Route
                                 index
                                 element={
-                                    <Navigate
-                                        to="/auth/sign-up/details"
-                                        replace
-                                    />
+                                    <Navigate to="/auth/sign-in" replace />
                                 }
                             />
-                            <Route path="details" element={<SignUp />} />
-                            <Route path="pwd" element={<SignUpPwd />} />
+                            <Route path="initial" element={<AuthInitial />} />
+                            <Route path="sign-in" element={<SignIn />} />
+                            <Route path="sign-up/*">
+                                <Route
+                                    index
+                                    element={
+                                        <Navigate
+                                            to="/auth/sign-up/details"
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route path="details" element={<SignUp />} />
+                                <Route path="pwd" element={<SignUpPwd />} />
+                            </Route>
                         </Route>
-                    </Route>
-                    <Route path="/main/*" element={<MainLayout />}>
-                        <Route
-                            index
-                            element={<Navigate to="/main/profile" replace />}
-                        />
-                        <Route path="profile" element={<Profile />} />
-                        <Route path="translate" element={<Translate />} />
-                        <Route path="organization" element={<Organization />} />
-                        <Route path="history" element={<History />} />
-                        <Route
-                            path="history/preview/:id"
-                            element={<HistoryPreview />}
-                        />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </LoaderProvider>
+                        <Route path="/main/*" element={<MainLayout />}>
+                            <Route
+                                index
+                                element={
+                                    <Navigate to="/main/translate" replace />
+                                }
+                            />
+                            <Route path="profile" element={<Profile />} />
+                            <Route path="translate" element={<Translate />} />
+                            <Route
+                                path="organization"
+                                element={<Organization />}
+                            />
+                            <Route path="history" element={<History />} />
+                            <Route
+                                path="history/preview/:id"
+                                element={<HistoryPreview />}
+                            />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </LoaderProvider>
+        </ErrorModalProvider>
     );
 }
 

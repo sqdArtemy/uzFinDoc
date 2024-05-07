@@ -33,7 +33,7 @@ const SignIn = observer(() => {
                     setError(authStore.errorMessage);
                     hideLoader();
                 } else if (authStore.state === 'success') {
-                    navigate('/profile');
+                    navigate('/main');
                     hideLoader();
                 } else if (authStore.state === 'loading') {
                     setError('');

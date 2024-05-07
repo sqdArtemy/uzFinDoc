@@ -3,13 +3,23 @@ import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { DnD } from './DnD/DnD.tsx';
 import { Button, TextField } from '@mui/material';
+import { useErrorModal } from '../Error/Error.tsx';
 
 const Translate = observer(() => {
     const [file, setFile] = useState<File | null>(null);
+    const { showErrorModal } = useErrorModal();
 
     useEffect(() => {
         console.log(file);
     }, [file]);
+
+    const handleTranslate = () => {
+        console.log('Translate');
+        if (!file) {
+            showErrorModal('Please upload a file to translate');
+            return;
+        }
+    };
 
     return (
         <div className={styles.bodyContainer}>
@@ -43,7 +53,11 @@ const Translate = observer(() => {
                             ></TextField>
                         </span>
                     </span>
-                    <Button size={'medium'} variant="contained">
+                    <Button
+                        size={'medium'}
+                        variant="contained"
+                        onClick={handleTranslate}
+                    >
                         Start Translating
                     </Button>
                 </div>

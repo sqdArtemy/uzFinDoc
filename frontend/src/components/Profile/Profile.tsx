@@ -13,11 +13,11 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
+    Avatar,
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { validatePwd } from '../../utils';
+import { stringAvatar, validatePwd } from '../../utils';
 import { autorun } from 'mobx';
-import profileLogo from '../../assets/profile-logo.png';
 
 const Profile = observer(() => {
     const navigate = useNavigate();
@@ -73,7 +73,7 @@ const Profile = observer(() => {
                 setError(authStore.errorMessage);
                 setLoading(false);
             } else if (authStore.state === 'success') {
-                navigate('/profile');
+                navigate('/main/profile');
                 setLoading(false);
             } else if (authStore.state === 'loading') {
                 setError('');
@@ -106,7 +106,11 @@ const Profile = observer(() => {
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>Profile</span>
                 <span className={styles.profileContainer}>
-                    <img className={styles.profileLogo} src={profileLogo}></img>
+                    <Avatar
+                        {...stringAvatar(
+                            `${authStore.data.nameFirstName} ${authStore.data.nameLastName}`
+                        )}
+                    />
                     <span className={styles.formTextRegular}>
                         {authStore.data.email ?? 'example@gmail.com'}
                     </span>
