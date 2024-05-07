@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useLoader } from '../Loader/Loader';
 import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
@@ -29,13 +29,13 @@ const SignIn = observer(() => {
     useEffect(
         () =>
             autorun(() => {
-                if (authStore.state === 'error') {
-                    setError(authStore.errorMessage);
+                if (userStore.state === 'error') {
+                    setError(userStore.errorMsg);
                     hideLoader();
-                } else if (authStore.state === 'success') {
+                } else if (userStore.state === 'success') {
                     navigate('/main');
                     hideLoader();
-                } else if (authStore.state === 'loading') {
+                } else if (userStore.state === 'loading') {
                     setError('');
                     showLoader();
                 }
@@ -65,7 +65,7 @@ const SignIn = observer(() => {
             return setError('Both password and email must be entered.');
         }
 
-        authStore.login(email, password);
+        userStore.login(email, password);
 
         // some auth check with api
         // navigate('/auth/sign-up')

@@ -10,7 +10,7 @@
   .upper-container {
     display: flex;
     justify-content: space-between;
-    height: 25%;
+    height: 28%;
     padding-top: 2rem;
     flex-direction: column;
     padding-left: 2rem;
@@ -20,6 +20,12 @@
       display: flex;
       flex-direction: row;
       gap: 1.5rem;
+      align-items: center;
+
+      button{
+        align-self: flex-start;
+        padding: 0.5rem 0.5rem;
+      }
 
       img {
         width: 5rem;
@@ -50,15 +56,17 @@
   }
 
   .bottom-container {
-    height: 75%;
+    height: 72%;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     padding-top: 1rem;
     padding-left: 2rem;
+    padding-right: 5rem;
 
     .bottom-container-add-button {
       width: 10rem;
+
     }
 
     .bottom-container-header-text {
@@ -78,7 +86,8 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding: 0.5rem 5rem 0.5rem 0.5rem;
+        padding: 0.5rem 1rem 0.5rem 0.5rem;
+        border-radius: 0.5rem;
 
         &:hover {
           background-color: #f3f4f6;

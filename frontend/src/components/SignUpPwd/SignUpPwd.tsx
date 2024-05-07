@@ -10,7 +10,7 @@ import {
     OutlinedInput,
 } from '@mui/material';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useLoader } from '../Loader/Loader';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -48,26 +48,26 @@ const SignUpPwd = observer(() => {
             return setError('Both fields should be filled.');
         }
 
-        authStore.data.password = password;
-        authStore.register({
-            email: authStore.storeData.email,
-            phone: authStore.storeData.phone,
+        userStore.data.password = password;
+        userStore.register({
+            email: userStore.storeData.email,
+            phone: userStore.storeData.phone,
             password: password,
-            nameFirstName: authStore.storeData.nameFirstName,
-            nameLastName: authStore.storeData.nameLastName,
+            nameFirstName: userStore.storeData.nameFirstName,
+            nameLastName: userStore.storeData.nameLastName,
             nameMiddleName: 'something',
         });
     };
 
     useEffect(() => {
         autorun(() => {
-            if (authStore.state === 'error') {
-                setError(authStore.errorMessage);
+            if (userStore.state === 'error') {
+                setError(userStore.errorMsg);
                 hideLoader();
-            } else if (authStore.state === 'success') {
+            } else if (userStore.state === 'success') {
                 navigate('/main');
                 hideLoader();
-            } else if (authStore.state === 'loading') {
+            } else if (userStore.state === 'loading') {
                 setError('');
                 showLoader();
             }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getErrorMessage } from './helpers/getErrorMessage.ts';
 import { snakeToCamel } from './helpers/snakeToCamel.ts';
 import { camelToSnake } from './helpers/camelToSnake.ts';
-import {authService} from "./services/authService.ts";
+import { authService } from './services/authService.ts';
 
 export const axiosInstance = axios.create({
     baseURL: 'http://127.0.0.1:5000',
@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
     async function (error) {
         if (
             error.response?.status === 401 &&
-            !error.config?.url?.includes("/token/refresh")
+            !error.config?.url?.includes('/token/refresh')
         ) {
             const refreshToken = localStorage.getItem('refreshToken');
             const response = await authService.refreshToken(refreshToken!);

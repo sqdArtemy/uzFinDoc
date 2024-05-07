@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styles from './Profile.module.scss';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
@@ -26,11 +26,11 @@ const Profile = observer(() => {
     const [pwdErrorText, setPwdErrorText] = useState('');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        name: authStore.data.nameFirstName,
-        surname: authStore.data.nameLastName,
-        phoneNumber: authStore.data.phone,
-        password: authStore.data.password,
-        middleName: authStore.data.nameMiddleName,
+        name: userStore.data.nameFirstName,
+        surname: userStore.data.nameLastName,
+        phoneNumber: userStore.data.phone,
+        password: userStore.data.password,
+        middleName: userStore.data.nameMiddleName,
     });
 
     const handleMouseDownPassword = (
@@ -57,9 +57,9 @@ const Profile = observer(() => {
             return setError('All fields are required.');
         }
 
-        console.log(authStore.data);
+        console.log(userStore.data);
         console.log(phoneNumber, name, surname);
-        authStore.updateUser({
+        userStore.updateUser(userStore.data.id, {
             phone: phoneNumber,
             nameFirstName: name,
             nameLastName: surname,
@@ -69,33 +69,33 @@ const Profile = observer(() => {
 
     useEffect(() => {
         autorun(() => {
-            if (authStore.state === 'error') {
-                setError(authStore.errorMessage);
+            if (userStore.state === 'error') {
+                setError(userStore.errorMsg);
                 setLoading(false);
-            } else if (authStore.state === 'success') {
+            } else if (userStore.state === 'success') {
                 navigate('/main/profile');
                 setLoading(false);
-            } else if (authStore.state === 'loading') {
+            } else if (userStore.state === 'loading') {
                 setError('');
                 setLoading(true);
             }
             setFormData({
-                name: authStore.data.nameFirstName,
-                surname: authStore.data.nameLastName,
-                phoneNumber: authStore.data.phone,
-                password: authStore.data.password,
-                middleName: authStore.data.nameMiddleName,
+                name: userStore.data.nameFirstName,
+                surname: userStore.data.nameLastName,
+                phoneNumber: userStore.data.phone,
+                password: userStore.data.password,
+                middleName: userStore.data.nameMiddleName,
             });
         });
     }, []);
 
     const handleCancel = () => {
         setFormData({
-            name: authStore.data.nameFirstName,
-            surname: authStore.data.nameLastName,
-            phoneNumber: authStore.data.phone,
-            password: authStore.data.password,
-            middleName: authStore.data.nameMiddleName,
+            name: userStore.data.nameFirstName,
+            surname: userStore.data.nameLastName,
+            phoneNumber: userStore.data.phone,
+            password: userStore.data.password,
+            middleName: userStore.data.nameMiddleName,
         });
     };
 
@@ -108,11 +108,11 @@ const Profile = observer(() => {
                 <span className={styles.profileContainer}>
                     <Avatar
                         {...stringAvatar(
-                            `${authStore.data.nameFirstName} ${authStore.data.nameLastName}`
+                            `${userStore.data.nameFirstName} ${userStore.data.nameLastName}`
                         )}
                     />
                     <span className={styles.formTextRegular}>
-                        {authStore.data.email ?? 'example@gmail.com'}
+                        {userStore.data.email ?? 'example@gmail.com'}
                     </span>
                 </span>
             </div>

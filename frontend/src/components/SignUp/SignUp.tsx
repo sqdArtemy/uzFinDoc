@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './SignUp.module.scss';
 import { Button, TextField } from '@mui/material';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { ArrowForwardIos } from '@mui/icons-material';
@@ -19,7 +19,7 @@ const SignUp = observer(() => {
         const middleName = data.get('middleName') as string;
         const phoneNumber = data.get('phoneNumber') as string;
         console.log({
-            email: authStore.storeData.email,
+            email: userStore.storeData.email,
             name,
             surname,
             phoneNumber,
@@ -28,8 +28,8 @@ const SignUp = observer(() => {
             return setError('This is required information.');
         }
 
-        authStore.data = {
-            ...authStore.storeData,
+        userStore.data = {
+            ...userStore.storeData,
             nameFirstName: name,
             nameLastName: surname,
             phone: phoneNumber,
@@ -43,7 +43,7 @@ const SignUp = observer(() => {
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>Sign Up</span>
                 <span className={styles.formTextRegular}>
-                    Welcome, {authStore.storeData.email}
+                    Welcome, {userStore.storeData.email}
                 </span>
             </div>
             <div className={styles.formInputContainer}>
@@ -55,7 +55,7 @@ const SignUp = observer(() => {
                     name="name"
                     autoComplete="name"
                     autoFocus
-                    defaultValue={authStore.storeData.nameFirstName}
+                    defaultValue={userStore.storeData.nameFirstName}
                 />
                 <TextField
                     variant="outlined"
@@ -65,7 +65,7 @@ const SignUp = observer(() => {
                     name="surname"
                     autoComplete="surname"
                     autoFocus
-                    defaultValue={authStore.storeData.nameLastName}
+                    defaultValue={userStore.storeData.nameLastName}
                 />
                 <TextField
                     variant="outlined"
@@ -75,7 +75,7 @@ const SignUp = observer(() => {
                     name="middleName"
                     autoComplete="middleName"
                     autoFocus
-                    defaultValue={authStore.storeData.nameLastName}
+                    defaultValue={userStore.storeData.nameLastName}
                 />
                 <TextField
                     variant="outlined"
@@ -85,7 +85,7 @@ const SignUp = observer(() => {
                     name="phoneNumber"
                     autoComplete="phoneNumber"
                     autoFocus
-                    defaultValue={authStore.storeData.phone}
+                    defaultValue={userStore.storeData.phone}
                     // error={!!emailErrorText}
                     // helperText={emailErrorText}
                     // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}

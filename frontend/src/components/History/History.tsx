@@ -5,7 +5,7 @@ import FileList from '../FileList/FileList.tsx';
 const History = observer(() => {
     return (
         <div className={styles.bodyContainer}>
-            <FileList />
+            <FileList organizationId={null} />
         </div>
     );
 });

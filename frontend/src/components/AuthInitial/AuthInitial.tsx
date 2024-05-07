@@ -3,7 +3,7 @@ import styles from './AuthInitial.module.scss';
 import { Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils';
 
@@ -22,8 +22,8 @@ const AuthInitial = observer(() => {
         }
         setError('');
 
-        authStore.data = {
-            ...authStore.storeData,
+        userStore.data = {
+            ...userStore.storeData,
             email: email,
         };
         navigate('/auth/sign-up');
@@ -50,7 +50,7 @@ const AuthInitial = observer(() => {
                     name="email"
                     autoComplete="email"
                     autoFocus
-                    defaultValue={authStore.storeData.email}
+                    defaultValue={userStore.storeData.email}
                     onChange={(e) =>
                         validateEmail(e.target.value, setInputErrorText)
                     }

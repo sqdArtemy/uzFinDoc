@@ -1,8 +1,9 @@
-import { IGetUserResponse } from "./users.ts";
+import { IGetUserResponse } from './users.ts';
 
 export interface IOrganizationResponse {
-    "id": number,
-    "name": string,
-    "createdAt": string | Date,
-    "owner": IGetUserResponse;
+    id: number;
+    name: string;
+    createdAt: string | Date;
+    owner: IGetUserResponse;
+    email: string;
 }

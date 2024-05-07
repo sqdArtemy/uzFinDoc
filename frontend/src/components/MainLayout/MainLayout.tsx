@@ -2,12 +2,19 @@ import styles from './MainLayout.module.scss';
 import projectLogo from '../../assets/project-logo.png';
 import { observer } from 'mobx-react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { Avatar } from '@mui/material';
 import { stringAvatar } from '../../utils.ts';
+import OrganizationAction from '../OrganizationAction/OrganizationAction.tsx';
+import { useState } from 'react';
 
 const MainLayout = observer(() => {
     const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
+
+    function handleClose() {
+        setIsOpen(false);
+    }
 
     return (
         <div className={styles.bodyContainer}>
@@ -23,7 +30,11 @@ const MainLayout = observer(() => {
                     </span>
                     <span
                         className={styles.textLarge}
-                        onClick={() => navigate('/main/organization')}
+                        onClick={() => {
+                            if (userStore.data.organization?.id)
+                                return navigate('/main/organization');
+                            setIsOpen(true);
+                        }}
                     >
                         Organization
                     </span>
@@ -39,13 +50,13 @@ const MainLayout = observer(() => {
                     onClick={() => navigate('/main/profile')}
                 >
                     <span className={styles.textRegular}>
-                        {authStore.data.nameFirstName +
+                        {userStore.data.nameFirstName +
                             ' ' +
-                            authStore.data.nameLastName ?? 'example@gmail.com'}
+                            userStore.data.nameLastName ?? 'example@gmail.com'}
                     </span>
                     <Avatar
                         {...stringAvatar(
-                            `${authStore.data.nameFirstName} ${authStore.data.nameLastName}`
+                            `${userStore.data.nameFirstName} ${userStore.data.nameLastName}`
                         )}
                     />
                 </span>
@@ -53,6 +64,11 @@ const MainLayout = observer(() => {
             <div className={styles.mainContainer}>
                 <Outlet />
             </div>
+            <OrganizationAction
+                open={isOpen}
+                handleClose={handleClose}
+                initialData={null}
+            />
         </div>
     );
 });

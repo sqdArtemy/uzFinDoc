@@ -6,10 +6,13 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { IGetUserResponse } from '../api/interfaces/responses/users.ts';
 import { IUpdateUserRequest } from '../api/interfaces/requests/users.ts';
 import { IRegisterRequest } from '../api/interfaces/requests/auth.ts';
+import { organizationService } from '../api/services/organizationService.ts';
+import { IOrganizationResponse } from '../api/interfaces/responses/organization.ts';
+import { ICreateOrganization } from '../api/interfaces/requests/organization.ts';
 
 type CurrentUserData = ILoginResponse['user'] & { password: string };
 
-class AuthStore {
+class UserStore {
     storeData: CurrentUserData = {} as CurrentUserData;
     state: 'pending' | 'loading' | 'success' | 'error' = 'pending';
     errorMessage: string = '';
@@ -23,7 +26,10 @@ class AuthStore {
     }
 
     get data(): CurrentUserData {
-        if (isNaN(this.storeData.id)) {
+        if (
+            isNaN(this.storeData.id) ||
+            isNaN(this.storeData.organization!.id)
+        ) {
             this.fetchCurrentUser();
         }
         return this.storeData;
@@ -32,6 +38,64 @@ class AuthStore {
     set data(data: CurrentUserData) {
         this.storeData = data;
     }
+
+    set errorMsg(error: string) {
+        console.log(error[0]);
+        if (error[0] === '{') {
+            error = 'Something went wrong.';
+        }
+        this.errorMessage = error;
+    }
+
+    get errorMsg() {
+        return this.errorMessage;
+    }
+
+    createOrganization(data: ICreateOrganization) {
+        this.currentState = 'loading';
+        organizationService
+            .createOrganization(data)
+            .then(
+                this.createOrganizationSuccess,
+                this.createOrganizationFailure
+            );
+    }
+
+    createOrganizationSuccess = ({
+        data,
+    }: AxiosResponse<IOrganizationResponse>) => {
+        this.data = { ...this.storeData, organization: data };
+        this.currentState = 'success';
+    };
+
+    createOrganizationFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        this.errorMsg = response?.data || 'Something went wrong';
+    };
+
+    updateOrganization(data: ICreateOrganization) {
+        this.currentState = 'loading';
+        organizationService
+            .updateOrganization(data, this.data.organization!.id)
+            .then(
+                this.updateOrganizationSuccess,
+                this.updateOrganizationFailure
+            );
+    }
+
+    updateOrganizationSuccess = ({
+        data,
+    }: AxiosResponse<IOrganizationResponse>) => {
+        this.data = { ...this.data, organization: data };
+        this.currentState = 'success';
+        console.log(this.data, this.state);
+    };
+
+    updateOrganizationFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        this.errorMsg = response?.data || 'Something went wrong';
+        console.log(this.data, this.currentState);
+    };
 
     fetchCurrentUser() {
         this.currentState = 'loading';
@@ -47,7 +111,7 @@ class AuthStore {
 
     fetchCurrentUserFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 
     login(email: string, password: string) {
@@ -71,7 +135,7 @@ class AuthStore {
 
     loginFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 
     logout() {
@@ -88,13 +152,13 @@ class AuthStore {
 
     logoutFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 
-    updateUser(data: IUpdateUserRequest) {
+    updateUser(id: number, data: IUpdateUserRequest) {
         this.currentState = 'loading';
         userService
-            .updateUser(this.storeData.id, data)
+            .updateUser(id, data)
             .then(this.updateUserSuccess, this.updateUserFailure);
     }
 
@@ -105,13 +169,13 @@ class AuthStore {
 
     updateUserFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 
-    deleteUser() {
+    deleteUser(id: number) {
         this.currentState = 'loading';
         userService
-            .deleteUser(this.storeData.id)
+            .deleteUser(id)
             .then(this.deleteUserSuccess, this.deleteUserFailure);
     }
 
@@ -122,7 +186,7 @@ class AuthStore {
 
     deleteUserFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 
     register(data: IRegisterRequest) {
@@ -139,9 +203,9 @@ class AuthStore {
 
     registerFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
-        this.errorMessage = response?.data || 'Something went wrong';
+        this.errorMsg = response?.data || 'Something went wrong';
     };
 }
 
-const authStore = new AuthStore();
-export default authStore;
+const userStore = new UserStore();
+export default userStore;
