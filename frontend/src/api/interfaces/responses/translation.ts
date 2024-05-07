@@ -1,5 +1,6 @@
 import { IGetUserResponse } from "./users.ts";
 import { IOrganizationResponse } from "./organization.ts";
+import {IGetFeedbackResponse} from "./feedback.ts";
 
 export interface ITranslationResponse {
     "id": number;
@@ -10,7 +11,9 @@ export interface ITranslationResponse {
     "creator": IGetUserResponse,
     "inputDocument": IDocumentResponse;
     "outputDocument": IDocumentResponse;
-    "organization": IOrganizationResponse;
+    "organization": IOrganizationResponse | null;
+    "feedback"?: IGetFeedbackResponse | null, // feedback is returned in POST methods
+    "process_time": number;
 }
 
 export interface IDocumentResponse {
@@ -22,4 +25,11 @@ export interface IDocumentResponse {
     "link": string;
     "type": string;
     "language": string;
+}
+
+export interface IUnknownWordResponse {
+    "written_form": string,
+    "reporter_id": number,
+    "document_id": number,
+    "possible_translation": string;
 }

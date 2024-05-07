@@ -2,6 +2,7 @@ import { axiosInstance } from '../axiosInstance.ts'
 import { ICreateOrganization } from "../interfaces/requests/organization.ts";
 import { IOrganizationResponse } from "../interfaces/responses/organization.ts";
 import { IGetUserResponse } from "../interfaces/responses/users.ts";
+import {ITranslationResponse} from "../interfaces/responses/translation.ts";
 
 export class OrganizationService {
     public createOrganization = async (data: ICreateOrganization) => {
@@ -37,6 +38,11 @@ export class OrganizationService {
     public deleteMember = async (organizationId: number, email: string) => {
         const url = `/organization/${organizationId}/user/${email}`;
         return await axiosInstance.delete<IGetUserResponse[]>(url);
+    }
+
+    public getTranslations = async (organizationId: number) => {
+        const url = `/organization/${organizationId}/translations`;
+        return axiosInstance.get<ITranslationResponse[]>(url)
     }
 }
 
