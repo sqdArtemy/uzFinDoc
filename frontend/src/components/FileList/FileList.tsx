@@ -19,6 +19,9 @@ const FileList = observer(({ organizationId }) => {
         if (organizationId)
             translationsStore.getOrganizationTranslations(organizationId);
         else translationsStore.getTranslations();
+
+        console.log(translationsStore.storeData);
+
         return autorun(() => {
             if (translationsStore.state === 'error') {
                 showErrorModal(translationsStore.errorMessage);
@@ -37,7 +40,7 @@ const FileList = observer(({ organizationId }) => {
                 Translation History
             </span>
             <div className={styles.membersListContainer}>
-                {translationsStore.data.map((translation) => {
+                {translationsStore.storeData.map((translation) => {
                     return (
                         <span
                             key={translation.id}
@@ -62,15 +65,20 @@ const FileList = observer(({ organizationId }) => {
                                         >
                                             {translation.generatedAt.toString()}
                                         </span>
-                                        <span
-                                            className={styles.descriptionText}
-                                        >
-                                            Editor:{' '}
-                                            {translation.creator.nameFirstName +
-                                                ' ' +
-                                                translation.creator
-                                                    .nameLastName}
-                                        </span>
+                                        {organizationId && (
+                                            <span
+                                                className={
+                                                    styles.descriptionText
+                                                }
+                                            >
+                                                Editor:{' '}
+                                                {translation.creator
+                                                    .nameFirstName +
+                                                    ' ' +
+                                                    translation.creator
+                                                        .nameLastName}
+                                            </span>
+                                        )}
                                     </span>
                                 </span>
                             </span>

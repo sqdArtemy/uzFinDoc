@@ -31,6 +31,7 @@ const Translate = observer(() => {
     const [fileDetails, setFileDetails] = useState<{
         name: string;
         size?: number;
+        id?: number;
     }>({ name: '', size: 0 });
     const [outputFormat, setOutputFormat] = useState<'pdf' | 'docx'>('pdf');
     const [isOrganization, setIsOrganization] = useState(false);
@@ -55,6 +56,7 @@ const Translate = observer(() => {
                 setIsOutputDoc(true);
                 setFileDetails({
                     name: translateStore._translationData.outputDocument.name,
+                    id: translateStore._translationData.outputDocument.id,
                 });
             }
         });
@@ -109,6 +111,7 @@ const Translate = observer(() => {
                             type={previewType}
                             format={format}
                             fileDetails={fileDetails}
+                            isOutputDoc={isOutputDoc}
                         />
                     </span>
                 ) : (
@@ -158,7 +161,6 @@ const Translate = observer(() => {
                                     value="pdf"
                                     control={
                                         <Radio
-                                            defaultChecked
                                             checked={outputFormat === 'pdf'}
                                             onChange={() =>
                                                 setOutputFormat('pdf')

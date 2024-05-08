@@ -40,6 +40,7 @@ class TranslationsStore {
     }: AxiosResponse<ITranslationResponse[]>) => {
         this.currentState = 'success';
         this.data = data;
+        console.log(data);
     };
 
     getOrganizationTranslationsFailure = ({ response }: AxiosError<string>) => {

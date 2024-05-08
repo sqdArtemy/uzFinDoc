@@ -35,7 +35,7 @@ class TranslateStore {
 
     translateSuccess = ({ data }: AxiosResponse<ITranslationResponse>) => {
         this.translationData = data;
-        this.downloadDocument(data.outputDocument.id);
+        this.previewDocument(data.outputDocument.id);
     };
 
     translateFailure = ({ response }: AxiosError<string>) => {
@@ -43,13 +43,13 @@ class TranslateStore {
         this.errorMessage = response?.data || 'Something went wrong';
     };
 
-    downloadDocument(documentId: number) {
+    previewDocument(documentId: number) {
         translationService
             .downloadDocument(documentId)
-            .then(this.downloadDocumentSuccess, this.downloadDocumentFailure);
+            .then(this.previewDocumentSuccess, this.previewDocumentFailure);
     }
 
-    downloadDocumentSuccess = ({ data }: AxiosResponse<string>) => {
+    previewDocumentSuccess = ({ data }: AxiosResponse<string>) => {
         const blob = new Blob([data], { type: 'application/octet-stream' });
         console.log(blob);
         let resultData = '';
@@ -63,6 +63,32 @@ class TranslateStore {
             this.documentData = resultData;
             this.currentState = 'success';
         };
+    };
+
+    previewDocumentFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        this.errorMessage = response?.data || 'Something went wrong';
+    };
+
+    downloadDocument(documentId: number) {
+        this.currentState = 'loading';
+        translationService
+            .downloadDocument(documentId)
+            .then(this.downloadDocumentSuccess, this.downloadDocumentFailure);
+    }
+
+    downloadDocumentSuccess = ({ data }: AxiosResponse<string>) => {
+        const blob = new Blob([data], { type: 'application/octet-stream' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download =
+            this._translationData.outputDocument.name +
+            '.' +
+            this._translationData.outputDocument.format;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.currentState = 'success';
     };
 
     downloadDocumentFailure = ({ response }: AxiosError<string>) => {
