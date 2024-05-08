@@ -24,6 +24,8 @@ const Organization = observer(() => {
     }
 
     useEffect(() => {
+        console.log('USER DATA', userStore.storeData);
+
         return autorun(() => {
             if (organizationMembersStore.state === 'error') {
                 showErrorModal(organizationMembersStore.errorMessage);

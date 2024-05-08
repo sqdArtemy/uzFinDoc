@@ -32,15 +32,18 @@ const FileList = observer(({ organizationId }) => {
                 hideLoader();
             }
         });
-    }, []);
+    }, [organizationId]);
 
+    useEffect(() => {
+        console.log('DATA', translationsStore.data);
+    }, [translationsStore.data]);
     return (
         <>
             <span className={styles.bottomContainerHeaderText}>
                 Translation History
             </span>
             <div className={styles.membersListContainer}>
-                {translationsStore.storeData.map((translation) => {
+                {translationsStore.data.map((translation) => {
                     return (
                         <span
                             key={translation.id}
@@ -65,7 +68,7 @@ const FileList = observer(({ organizationId }) => {
                                         >
                                             {translation.generatedAt.toString()}
                                         </span>
-                                        {organizationId && (
+                                        {organizationId ? (
                                             <span
                                                 className={
                                                     styles.descriptionText
@@ -73,11 +76,11 @@ const FileList = observer(({ organizationId }) => {
                                             >
                                                 Editor:{' '}
                                                 {translation.creator
-                                                    .nameFirstName +
-                                                    ' ' +
-                                                    translation.creator
-                                                        .nameLastName}
+                                                    ? `${translation.creator.nameFirstName} ${translation.creator.nameLastName}`
+                                                    : 'undefined'}
                                             </span>
+                                        ) : (
+                                            <></>
                                         )}
                                     </span>
                                 </span>
