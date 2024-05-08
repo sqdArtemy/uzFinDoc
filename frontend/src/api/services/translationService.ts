@@ -16,14 +16,14 @@ export class TranslationService {
         const formData = new FormData();
         formData.append('output_format', outputFormat);
         formData.append('input_document', file);
-        formData.append('language', 'en');
+        formData.append('language', 'uz');
 
         return axiosInstance.post<ITranslationResponse>(url, formData);
     };
 
     public downloadDocument = async (documentId: number) => {
         const url = `/document/${documentId}/download`;
-        return axiosInstance.get<Blob>(url, {
+        return axiosInstance.get<string>(url, {
             headers: {
                 responseType: 'arraybuffer',
             },

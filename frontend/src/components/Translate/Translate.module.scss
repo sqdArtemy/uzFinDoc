@@ -9,13 +9,17 @@
     display: flex;
     width: 50%;
     height: 100%;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-bottom: 5rem;
 
     .dropzone-container {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
+      width: 100%;
     }
 
   }
@@ -39,12 +43,18 @@
       width: 50%;
       gap: 2rem;
 
+      .right-translate-options {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
       .right-translate-header {
         display: flex;
         flex-direction: row;
         gap: 2rem;
 
-        .right-translate-info{
+        .right-translate-info {
           display: flex;
           flex-direction: column;
           gap: 1rem;
@@ -55,6 +65,6 @@
   }
 }
 
-.text-large{
-    font-size: 1.5rem;
+.text-large {
+  font-size: 1.5rem;
 }

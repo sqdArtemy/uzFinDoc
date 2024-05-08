@@ -6,14 +6,19 @@ import { ITranslationResponse } from '../api/interfaces/responses/translation.ts
 class TranslateStore {
     state: 'pending' | 'loading' | 'success' | 'error' = 'pending';
     errorMessage: string = '';
-    storeData: ITranslationResponse = {} as ITranslationResponse;
+    _translationData: ITranslationResponse = {} as ITranslationResponse;
+    _documentData: string | ArrayBuffer | null = '';
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    set data(data: ITranslationResponse) {
-        this.storeData = data;
+    set translationData(data: ITranslationResponse) {
+        this._translationData = data;
+    }
+
+    set documentData(data: string | ArrayBuffer | null) {
+        this._documentData = data;
     }
 
     set currentState(state: 'pending' | 'loading' | 'success' | 'error') {
@@ -22,21 +27,55 @@ class TranslateStore {
 
     translate(outputFormat: 'docx' | 'pdf', file: File) {
         this.currentState = 'loading';
-        console.log('Translate', outputFormat, file);
+
         translationService
             .translateDocument(outputFormat, file)
             .then(this.translateSuccess, this.translateFailure);
     }
 
     translateSuccess = ({ data }: AxiosResponse<ITranslationResponse>) => {
-        this.currentState = 'success';
-        this.data = data;
+        this.translationData = data;
+        this.downloadDocument(data.outputDocument.id);
     };
 
     translateFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
         this.errorMessage = response?.data || 'Something went wrong';
     };
+
+    downloadDocument(documentId: number) {
+        translationService
+            .downloadDocument(documentId)
+            .then(this.downloadDocumentSuccess, this.downloadDocumentFailure);
+    }
+
+    downloadDocumentSuccess = ({ data }: AxiosResponse<string>) => {
+        const blob = new Blob([data], { type: 'application/octet-stream' });
+        console.log(blob);
+        let resultData = '';
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+            this.documentData = reader.result;
+            resultData = (this._documentData as string).substring(
+                (this._documentData as string).indexOf(',') + 1
+            );
+            this.documentData = resultData;
+            this.currentState = 'success';
+        };
+    };
+
+    downloadDocumentFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        this.errorMessage = response?.data || 'Something went wrong';
+    };
+
+    reset() {
+        this.state = 'pending';
+        this.errorMessage = '';
+        this._translationData = {} as ITranslationResponse;
+        this._documentData = '';
+    }
 }
 
 const translateStore = new TranslateStore();

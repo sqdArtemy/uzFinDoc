@@ -2,73 +2,119 @@ import styles from './Translate.module.scss';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { DnD } from './DnD/DnD.tsx';
-import { Button, TextField } from '@mui/material';
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
+    TextField,
+} from '@mui/material';
 import { useErrorModal } from '../Error/Error.tsx';
 import { autorun } from 'mobx';
 import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
-import { Document, Page } from 'react-pdf';
+import PreviewDocument from '../PreviewDocument/PreviewDocument.tsx';
 
 const Translate = observer(() => {
     const [file, setFile] = useState<File | null>(null);
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
     const [isPreview, setIsPreview] = useState(false);
-
-    const [numPages, setNumPages] = useState<number>();
-    const [containerWidth] = useState<number>();
-
-    function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-        setNumPages(numPages);
-    }
+    const [format, setFormat] = useState<string>('');
+    const [previewType, setPreviewType] = useState<string>('');
+    const [previewFile, setPreviewFile] = useState<
+        string | ArrayBuffer | null | File
+    >('');
+    const [isOutputDoc, setIsOutputDoc] = useState(false);
+    const [fileDetails, setFileDetails] = useState<{
+        name: string;
+        size?: number;
+    }>({ name: '', size: 0 });
+    const [outputFormat, setOutputFormat] = useState<'pdf' | 'docx'>('pdf');
+    const [isOrganization, setIsOrganization] = useState(false);
 
     useEffect(() => {
         autorun(() => {
             if (translateStore.state === 'error') {
                 showErrorModal(translateStore.errorMessage);
+                hideLoader();
+                setIsOutputDoc(false);
             } else if (translateStore.state === 'loading') {
                 showLoader();
             } else if (translateStore.state === 'success') {
                 hideLoader();
-                console.log(translateStore.data);
+                console.log(translateStore._translationData);
                 setIsPreview(true);
+                setPreviewFile(translateStore._documentData);
+                setPreviewType(
+                    translateStore._translationData.outputDocument.format
+                );
+                setFormat('base64');
+                setIsOutputDoc(true);
+                setFileDetails({
+                    name: translateStore._translationData.outputDocument.name,
+                });
             }
         });
     }, []);
 
     const handleTranslate = () => {
-        console.log('Translate');
         if (!file) {
             showErrorModal('Please upload a file to translate');
             return;
         }
 
-        console.log('HANDLE Translate', file);
-        translateStore.translate('pdf', file);
+        translateStore.translate(outputFormat, file);
     };
+
+    useEffect(() => {
+        if (file && !isOutputDoc) {
+            setPreviewFile(file);
+            setIsPreview(true);
+            setFormat('file');
+            setFileDetails({
+                name: file.name,
+                size: file.size,
+            });
+            if (file.type === 'application/pdf') {
+                setPreviewType('pdf');
+            } else {
+                setPreviewType('docx');
+            }
+        }
+    }, [file, isOutputDoc]);
+
+    useEffect(() => {
+        return () => {
+            translateStore.reset();
+        };
+    }, []);
 
     return (
         <div className={styles.bodyContainer}>
             <div className={styles.leftContainer}>
                 {isPreview ? (
-                    <Document
-                        file={'some.pdf'}
-                        onLoadSuccess={onDocumentLoadSuccess}
+                    <span
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
                     >
-                        {Array.from(new Array(numPages), (_el, index) => (
-                            <Page
-                                key={`page_${index + 1}`}
-                                pageNumber={index + 1}
-                                width={
-                                    containerWidth
-                                        ? Math.min(containerWidth, 800)
-                                        : 800
-                                }
-                            />
-                        ))}
-                    </Document>
+                        <PreviewDocument
+                            file={previewFile}
+                            type={previewType}
+                            format={format}
+                            fileDetails={fileDetails}
+                        />
+                    </span>
                 ) : (
-                    <DnD setFile={setFile} />
+                    <span className={styles.dropzoneContainer}>
+                        <DnD setFile={setFile} />
+                    </span>
                 )}
             </div>
             <div className={styles.solidVerticalBar}></div>
@@ -105,6 +151,48 @@ const Translate = observer(() => {
                     >
                         Start Translating
                     </Button>
+                    <span className={styles.rightTranslateOptions}>
+                        <FormControl>
+                            <RadioGroup row name="row-radio-buttons-group">
+                                <FormControlLabel
+                                    value="pdf"
+                                    control={
+                                        <Radio
+                                            defaultChecked
+                                            checked={outputFormat === 'pdf'}
+                                            onChange={() =>
+                                                setOutputFormat('pdf')
+                                            }
+                                        />
+                                    }
+                                    label="PDF"
+                                />
+                                <FormControlLabel
+                                    value="docx"
+                                    control={
+                                        <Radio
+                                            checked={outputFormat === 'docx'}
+                                            onChange={() =>
+                                                setOutputFormat('docx')
+                                            }
+                                        />
+                                    }
+                                    label="DOCX"
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={isOrganization}
+                                    onChange={() =>
+                                        setIsOrganization(!isOrganization)
+                                    }
+                                />
+                            }
+                            label="Organization"
+                        />
+                    </span>
                 </div>
             </div>
         </div>
