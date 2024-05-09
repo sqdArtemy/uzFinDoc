@@ -51,12 +51,15 @@ const PreviewDocument = observer(
                 if (translateStore.state === 'error') {
                     showErrorModal(translateStore.errorMessage);
                     hideLoader();
+                    translateStore.currentState = 'pending';
                 }
                 if (translateStore.state === 'loading') {
                     showLoader();
+                    translateStore.currentState = 'pending';
                 }
                 if (translateStore.state === 'success') {
                     hideLoader();
+                    translateStore.currentState = 'pending';
                 }
             });
         }, []);

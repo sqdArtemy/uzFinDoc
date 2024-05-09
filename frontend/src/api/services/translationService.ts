@@ -5,7 +5,7 @@ import {
 import { axiosInstance } from '../axiosInstance.ts';
 import { ICreateFeedbackResponse } from '../interfaces/responses/feedback.ts';
 // import FormData from 'form-data';
-type Rating = 0 | 1 | 2 | 3 | 4 | 5;
+export type Rating = 0 | 1 | 2 | 3 | 4 | 5;
 
 export class TranslationService {
     public translateDocument = async (

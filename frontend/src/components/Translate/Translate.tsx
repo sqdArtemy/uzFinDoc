@@ -16,6 +16,7 @@ import { autorun } from 'mobx';
 import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
 import PreviewDocument from '../PreviewDocument/PreviewDocument.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const Translate = observer(() => {
     const [file, setFile] = useState<File | null>(null);
@@ -35,6 +36,7 @@ const Translate = observer(() => {
     }>({ name: '', size: 0 });
     const [outputFormat, setOutputFormat] = useState<'pdf' | 'docx'>('pdf');
     const [isOrganization, setIsOrganization] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         translateStore.reset();
@@ -43,25 +45,53 @@ const Translate = observer(() => {
                 showErrorModal(translateStore.errorMessage);
                 hideLoader();
                 setIsOutputDoc(false);
+                translateStore.currentState = 'pending';
             } else if (translateStore.state === 'loading') {
                 showLoader();
+                translateStore.currentState = 'pending';
             } else if (translateStore.state === 'success') {
                 hideLoader();
-                console.log(translateStore._translationData);
-                setIsPreview(true);
-                setPreviewFile(translateStore._documentData);
-                setPreviewType(
-                    translateStore._translationData.outputDocument.format
+                navigate(
+                    '/main/history/preview/' +
+                        translateStore._translationData.outputDocument.id,
+                    {
+                        state: {
+                            id: translateStore._translationData.outputDocument
+                                .id,
+                            name:
+                                translateStore._translationData.outputDocument
+                                    .name +
+                                '.' +
+                                translateStore._translationData.outputDocument
+                                    .format,
+                            type: translateStore._translationData.outputDocument
+                                .format,
+                            generatedAt:
+                                translateStore._translationData.generatedAt,
+                            inputDocument: {
+                                id: translateStore._translationData
+                                    .inputDocument.id,
+                                name: translateStore._translationData
+                                    .inputDocument.name,
+                                format: translateStore._translationData
+                                    .inputDocument.format,
+                                uploadedAt:
+                                    translateStore._translationData
+                                        .inputDocument.uploadedAt,
+                            },
+                            creator: {
+                                nameFirstName:
+                                    translateStore._translationData.creator
+                                        .nameFirstName,
+                                nameLastName:
+                                    translateStore._translationData.creator
+                                        .nameLastName,
+                            },
+                            translationId: translateStore._translationData.id,
+                        },
+                    }
                 );
-                setFormat('base64');
-                setIsOutputDoc(true);
-                setFileDetails({
-                    name:
-                        translateStore._translationData.outputDocument.name +
-                        '.' +
-                        translateStore._translationData.outputDocument.format,
-                    id: translateStore._translationData.outputDocument.id,
-                });
+                translateStore.currentState = 'pending';
             }
         });
     }, []);

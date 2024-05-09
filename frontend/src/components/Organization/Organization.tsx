@@ -29,11 +29,14 @@ const Organization = observer(() => {
             if (organizationMembersStore.state === 'error') {
                 showErrorModal(organizationMembersStore.errorMessage);
                 hideLoader();
+                organizationMembersStore.currentState = 'pending';
             } else if (organizationMembersStore.state === 'loading') {
                 showLoader();
+                organizationMembersStore.currentState = 'pending';
             } else if (organizationMembersStore.state === 'success') {
                 setMembers(organizationMembersStore.data);
                 hideLoader();
+                organizationMembersStore.currentState = 'pending';
             }
         });
     }, []);

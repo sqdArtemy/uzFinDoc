@@ -36,10 +36,13 @@ const FileList = observer(({ organizationId }) => {
             if (translateStore.state === 'error') {
                 showErrorModal(translateStore.errorMessage);
                 hideLoader();
+                translateStore.currentState = 'pending';
             } else if (translateStore.state === 'loading') {
                 showLoader();
+                translateStore.currentState = 'pending';
             } else if (translateStore.state === 'success') {
                 hideLoader();
+                translateStore.currentState = 'pending';
             }
         });
     }, []);
@@ -49,10 +52,13 @@ const FileList = observer(({ organizationId }) => {
             if (translationsStore.state === 'error') {
                 showErrorModal(translationsStore.errorMessage);
                 hideLoader();
+                translationsStore.currentState = 'pending';
             } else if (translationsStore.state === 'loading') {
                 showLoader();
+                translationsStore.currentState = 'pending';
             } else if (translationsStore.state === 'success') {
                 hideLoader();
+                translationsStore.currentState = 'pending';
             }
         });
     }, []);
@@ -82,6 +88,7 @@ const FileList = observer(({ organizationId }) => {
                 format: inputDocument.format,
                 uploadedAt: inputDocument.uploadedAt,
             },
+            translationId: translation.id,
         };
         console.log(locationState);
         navigate(`/main/history/preview/${translation.outputDocument.id}`, {

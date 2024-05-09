@@ -1,7 +1,13 @@
 import styles from './HistoryPreview.module.scss';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { Box, Button, IconButton, TextareaAutosize } from '@mui/material';
+import {
+    Box,
+    Button,
+    IconButton,
+    Rating,
+    TextareaAutosize,
+} from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import PreviewDocument from '../PreviewDocument/PreviewDocument.tsx';
 import { useLocation } from 'react-router-dom';
@@ -13,6 +19,8 @@ import pdfIcon from '../../assets/pdf-icon.png';
 import docIcon from '../../assets/doc-icon.png';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+import feedbackStore from '../../stores/FeedbackStore.ts';
+import translationsStore from '../../stores/TranslationsStore.ts';
 
 const HistoryPreview = observer(() => {
     const location = useLocation();
@@ -34,6 +42,7 @@ const HistoryPreview = observer(() => {
             nameFirstName: string;
             nameLastName: string;
         };
+        translationId: number;
     }>(location.state);
     const [previewFile, setPreviewFile] = useState<string | ArrayBuffer | null>(
         ''
@@ -45,6 +54,8 @@ const HistoryPreview = observer(() => {
         name: '',
         id: -1,
     });
+    const [rating, setRating] = useState<0 | 1 | 2 | 3 | 4 | 5 | null>(0);
+    const [feedbackText, setFeedbackText] = useState<string>('');
 
     useEffect(() => {
         setFileDetails({
@@ -56,11 +67,30 @@ const HistoryPreview = observer(() => {
             if (translateStore.state === 'error') {
                 showErrorModal(translateStore.errorMessage);
                 hideLoader();
+                translationsStore.currentState = 'pending';
             } else if (translateStore.state === 'loading') {
                 showLoader();
+                translationsStore.currentState = 'pending';
             } else if (translateStore.state === 'success') {
                 hideLoader();
                 setPreviewFile(translateStore._documentData);
+                translationsStore.currentState = 'pending';
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        return autorun(() => {
+            if (feedbackStore.state === 'error') {
+                showErrorModal(feedbackStore.errorMsg);
+                hideLoader();
+                feedbackStore.currentState = 'pending';
+            } else if (feedbackStore.state === 'loading') {
+                showLoader();
+                feedbackStore.currentState = 'pending';
+            } else if (feedbackStore.state === 'success') {
+                hideLoader();
+                feedbackStore.currentState = 'pending';
             }
         });
     }, []);
@@ -74,6 +104,14 @@ const HistoryPreview = observer(() => {
         console.log('Delete', id);
     }
 
+    function handleSendFeedback() {
+        feedbackStore.createFeedback(
+            rating ? rating : 0,
+            feedbackText,
+            locationState.translationId
+        );
+    }
+
     return (
         <div className={styles.bodyContainer}>
             <div className={styles.leftContainer}>
@@ -84,7 +122,7 @@ const HistoryPreview = observer(() => {
                             type={locationState.type}
                             format={'base64'}
                             fileDetails={fileDetails}
-                            isOutputDoc={false}
+                            isOutputDoc={true}
                         />
                     </Box>
                 ) : (
@@ -165,8 +203,35 @@ const HistoryPreview = observer(() => {
                     </span>
                 </span>
                 <span className={styles.rightInputContainer}>
-                    <TextareaAutosize minRows={10} maxRows={10} />
-                    <Button variant="contained">Send Feedback</Button>
+                    <TextareaAutosize
+                        minRows={10}
+                        maxRows={10}
+                        placeholder="Enter your feedback here"
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                    />
+                    <Box
+                        display={'flex'}
+                        flexDirection={'row'}
+                        gap={'3rem'}
+                        width={'100%'}
+                        justifyContent={'flex-end'}
+                        alignItems={'center'}
+                    >
+                        <Rating
+                            name="simple-controlled"
+                            value={rating}
+                            onChange={(_event, newValue) => {
+                                setRating(newValue as 0 | 1 | 2 | 3 | 4 | 5);
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            onClick={handleSendFeedback}
+                        >
+                            Send Feedback
+                        </Button>
+                    </Box>
                 </span>
             </div>
         </div>
