@@ -38,6 +38,63 @@
       justify-content: flex-start;
       align-items: flex-start;
 
+      .member-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem 0.5rem 0.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        gap: 7rem;
+        margin-top: 2rem;
+
+        &:hover {
+          background-color: #f3f4f6;
+        }
+
+
+        .action-buttons-container {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .member-left-container {
+          display: flex;
+          flex-direction: row;
+          gap: 1rem;
+          align-items: center;
+          flex: 1;
+
+          img {
+            width: 4rem;
+            height: 4rem;
+          }
+        }
+
+
+        .member-text-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+
+          .member-name-container {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+
+
+          }
+
+          .description-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+          }
+        }
+      }
+
       .right-header {
         display: flex;
         flex-direction: row;

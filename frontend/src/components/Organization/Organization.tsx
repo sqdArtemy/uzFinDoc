@@ -181,7 +181,11 @@ const Organization = observer(() => {
                         <div className={styles.membersListContainer}>
                             {members.map((member) => (
                                 <span
-                                    key={member.id}
+                                    key={
+                                        userStore.data.id === member.id
+                                            ? 0
+                                            : member.id
+                                    }
                                     className={styles.memberContainer}
                                 >
                                     <span

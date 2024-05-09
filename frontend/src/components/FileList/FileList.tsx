@@ -59,25 +59,37 @@ const FileList = observer(({ organizationId }) => {
 
     function navigateToPreview(translation: ITranslationResponse) {
         translateStore.previewDocument(translation.outputDocument.id);
-
-        navigate(`/main/history/preview/${translation.outputDocument.id}`, {
-            state: {
-                id: translation.outputDocument.id,
-                name:
-                    translation.outputDocument.name +
-                    '.' +
-                    translation.outputDocument.format,
-                type: translation.outputDocument.format,
-                format: 'base64',
+        console.log(translation);
+        const inputDocument = {
+            id: translation.inputDocument.id,
+            name: translation.inputDocument.name,
+            format: translation.inputDocument.format,
+            uploadedAt: translation.inputDocument.uploadedAt.toString(),
+        };
+        console.log(inputDocument);
+        const locationState = {
+            id: translation.outputDocument.id,
+            name:
+                translation.outputDocument.name +
+                '.' +
+                translation.outputDocument.format,
+            type: translation.outputDocument.format,
+            format: 'base64',
+            generatedAt: translation.generatedAt.toString(),
+            inputDocument: {
+                id: inputDocument.id,
+                name: inputDocument.name,
+                format: inputDocument.format,
+                uploadedAt: inputDocument.uploadedAt,
             },
+        };
+        console.log(locationState);
+        navigate(`/main/history/preview/${translation.outputDocument.id}`, {
+            state: locationState,
         });
     }
 
-    function handleDownload(
-        documentId: number,
-        name: string,
-        format: string
-    ) {
+    function handleDownload(documentId: number, name: string, format: string) {
         translateStore.downloadDocument(documentId, `${name}.${format}`);
     }
 

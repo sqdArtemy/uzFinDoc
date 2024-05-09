@@ -9,6 +9,10 @@ import { autorun } from 'mobx';
 import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
 import { useErrorModal } from '../Error/Error.tsx';
+import pdfIcon from '../../assets/pdf-icon.png';
+import docIcon from '../../assets/doc-icon.png';
+import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const HistoryPreview = observer(() => {
     const location = useLocation();
@@ -19,6 +23,17 @@ const HistoryPreview = observer(() => {
         name: string;
         type: string;
         format: string;
+        generatedAt: string;
+        inputDocument: {
+            id: number;
+            name: string;
+            format: string;
+            uploadedAt: string;
+        };
+        creator: {
+            nameFirstName: string;
+            nameLastName: string;
+        };
     }>(location.state);
     const [previewFile, setPreviewFile] = useState<string | ArrayBuffer | null>(
         ''
@@ -50,6 +65,15 @@ const HistoryPreview = observer(() => {
         });
     }, []);
 
+    function handleDownload(id: number, name: string, format: string) {
+        translateStore.downloadDocument(id, `${name.split('.')[0]}.${format}`);
+    }
+
+    function handleDelete(id: number) {
+        //translateStore.deleteDocument(id);
+        console.log('Delete', id);
+    }
+
     return (
         <div className={styles.bodyContainer}>
             <div className={styles.leftContainer}>
@@ -79,7 +103,65 @@ const HistoryPreview = observer(() => {
                         </span>
                     </span>
                     <span className={[styles.descriptionText].join(' ')}>
-                        Translated at: 05/01 1:15:43
+                        Translated at: {locationState.generatedAt}
+                    </span>
+                    <span
+                        key={locationState.inputDocument.id}
+                        className={styles.memberContainer}
+                    >
+                        <span className={styles.memberLeftContainer}>
+                            <img
+                                src={
+                                    locationState.inputDocument.format === 'pdf'
+                                        ? pdfIcon
+                                        : docIcon
+                                }
+                            />
+                            <span className={styles.memberTextContainer}>
+                                <span
+                                    className={[
+                                        styles.memberNameContainer,
+                                        styles.headerText,
+                                    ].join(' ')}
+                                >
+                                    {locationState.inputDocument.name.split(
+                                        '.'
+                                    )[0] +
+                                        `.${locationState.inputDocument.format}`}
+                                </span>
+                                <span className={styles.descriptionContainer}>
+                                    <span className={styles.descriptionText}>
+                                        {locationState.inputDocument.uploadedAt}
+                                    </span>
+                                    <span className={styles.descriptionText}>
+                                        Editor:{' '}
+                                        {locationState.creator
+                                            ? `${locationState.creator.nameFirstName} ${locationState.creator.nameLastName}`
+                                            : 'undefined'}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                        <span className={styles.actionButtonsContainer}>
+                            <IconButton
+                                onClick={() =>
+                                    handleDownload(
+                                        locationState.inputDocument.id,
+                                        locationState.inputDocument.name,
+                                        locationState.inputDocument.format
+                                    )
+                                }
+                            >
+                                <DownloadIcon />
+                            </IconButton>
+                            <IconButton
+                                onClick={() =>
+                                    handleDelete(locationState.inputDocument.id)
+                                }
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
                     </span>
                 </span>
                 <span className={styles.rightInputContainer}>
