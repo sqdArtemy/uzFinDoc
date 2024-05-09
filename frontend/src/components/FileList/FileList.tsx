@@ -74,11 +74,11 @@ const FileList = observer(({ organizationId }) => {
     }
 
     function handleDownload(
-        translationId: number,
+        documentId: number,
         name: string,
         format: string
     ) {
-        translateStore.downloadDocument(translationId, `${name}.${format}`);
+        translateStore.downloadDocument(documentId, `${name}.${format}`);
     }
 
     function handleDelete(translationId: number) {
@@ -150,7 +150,7 @@ const FileList = observer(({ organizationId }) => {
                                 <IconButton
                                     onClick={() =>
                                         handleDownload(
-                                            translation.id,
+                                            translation.outputDocument.id,
                                             translation.outputDocument.name,
                                             translation.outputDocument.format
                                         )
