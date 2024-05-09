@@ -64,12 +64,15 @@ const SignUpPwd = observer(() => {
             if (userStore.state === 'error') {
                 setError(userStore.errorMsg);
                 hideLoader();
+                userStore.currentState = 'pending';
             } else if (userStore.state === 'success') {
                 navigate('/main');
                 hideLoader();
+                userStore.currentState = 'pending';
             } else if (userStore.state === 'loading') {
                 setError('');
                 showLoader();
+                userStore.currentState = 'pending';
             }
         });
     }, []);

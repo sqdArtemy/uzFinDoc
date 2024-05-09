@@ -37,6 +37,7 @@ const Translate = observer(() => {
     const [isOrganization, setIsOrganization] = useState(false);
 
     useEffect(() => {
+        translateStore.reset();
         autorun(() => {
             if (translateStore.state === 'error') {
                 showErrorModal(translateStore.errorMessage);
@@ -55,7 +56,10 @@ const Translate = observer(() => {
                 setFormat('base64');
                 setIsOutputDoc(true);
                 setFileDetails({
-                    name: translateStore._translationData.outputDocument.name,
+                    name:
+                        translateStore._translationData.outputDocument.name +
+                        '.' +
+                        translateStore._translationData.outputDocument.format,
                     id: translateStore._translationData.outputDocument.id,
                 });
             }

@@ -34,6 +34,7 @@ class UserStore {
             isNaN(this.storeData.id) ||
             isNaN(this.storeData.organization!.id)
         ) {
+            console.trace();
             this.fetchCurrentUser();
         }
         return this.storeData;
@@ -100,7 +101,7 @@ class UserStore {
     updateOrganization(data: ICreateOrganization) {
         this.currentState = 'loading';
         organizationService
-            .updateOrganization(data, this.data.organization!.id)
+            .updateOrganization(data, this.storeData.organization!.id)
             .then(
                 this.updateOrganizationSuccess,
                 this.updateOrganizationFailure
@@ -110,15 +111,15 @@ class UserStore {
     updateOrganizationSuccess = ({
         data,
     }: AxiosResponse<IOrganizationResponse>) => {
-        this.data = { ...this.data, organization: data };
+        this.data = { ...this.storeData, organization: data };
         this.currentState = 'success';
-        console.log(this.data, this.state);
+        console.log(this.storeData, this.state);
     };
 
     updateOrganizationFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
         this.errorMsg = response?.data || 'Something went wrong';
-        console.log(this.data, this.currentState);
+        console.log(this.storeData, this.state);
     };
 
     fetchCurrentUser() {
@@ -159,6 +160,7 @@ class UserStore {
             ...this.storeData,
             ...data.user,
         };
+        console.log('refreshToken', localStorage.getItem('refreshToken'));
         this.currentState = 'success';
     };
 
@@ -227,7 +229,7 @@ class UserStore {
 
     registerSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
         this.data = { ...this.storeData, ...data };
-        this.login(this.data.email, this.data.password);
+        this.login(this.storeData.email, this.storeData.password);
     };
 
     registerFailure = ({ response }: AxiosError<string>) => {

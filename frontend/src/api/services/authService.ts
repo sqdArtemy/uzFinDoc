@@ -5,7 +5,8 @@ import {
 import { axiosInstance } from '../axiosInstance.ts';
 import {
     ILoginResponse,
-    ILogoutResponse, IRefreshTokenResponse,
+    ILogoutResponse,
+    IRefreshTokenResponse,
 } from '../interfaces/responses/auth.ts';
 
 export class AuthService {
@@ -28,13 +29,14 @@ export class AuthService {
     };
 
     public refreshToken = async (refreshToken: string) => {
+        console.trace();
         const url = '/token/refresh';
         return axiosInstance.get<IRefreshTokenResponse>(url, {
             headers: {
-                Authorization: `Bearer ${refreshToken}`
-            }
+                Authorization: `Bearer ${refreshToken}`,
+            },
         });
-    }
+    };
 }
 
 export const authService = new AuthService();

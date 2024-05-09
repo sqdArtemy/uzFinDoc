@@ -3,7 +3,7 @@ import projectLogo from '../../assets/project-logo.png';
 import { observer } from 'mobx-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import userStore from '../../stores/UserStore.ts';
-import { Avatar } from '@mui/material';
+import { Avatar, Box, Button } from '@mui/material';
 import { stringAvatar } from '../../utils.ts';
 import OrganizationAction from '../OrganizationAction/OrganizationAction.tsx';
 import { useState } from 'react';
@@ -31,7 +31,7 @@ const MainLayout = observer(() => {
                     <span
                         className={styles.textLarge}
                         onClick={() => {
-                            if (userStore.data.organization?.id)
+                            if (userStore.storeData.organization?.id)
                                 return navigate('/main/organization');
                             setIsOpen(true);
                         }}
@@ -45,20 +45,37 @@ const MainLayout = observer(() => {
                         History
                     </span>
                 </span>
-                <span
-                    className={styles.topProfileContainer}
-                    onClick={() => navigate('/main/profile')}
-                >
-                    <span className={styles.textRegular}>
-                        {userStore.data.nameFirstName +
-                            ' ' +
-                            userStore.data.nameLastName ?? 'example@gmail.com'}
-                    </span>
-                    <Avatar
-                        {...stringAvatar(
-                            `${userStore.data.nameFirstName} ${userStore.data.nameLastName}`
-                        )}
-                    />
+                <span className={styles.topProfileContainer}>
+                    <Button
+                        size={'large'}
+                        variant={'outlined'}
+                        color={'error'}
+                        onClick={() => {
+                            userStore.logout();
+                            navigate('/auth/sign-in');
+                        }}
+                    >
+                        Logout
+                    </Button>
+                    <Box
+                        display={'flex'}
+                        flexDirection={'row'}
+                        gap="1rem"
+                        alignItems={'center'}
+                        onClick={() => navigate('/main/profile')}
+                    >
+                        <span className={styles.textRegular}>
+                            {userStore.storeData.nameFirstName +
+                                ' ' +
+                                userStore.storeData.nameLastName ??
+                                'example@gmail.com'}
+                        </span>
+                        <Avatar
+                            {...stringAvatar(
+                                `${userStore.data.nameFirstName} ${userStore.data.nameLastName}`
+                            )}
+                        />
+                    </Box>
                 </span>
             </span>
             <div className={styles.mainContainer}>

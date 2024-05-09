@@ -32,12 +32,24 @@ const SignIn = observer(() => {
                 if (userStore.state === 'error') {
                     setError(userStore.errorMsg);
                     hideLoader();
-                } else if (userStore.state === 'success') {
+                    userStore.currentState = 'pending';
+                } else if (
+                    userStore.state === 'success' &&
+                    localStorage.getItem('accessToken')
+                ) {
                     navigate('/main');
                     hideLoader();
+                    userStore.currentState = 'pending';
+                } else if (
+                    userStore.state === 'success' &&
+                    !localStorage.getItem('accessToken')
+                ) {
+                    hideLoader();
+                    userStore.currentState = 'pending';
                 } else if (userStore.state === 'loading') {
                     setError('');
                     showLoader();
+                    userStore.currentState = 'pending';
                 }
             }),
         []

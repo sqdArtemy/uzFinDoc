@@ -26,11 +26,11 @@ const Profile = observer(() => {
     const [pwdErrorText, setPwdErrorText] = useState('');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        name: userStore.data.nameFirstName,
-        surname: userStore.data.nameLastName,
-        phoneNumber: userStore.data.phone,
-        password: userStore.data.password,
-        middleName: userStore.data.nameMiddleName,
+        name: 'undefined',
+        surname: 'undefined',
+        phoneNumber: 'undefined',
+        password: 'undefined',
+        middleName: 'undefined',
     });
 
     const handleMouseDownPassword = (
@@ -45,7 +45,7 @@ const Profile = observer(() => {
     const handleUpdate = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const password: string = data.get('password') as string;
+        // const password: string = data.get('password') as string;
         const phoneNumber: string = data.get('phoneNumber') as string;
         const name: string = data.get('name') as string;
         const surname: string = data.get('surname') as string;
@@ -53,13 +53,13 @@ const Profile = observer(() => {
 
         if (pwdErrorText) {
             return;
-        } else if (!password || !phoneNumber || !name || !surname) {
+        } else if (!phoneNumber || !name || !surname || !middleName) {
             return setError('All fields are required.');
         }
 
         console.log(userStore.data);
         console.log(phoneNumber, name, surname);
-        userStore.updateUser(userStore.data.id, {
+        userStore.updateUser(userStore.storeData.id, {
             phone: phoneNumber,
             nameFirstName: name,
             nameLastName: surname,
@@ -68,24 +68,38 @@ const Profile = observer(() => {
     };
 
     useEffect(() => {
-        autorun(() => {
+        return autorun(() => {
             if (userStore.state === 'error') {
                 setError(userStore.errorMsg);
                 setLoading(false);
+                userStore.currentState = 'pending';
             } else if (userStore.state === 'success') {
                 navigate('/main/profile');
                 setLoading(false);
+                setFormData({
+                    name: userStore.data.nameFirstName,
+                    surname: userStore.data.nameLastName,
+                    phoneNumber: userStore.data.phone,
+                    password: userStore.data.password,
+                    middleName: userStore.data.nameMiddleName,
+                });
+                userStore.currentState = 'pending';
             } else if (userStore.state === 'loading') {
                 setError('');
                 setLoading(true);
+                userStore.currentState = 'pending';
             }
-            setFormData({
-                name: userStore.data.nameFirstName,
-                surname: userStore.data.nameLastName,
-                phoneNumber: userStore.data.phone,
-                password: userStore.data.password,
-                middleName: userStore.data.nameMiddleName,
-            });
+        });
+    }, []);
+
+    useEffect(() => {
+        userStore.fetchCurrentUser();
+        setFormData({
+            name: userStore.data.nameFirstName,
+            surname: userStore.data.nameLastName,
+            phoneNumber: userStore.data.phone,
+            password: userStore.data.password,
+            middleName: userStore.data.nameMiddleName,
         });
     }, []);
 
@@ -125,7 +139,7 @@ const Profile = observer(() => {
                     name="name"
                     autoComplete="name"
                     autoFocus
-                    value={formData.name || ''}
+                    value={formData.name}
                     onChange={(e) => {
                         setError('');
                         setFormData({ ...formData, name: e.target.value });
@@ -139,7 +153,7 @@ const Profile = observer(() => {
                     name="surname"
                     autoComplete="surname"
                     autoFocus
-                    value={formData.surname || ''}
+                    value={formData.surname}
                     onChange={(e) => {
                         setError('');
                         setFormData({ ...formData, surname: e.target.value });
@@ -153,7 +167,7 @@ const Profile = observer(() => {
                     name="middleName"
                     autoComplete="middleName"
                     autoFocus
-                    value={formData.middleName || ''}
+                    value={formData.middleName}
                     onChange={(e) => {
                         setError('');
                         setFormData({
@@ -170,7 +184,7 @@ const Profile = observer(() => {
                     name="phoneNumber"
                     autoComplete="phoneNumber"
                     autoFocus
-                    value={formData.phoneNumber || ''}
+                    value={formData.phoneNumber}
                     onChange={(e) => {
                         setError('');
                         setFormData({
@@ -246,7 +260,6 @@ const Profile = observer(() => {
                         variant="outlined"
                         color="success"
                         style={{ margin: '20px 0' }}
-                        // onClick={() => setLoading(true)}
                         loading={loading}
                     >
                         Update

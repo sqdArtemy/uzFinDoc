@@ -35,11 +35,14 @@ const OrganizationModal = observer(({ open, handleClose, initialData }) => {
                 if (userStore.state === 'error') {
                     showErrorModal(userStore.errorMsg);
                     hideLoader();
+                    userStore.currentState = 'pending';
                 } else if (userStore.state === 'loading') {
                     showLoader();
+                    userStore.currentState = 'pending';
                 } else if (userStore.state === 'success') {
                     handleClose();
                     hideLoader();
+                    userStore.currentState = 'pending';
                 }
             }),
         []

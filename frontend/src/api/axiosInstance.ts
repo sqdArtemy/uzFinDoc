@@ -17,7 +17,8 @@ axiosInstance.interceptors.request.use(
         if (
             token &&
             config.url !== '/user/login' &&
-            config.url !== '/user/register'
+            config.url !== '/user/register' &&
+            config.url !== '/token/refresh'
         ) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -37,10 +38,16 @@ axiosInstance.interceptors.response.use(
     async function (error) {
         if (
             error.response?.status === 401 &&
-            !error.config?.url?.includes('/token/refresh')
+            !error.config?.url?.includes('/token/refresh') &&
+            !error.config?.url?.includes('/user/logout')
         ) {
             const refreshToken = localStorage.getItem('refreshToken');
+            console.log('1', refreshToken);
+            // if (!refreshToken) {
+            //     return Promise.reject(error);
+            // }
             const response = await authService.refreshToken(refreshToken!);
+            console.log('2', refreshToken);
             if (response.data && response.data.accessToken) {
                 const originalRequest = error.config;
                 originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
