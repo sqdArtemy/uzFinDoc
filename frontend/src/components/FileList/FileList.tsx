@@ -13,6 +13,7 @@ import { useLoader } from '../Loader/Loader.tsx';
 import { ITranslationResponse } from '../../api/interfaces/responses/translation.ts';
 import { useNavigate } from 'react-router-dom';
 import translateStore from '../../stores/TranslateStore.ts';
+import userStore from '../../stores/UserStore.ts';
 
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
@@ -89,6 +90,14 @@ const FileList = observer(({ organizationId }) => {
                 uploadedAt: inputDocument.uploadedAt,
             },
             translationId: translation.id,
+            creator: {
+                nameFirstName: organizationId
+                    ? translation.creator.nameFirstName
+                    : userStore.data.nameFirstName,
+                nameLastName: organizationId
+                    ? translation.creator.nameLastName
+                    : userStore.data.nameLastName,
+            },
         };
         console.log(locationState);
         navigate(`/main/history/preview/${translation.outputDocument.id}`, {

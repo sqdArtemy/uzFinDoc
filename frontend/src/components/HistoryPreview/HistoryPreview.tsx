@@ -133,7 +133,7 @@ const HistoryPreview = observer(() => {
             <div className={styles.rightContainer}>
                 <span className={styles.rightContentContainer}>
                     <span className={styles.rightHeader}>
-                        <IconButton>
+                        <IconButton onClick={() => window.history.back()}>
                             <KeyboardArrowLeftIcon />
                         </IconButton>
                         <span className={styles.headerText}>
