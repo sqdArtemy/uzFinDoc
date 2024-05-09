@@ -45,13 +45,13 @@ const Profile = observer(() => {
     const handleUpdate = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        // const password: string = data.get('password') as string;
+        const password: string = data.get('password') as string;
         const phoneNumber: string = data.get('phoneNumber') as string;
         const name: string = data.get('name') as string;
         const surname: string = data.get('surname') as string;
         const middleName: string = data.get('middleName') as string;
 
-        if (pwdErrorText) {
+        if (password && pwdErrorText) {
             return;
         } else if (!phoneNumber || !name || !surname || !middleName) {
             return setError('All fields are required.');
@@ -64,6 +64,7 @@ const Profile = observer(() => {
             nameFirstName: name,
             nameLastName: surname,
             nameMiddleName: middleName,
+            password: password,
         });
     };
 
@@ -204,7 +205,7 @@ const Profile = observer(() => {
                         htmlFor="outlined-adornment-password"
                         error={!!pwdErrorText}
                     >
-                        Password *
+                        Password
                     </InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
@@ -219,6 +220,7 @@ const Profile = observer(() => {
                                 password: e.target.value,
                             });
                         }}
+                        fullWidth
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
