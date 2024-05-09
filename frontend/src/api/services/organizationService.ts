@@ -11,7 +11,7 @@ export class OrganizationService {
     };
 
     public getOrganization = async (organizationId: number) => {
-        const url = '/organizations/' + organizationId;
+        const url = '/organization/' + organizationId;
         return axiosInstance.get<IOrganizationResponse>(url);
     };
 

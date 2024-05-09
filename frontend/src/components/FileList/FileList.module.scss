@@ -14,8 +14,15 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding-right: 5rem;
     align-items: center;
+    padding: 0.5rem 1rem 0.5rem 5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
 
     .action-buttons-container {
       display: flex;
@@ -27,6 +34,7 @@
       flex-direction: row;
       gap: 1rem;
       align-items: center;
+      flex:  1;
 
       img {
         width: 4rem;

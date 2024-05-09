@@ -10,10 +10,14 @@ import { autorun } from 'mobx';
 import translationsStore from '../../stores/TranslationsStore.ts';
 import { useErrorModal } from '../Error/Error.tsx';
 import { useLoader } from '../Loader/Loader.tsx';
+import { ITranslationResponse } from '../../api/interfaces/responses/translation.ts';
+import { useNavigate } from 'react-router-dom';
+import translateStore from '../../stores/TranslateStore.ts';
 
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (organizationId)
@@ -21,7 +25,26 @@ const FileList = observer(({ organizationId }) => {
         else translationsStore.getTranslations();
 
         console.log(translationsStore.storeData);
+    }, [organizationId]);
 
+    useEffect(() => {
+        console.log('DATA', translationsStore.data);
+    }, [translationsStore.data]);
+
+    useEffect(() => {
+        return autorun(() => {
+            if (translateStore.state === 'error') {
+                showErrorModal(translateStore.errorMessage);
+                hideLoader();
+            } else if (translateStore.state === 'loading') {
+                showLoader();
+            } else if (translateStore.state === 'success') {
+                hideLoader();
+            }
+        });
+    }, []);
+
+    useEffect(() => {
         return autorun(() => {
             if (translationsStore.state === 'error') {
                 showErrorModal(translationsStore.errorMessage);
@@ -32,11 +55,37 @@ const FileList = observer(({ organizationId }) => {
                 hideLoader();
             }
         });
-    }, [organizationId]);
+    }, []);
 
-    useEffect(() => {
-        console.log('DATA', translationsStore.data);
-    }, [translationsStore.data]);
+    function navigateToPreview(translation: ITranslationResponse) {
+        translateStore.previewDocument(translation.outputDocument.id);
+
+        navigate(`/main/history/preview/${translation.outputDocument.id}`, {
+            state: {
+                id: translation.outputDocument.id,
+                name:
+                    translation.outputDocument.name +
+                    '.' +
+                    translation.outputDocument.format,
+                type: translation.outputDocument.format,
+                format: 'base64',
+            },
+        });
+    }
+
+    function handleDownload(
+        translationId: number,
+        name: string,
+        format: string
+    ) {
+        translateStore.downloadDocument(translationId, `${name}.${format}`);
+    }
+
+    function handleDelete(translationId: number) {
+        // translateStore.deleteTranslation(translationId);
+        console.log('Delete', translationId);
+    }
+
     return (
         <>
             <span className={styles.bottomContainerHeaderText}>
@@ -49,8 +98,18 @@ const FileList = observer(({ organizationId }) => {
                             key={translation.id}
                             className={styles.memberContainer}
                         >
-                            <span className={styles.memberLeftContainer}>
-                                <img src={pdfIcon ? pdfIcon : docIcon} />
+                            <span
+                                className={styles.memberLeftContainer}
+                                onClick={() => navigateToPreview(translation)}
+                            >
+                                <img
+                                    src={
+                                        translation.outputDocument.format ===
+                                        'pdf'
+                                            ? pdfIcon
+                                            : docIcon
+                                    }
+                                />
                                 <span className={styles.memberTextContainer}>
                                     <span
                                         className={[
@@ -59,6 +118,8 @@ const FileList = observer(({ organizationId }) => {
                                         ].join(' ')}
                                     >
                                         {translation.outputDocument.name}
+                                        {'.'}
+                                        {translation.outputDocument.format}
                                     </span>
                                     <span
                                         className={styles.descriptionContainer}
@@ -86,10 +147,20 @@ const FileList = observer(({ organizationId }) => {
                                 </span>
                             </span>
                             <span className={styles.actionButtonsContainer}>
-                                <IconButton>
+                                <IconButton
+                                    onClick={() =>
+                                        handleDownload(
+                                            translation.id,
+                                            translation.outputDocument.name,
+                                            translation.outputDocument.format
+                                        )
+                                    }
+                                >
                                     <DownloadIcon />
                                 </IconButton>
-                                <IconButton>
+                                <IconButton
+                                    onClick={() => handleDelete(translation.id)}
+                                >
                                     <DeleteIcon />
                                 </IconButton>
                             </span>

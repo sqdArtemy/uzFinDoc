@@ -1,6 +1,6 @@
 import styles from './Organization.module.scss';
 import { observer } from 'mobx-react';
-import { Avatar, Button, Chip } from '@mui/material';
+import { Avatar, Box, Button, Chip, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { stringAvatar } from '../../utils.ts';
 import FileList from '../FileList/FileList.tsx';
@@ -18,6 +18,7 @@ const Organization = observer(() => {
     const [members, setMembers] = useState<IGetUserResponse[]>([]);
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
+    const [memberEmail, setMemberEmail] = useState('');
 
     function handleClose() {
         setIsOpen(false);
@@ -25,6 +26,8 @@ const Organization = observer(() => {
 
     useEffect(() => {
         console.log('USER DATA', userStore.storeData);
+
+        userStore.getOrganization(userStore.data.organization!.id);
 
         return autorun(() => {
             if (organizationMembersStore.state === 'error') {
@@ -46,71 +49,139 @@ const Organization = observer(() => {
             );
     }, [userStore.storeData]);
 
+    function handleAddMember(email) {
+        organizationMembersStore.addMember(
+            userStore.data.organization!.id,
+            email
+        );
+    }
+
+    function handleDeleteMember(email: string) {
+        organizationMembersStore.deleteMember(
+            userStore.data.organization!.id,
+            email
+        );
+    }
+
     return (
         <div className={styles.bodyContainer}>
             <div className={styles.upperContainer}>
-                <div className={styles.organizationInfoContainer}>
-                    <Avatar
-                        {...stringAvatar(
-                            userStore.data.organization?.name ?? ''
-                        )}
-                        variant={'square'}
-                        sx={{ width: 90, height: 90 }}
-                    />
-                    <div className={styles.organizationInfoRightContainer}>
-                        <span className={styles.headerText}>
-                            {userStore.data.organization?.name ?? 'undefined'}
-                        </span>
-                        <span className={styles.descriptionText}>
-                            {userStore.data.organization?.email ?? 'undefined'}
-                        </span>
-                        <Button
-                            variant={'outlined'}
-                            size={'small'}
-                            fullWidth
-                            color={'primary'}
-                            onClick={() => setIsOpen(true)}
-                        >
-                            Update Info
-                        </Button>
-                    </div>
-                </div>
+                <Box
+                    flexDirection={'row'}
+                    sx={{
+                        height: '100%',
+                        width: '100%',
+                        paddingRight: '5rem',
+                    }}
+                    display={'flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}
+                >
+                    <Box
+                        flexDirection={'column'}
+                        sx={{
+                            height: '100%',
+                        }}
+                        display={'flex'}
+                        justifyContent={'space-between'}
+                    >
+                        <div className={styles.organizationInfoContainer}>
+                            <Avatar
+                                {...stringAvatar(
+                                    userStore.data.organization?.name ?? ''
+                                )}
+                                variant={'square'}
+                                sx={{ width: 90, height: 90 }}
+                            />
+                            <div
+                                className={
+                                    styles.organizationInfoRightContainer
+                                }
+                            >
+                                <span className={styles.headerText}>
+                                    {userStore.data.organization?.name ??
+                                        'undefined'}
+                                </span>
+                                <span className={styles.descriptionText}>
+                                    {userStore.data.organization?.email ??
+                                        'undefined'}
+                                </span>
+                                <Button
+                                    variant={'outlined'}
+                                    size={'small'}
+                                    fullWidth
+                                    color={'primary'}
+                                    onClick={() => setIsOpen(true)}
+                                >
+                                    Update Info
+                                </Button>
+                            </div>
+                        </div>
 
-                <span className={styles.upperButtonsContainer}>
+                        <span className={styles.upperButtonsContainer}>
+                            <Button
+                                size={'small'}
+                                variant={'text'}
+                                color={
+                                    buttonState === 'Documents'
+                                        ? 'success'
+                                        : 'primary'
+                                }
+                                onClick={() => setButtonState('Documents')}
+                            >
+                                Documents
+                            </Button>
+                            <Button
+                                size={'small'}
+                                variant={'text'}
+                                color={
+                                    buttonState === 'Members'
+                                        ? 'success'
+                                        : 'primary'
+                                }
+                                onClick={() => setButtonState('Members')}
+                            >
+                                Members
+                            </Button>
+                        </span>
+                    </Box>
                     <Button
-                        size={'small'}
-                        variant={'text'}
-                        color={
-                            buttonState === 'Documents' ? 'success' : 'primary'
-                        }
-                        onClick={() => setButtonState('Documents')}
+                        variant={'contained'}
+                        size={'large'}
+                        color={'error'}
                     >
-                        Documents
+                        {userStore.data.id
+                            ? 'Remove Organization'
+                            : 'Leave Organization'}
                     </Button>
-                    <Button
-                        size={'small'}
-                        variant={'text'}
-                        color={
-                            buttonState === 'Members' ? 'success' : 'primary'
-                        }
-                        onClick={() => setButtonState('Members')}
-                    >
-                        Members
-                    </Button>
-                </span>
+                </Box>
             </div>
             <div className={styles.horizontalSolidBar}></div>
             <div className={styles.bottomContainer}>
                 {buttonState === 'Members' ? (
                     <>
-                        <Button
-                            size={'medium'}
-                            variant="contained"
-                            color={'success'}
-                            className={styles.bottomContainerAddButton}
+                        <Box
+                            flexDirection={'row'}
+                            gap={'0.5rem'}
+                            display={'flex'}
                         >
-                            Add member
-                        </Button>
+                            <TextField
+                                variant="outlined"
+                                size={'small'}
+                                label={'Member Email'}
+                                value={memberEmail}
+                                onChange={(e) => setMemberEmail(e.target.value)}
+                            />
+                            <Button
+                                size={'medium'}
+                                variant="contained"
+                                color={'success'}
+                                className={styles.bottomContainerAddButton}
+                                onClick={() => handleAddMember(memberEmail)}
+                            >
+                                Add member
+                            </Button>
+                        </Box>
                         <div className={styles.membersListContainer}>
                             {members.map((member) => (
                                 <span
@@ -146,8 +217,8 @@ const Organization = observer(() => {
                                                         ' ' +
                                                         member.nameLastName}
                                                 </span>{' '}
-                                                {member.email ===
-                                                userStore.data.email ? (
+                                                {userStore.data.id ===
+                                                member.id ? (
                                                     <Chip
                                                         label="Owner"
                                                         color={'primary'}
@@ -170,12 +241,9 @@ const Organization = observer(() => {
                                         size={'large'}
                                         variant="contained"
                                         color={'error'}
-                                        onClick={() => {
-                                            organizationMembersStore.deleteMember(
-                                                member.organization!.id,
-                                                member.email
-                                            );
-                                        }}
+                                        onClick={() =>
+                                            handleDeleteMember(member.email)
+                                        }
                                     >
                                         REMOVE MEMBER
                                     </Button>

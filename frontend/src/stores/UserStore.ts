@@ -10,7 +10,11 @@ import { organizationService } from '../api/services/organizationService.ts';
 import { IOrganizationResponse } from '../api/interfaces/responses/organization.ts';
 import { ICreateOrganization } from '../api/interfaces/requests/organization.ts';
 
-type CurrentUserData = ILoginResponse['user'] & { password: string };
+type CurrentUserData = ILoginResponse['user'] & { password: string } & {
+    organization: null | {
+        owner?: IGetUserResponse;
+    };
+};
 
 class UserStore {
     storeData: CurrentUserData = {} as CurrentUserData;
@@ -61,6 +65,26 @@ class UserStore {
             );
     }
 
+    getOrganization(organizationId: number) {
+        this.currentState = 'loading';
+        organizationService
+            .getOrganization(organizationId)
+            .then(this.getOrganizationSuccess, this.getOrganizationFailure);
+    }
+
+    getOrganizationSuccess = ({
+        data,
+    }: AxiosResponse<IOrganizationResponse>) => {
+        this.data = { ...this.storeData, organization: data };
+        this.currentState = 'success';
+    };
+
+    getOrganizationFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        console.log(response);
+        this.errorMsg = response?.data || 'Something went wrong';
+    };
+
     createOrganizationSuccess = ({
         data,
     }: AxiosResponse<IOrganizationResponse>) => {
@@ -105,8 +129,13 @@ class UserStore {
     }
 
     fetchCurrentUserSuccess = ({ data }: AxiosResponse<IGetUserResponse>) => {
-        this.currentState = 'success';
+        if (!data.organization) {
+            this.currentState = 'success';
+            this.data = { ...this.storeData, ...data };
+            return;
+        }
         this.data = { ...this.storeData, ...data };
+        this.getOrganization(data.organization.id);
     };
 
     fetchCurrentUserFailure = ({ response }: AxiosError<string>) => {

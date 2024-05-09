@@ -44,6 +44,7 @@ class TranslateStore {
     };
 
     previewDocument(documentId: number) {
+        this.currentState = 'loading';
         translationService
             .downloadDocument(documentId)
             .then(this.previewDocumentSuccess, this.previewDocumentFailure);
@@ -70,22 +71,25 @@ class TranslateStore {
         this.errorMessage = response?.data || 'Something went wrong';
     };
 
-    downloadDocument(documentId: number) {
+    downloadDocument(documentId: number, fileName: string) {
         this.currentState = 'loading';
         translationService
             .downloadDocument(documentId)
-            .then(this.downloadDocumentSuccess, this.downloadDocumentFailure);
+            .then(
+                (response) => this.downloadDocumentSuccess(response, fileName),
+                this.downloadDocumentFailure
+            );
     }
 
-    downloadDocumentSuccess = ({ data }: AxiosResponse<string>) => {
+    downloadDocumentSuccess = (
+        { data }: AxiosResponse<string>,
+        fileName: string
+    ) => {
         const blob = new Blob([data], { type: 'application/octet-stream' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download =
-            this._translationData.outputDocument.name +
-            '.' +
-            this._translationData.outputDocument.format;
+        a.download = fileName;
         a.click();
         window.URL.revokeObjectURL(url);
         this.currentState = 'success';
