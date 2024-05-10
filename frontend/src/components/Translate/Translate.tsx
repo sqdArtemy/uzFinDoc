@@ -40,15 +40,15 @@ const Translate = observer(() => {
 
     useEffect(() => {
         translateStore.reset();
-        autorun(() => {
+        return autorun(() => {
             if (translateStore.state === 'error') {
                 showErrorModal(translateStore.errorMessage);
                 hideLoader();
                 setIsOutputDoc(false);
-                translateStore.currentState = 'pending';
+                // translateStore.currentState = 'pending';
             } else if (translateStore.state === 'loading') {
                 showLoader();
-                translateStore.currentState = 'pending';
+                // translateStore.currentState = 'pending';
             } else if (translateStore.state === 'success') {
                 hideLoader();
                 navigate(
@@ -91,7 +91,7 @@ const Translate = observer(() => {
                         },
                     }
                 );
-                translateStore.currentState = 'pending';
+                // translateStore.currentState = 'pending';
             }
         });
     }, []);

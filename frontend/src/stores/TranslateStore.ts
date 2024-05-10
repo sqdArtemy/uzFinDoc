@@ -51,6 +51,7 @@ class TranslateStore {
     }
 
     previewDocumentSuccess = ({ data }: AxiosResponse<string>) => {
+        console.log(data);
         const blob = new Blob([data], { type: 'application/octet-stream' });
         console.log(blob);
         let resultData = '';
@@ -104,7 +105,7 @@ class TranslateStore {
         this.state = 'pending';
         this.errorMessage = '';
         this._translationData = {} as ITranslationResponse;
-        this._documentData = '';
+        // this._documentData = '';
     }
 }
 

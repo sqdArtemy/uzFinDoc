@@ -10,7 +10,7 @@
   .upper-container {
     display: flex;
     justify-content: space-between;
-    height: 30%;
+    height: 40%;
     padding-top: 2rem;
     flex-direction: column;
     padding-left: 2rem;
@@ -56,13 +56,13 @@
   }
 
   .bottom-container {
-    height: 69%;
+    height: 59%;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     padding-top: 1rem;
     padding-left: 2rem;
-    padding-right: 5rem;
+    padding-right: 2rem;
 
     .bottom-container-add-button {
       width: 10rem;

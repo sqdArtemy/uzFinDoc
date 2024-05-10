@@ -14,6 +14,8 @@ import { ITranslationResponse } from '../../api/interfaces/responses/translation
 import { useNavigate } from 'react-router-dom';
 import translateStore from '../../stores/TranslateStore.ts';
 import userStore from '../../stores/UserStore.ts';
+import moment from 'moment';
+import translationStore from '../../stores/TranslationStore.ts';
 
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
@@ -27,10 +29,6 @@ const FileList = observer(({ organizationId }) => {
 
         console.log(translationsStore.storeData);
     }, [organizationId]);
-
-    useEffect(() => {
-        console.log('DATA', translationsStore.data);
-    }, [translationsStore.data]);
 
     useEffect(() => {
         return autorun(() => {
@@ -64,14 +62,28 @@ const FileList = observer(({ organizationId }) => {
         });
     }, []);
 
+    useEffect(() => {
+        return autorun(() => {
+            if (translationStore.state === 'error') {
+                showErrorModal(translationStore.errorMessage);
+                hideLoader();
+            } else if (translationStore.state === 'loading') {
+                showLoader();
+            } else if (translationStore.state === 'success') {
+                hideLoader();
+            }
+        });
+    }, []);
+
     function navigateToPreview(translation: ITranslationResponse) {
         translateStore.previewDocument(translation.outputDocument.id);
+        translationStore.getTranslationById(translation.id);
         console.log(translation);
         const inputDocument = {
             id: translation.inputDocument.id,
             name: translation.inputDocument.name,
             format: translation.inputDocument.format,
-            uploadedAt: translation.inputDocument.uploadedAt.toString(),
+            uploadedAt: translation.inputDocument.uploadedAt,
         };
         console.log(inputDocument);
         const locationState = {
@@ -82,7 +94,7 @@ const FileList = observer(({ organizationId }) => {
                 translation.outputDocument.format,
             type: translation.outputDocument.format,
             format: 'base64',
-            generatedAt: translation.generatedAt.toString(),
+            generatedAt: translation.generatedAt,
             inputDocument: {
                 id: inputDocument.id,
                 name: inputDocument.name,
@@ -155,7 +167,9 @@ const FileList = observer(({ organizationId }) => {
                                         <span
                                             className={styles.descriptionText}
                                         >
-                                            {translation.generatedAt.toString()}
+                                            {moment(
+                                                translation.generatedAt
+                                            ).format('DD/MM/YYYY HH:mm')}
                                         </span>
                                         {organizationId ? (
                                             <span

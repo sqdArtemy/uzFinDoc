@@ -74,7 +74,7 @@ const Organization = observer(() => {
                     }}
                     display={'flex'}
                     justifyContent={'space-between'}
-                    alignItems={'center'}
+                    alignItems={'flex-start'}
                 >
                     <Box
                         flexDirection={'column'}
@@ -148,6 +148,9 @@ const Organization = observer(() => {
                         variant={'contained'}
                         size={'large'}
                         color={'error'}
+                        sx={{
+                            marginTop: '3rem',
+                        }}
                     >
                         {userStore.data.id
                             ? 'Remove Organization'

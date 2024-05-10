@@ -16,7 +16,7 @@ export class TranslationService {
         const formData = new FormData();
         formData.append('output_format', outputFormat);
         formData.append('input_document', file);
-        formData.append('language', 'uz');
+        formData.append('language', 'en');
 
         return axiosInstance.post<ITranslationResponse>(url, formData);
     };
@@ -24,9 +24,7 @@ export class TranslationService {
     public downloadDocument = async (documentId: number) => {
         const url = `/document/${documentId}/download`;
         return axiosInstance.get<string>(url, {
-            headers: {
-                responseType: 'arraybuffer',
-            },
+            responseType: 'arraybuffer',
         });
     };
 

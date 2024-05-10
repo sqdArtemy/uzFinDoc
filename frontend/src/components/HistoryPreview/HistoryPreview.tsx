@@ -21,6 +21,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import feedbackStore from '../../stores/FeedbackStore.ts';
 import translationsStore from '../../stores/TranslationsStore.ts';
+import moment from 'moment';
+import translationStore from '../../stores/TranslationStore.ts';
 
 const HistoryPreview = observer(() => {
     const location = useLocation();
@@ -95,6 +97,25 @@ const HistoryPreview = observer(() => {
         });
     }, []);
 
+    useEffect(() => {
+        translationStore.getTranslationById(locationState.translationId);
+        return autorun(() => {
+            if (translationStore.state === 'error') {
+                showErrorModal(translationStore.errorMessage);
+                hideLoader();
+                translationStore.currentState = 'pending';
+            } else if (translationStore.state === 'loading') {
+                showLoader();
+                translationStore.currentState = 'pending';
+            } else if (translationStore.state === 'success') {
+                hideLoader();
+                setRating(translationStore.data.feedback?.rating || 0);
+                setFeedbackText(translationStore.data.feedback?.review || '');
+                translationStore.currentState = 'pending';
+            }
+        });
+    }, []);
+
     function handleDownload(id: number, name: string, format: string) {
         translateStore.downloadDocument(id, `${name.split('.')[0]}.${format}`);
     }
@@ -110,6 +131,7 @@ const HistoryPreview = observer(() => {
             feedbackText,
             locationState.translationId
         );
+        window.location.reload();
     }
 
     return (
@@ -141,7 +163,10 @@ const HistoryPreview = observer(() => {
                         </span>
                     </span>
                     <span className={[styles.descriptionText].join(' ')}>
-                        Translated at: {locationState.generatedAt}
+                        Translated at:{' '}
+                        {moment(locationState.generatedAt).format(
+                            'MMMM Do YYYY, h:mm:ss a'
+                        )}
                     </span>
                     <span
                         key={locationState.inputDocument.id}
@@ -169,7 +194,10 @@ const HistoryPreview = observer(() => {
                                 </span>
                                 <span className={styles.descriptionContainer}>
                                     <span className={styles.descriptionText}>
-                                        {locationState.inputDocument.uploadedAt}
+                                        {moment(
+                                            locationState.inputDocument
+                                                .uploadedAt
+                                        ).format('DD/MM/YYYY HH:mm')}
                                     </span>
                                     <span className={styles.descriptionText}>
                                         Editor:{' '}
@@ -209,6 +237,7 @@ const HistoryPreview = observer(() => {
                         placeholder="Enter your feedback here"
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
+                        disabled={!!translationStore.data.feedback}
                     />
                     <Box
                         display={'flex'}
@@ -224,13 +253,16 @@ const HistoryPreview = observer(() => {
                             onChange={(_event, newValue) => {
                                 setRating(newValue as 0 | 1 | 2 | 3 | 4 | 5);
                             }}
+                            readOnly={!!translationStore.data.feedback}
                         />
-                        <Button
-                            variant="contained"
-                            onClick={handleSendFeedback}
-                        >
-                            Send Feedback
-                        </Button>
+                        {!translationStore.data.feedback && (
+                            <Button
+                                variant="contained"
+                                onClick={handleSendFeedback}
+                            >
+                                Send Feedback
+                            </Button>
+                        )}
                     </Box>
                 </span>
             </div>
