@@ -75,6 +75,7 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     input_document_id = fields.Int(required=True)
     output_document_id = fields.Int(required=True)
     organization_id = fields.Int(required=True)
+    is_organizational = fields.Bool(required=True)
 
     @validates("process_time")
     def validate_creator_id(self, value: int) -> None:

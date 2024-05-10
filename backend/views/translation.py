@@ -39,6 +39,8 @@ class TranslationCreateView(Resource):
         user = User.query.filter_by(id=requester_id).first()
         available_formats = DocumentFormats.AVAILABLE_FORMATS.value
 
+        is_organisational = data.get("is_organisational")
+
         input_document = data.get("input_document")
         output_format = data.get("output_format")
         document_format = input_document.content_type.split('/')[-1]
@@ -99,7 +101,7 @@ class TranslationCreateView(Resource):
                 "process_time": end_time-start_time,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "output_document_id": out_document.id,
-                "organization_id": user.organization_id
+                "organization_id": user.organization_id if is_organisational else None,
             })
 
             db.session.add(translation)

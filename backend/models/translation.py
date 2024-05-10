@@ -24,8 +24,7 @@ class Translation(db.Model):
         "Feedback",
         backref="translation",
         primaryjoin="Translation.id==Feedback.translation_id",
-        lazy="joined",
-        uselist=False
+        lazy="joined"
     )
     input_document = db.relationship(
         "Document",
