@@ -10,21 +10,27 @@ import organizationMembersStore from '../../stores/OrganizationMembersStore.ts';
 import { autorun } from 'mobx';
 import { useErrorModal } from '../Error/Error.tsx';
 import { useLoader } from '../Loader/Loader.tsx';
-import { IGetUserResponse } from '../../api/interfaces/responses/users.ts';
 
 const Organization = observer(() => {
     const [buttonState, setButtonState] = useState('Members');
     const [isOpen, setIsOpen] = useState(false);
-    const [members, setMembers] = useState<IGetUserResponse[]>([]);
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
     const [memberEmail, setMemberEmail] = useState('');
+    const [ownerId, setOwnerId] = useState<number | undefined>(
+        userStore.data.organization?.owner?.id
+    );
 
     function handleClose() {
         setIsOpen(false);
     }
 
     useEffect(() => {
+        setOwnerId(userStore.data.organization?.owner?.id);
+        if (userStore.data.organization)
+            organizationMembersStore.getAllMembers(
+                userStore.data.organization.id
+            );
         return autorun(() => {
             if (organizationMembersStore.state === 'error') {
                 showErrorModal(organizationMembersStore.errorMessage);
@@ -34,7 +40,13 @@ const Organization = observer(() => {
                 showLoader();
                 organizationMembersStore.currentState = 'pending';
             } else if (organizationMembersStore.state === 'success') {
-                setMembers(organizationMembersStore.data);
+                // setMembers(
+                //     [...organizationMembersStore.data].sort((a, b) => {
+                //         if (a.id === ownerId) return -1;
+                //         if (b.id === ownerId) return 1;
+                //         return 0;
+                //     })
+                // );
                 hideLoader();
                 organizationMembersStore.currentState = 'pending';
             }
@@ -42,10 +54,13 @@ const Organization = observer(() => {
     }, []);
 
     useEffect(() => {
-        if (userStore.data.organization)
+        if (userStore.data.organization) {
             organizationMembersStore.getAllMembers(
                 userStore.data.organization.id
             );
+        }
+        if (userStore.data.organization?.owner)
+            setOwnerId(userStore.data.organization.owner.id);
     }, [userStore.storeData]);
 
     function handleAddMember(email) {
@@ -152,7 +167,7 @@ const Organization = observer(() => {
                             marginTop: '3rem',
                         }}
                     >
-                        {userStore.data.id
+                        {userStore.data.id === ownerId
                             ? 'Remove Organization'
                             : 'Leave Organization'}
                     </Button>
@@ -185,76 +200,83 @@ const Organization = observer(() => {
                             </Button>
                         </Box>
                         <div className={styles.membersListContainer}>
-                            {members.map((member) => (
-                                <span
-                                    key={
-                                        userStore.data.id === member.id
-                                            ? 0
-                                            : member.id
-                                    }
-                                    className={styles.memberContainer}
-                                >
+                            {[...organizationMembersStore.data]
+                                .sort((a, b) => {
+                                    if (a.id === ownerId) return -1;
+                                    if (b.id === ownerId) return 1;
+                                    return 0;
+                                })
+                                .map((member) => (
                                     <span
-                                        className={styles.memberLeftContainer}
+                                        key={member.id}
+                                        className={styles.memberContainer}
                                     >
-                                        <Avatar
-                                            {...stringAvatar(
-                                                member.nameFirstName +
-                                                    ' ' +
-                                                    member.nameLastName
-                                            )}
-                                        />
                                         <span
                                             className={
-                                                styles.memberTextContainer
+                                                styles.memberLeftContainer
                                             }
                                         >
+                                            <Avatar
+                                                {...stringAvatar(
+                                                    member.nameFirstName +
+                                                        ' ' +
+                                                        member.nameLastName
+                                                )}
+                                            />
                                             <span
                                                 className={
-                                                    styles.memberNameContainer
+                                                    styles.memberTextContainer
                                                 }
                                             >
                                                 <span
                                                     className={
-                                                        styles.headerText
+                                                        styles.memberNameContainer
                                                     }
                                                 >
-                                                    {member.nameFirstName +
-                                                        ' ' +
-                                                        member.nameLastName}
-                                                </span>{' '}
-                                                {userStore.data.id ===
-                                                member.id ? (
-                                                    <Chip
-                                                        label="Owner"
-                                                        color={'primary'}
-                                                        variant="outlined"
-                                                    />
-                                                ) : (
-                                                    <></>
-                                                )}
-                                            </span>
-                                            <span
-                                                className={
-                                                    styles.descriptionText
-                                                }
-                                            >
-                                                {member.email}
+                                                    <span
+                                                        className={
+                                                            styles.headerText
+                                                        }
+                                                    >
+                                                        {member.nameFirstName +
+                                                            ' ' +
+                                                            member.nameLastName}
+                                                    </span>{' '}
+                                                    {ownerId === member.id ? (
+                                                        <Chip
+                                                            label="Owner"
+                                                            color={'primary'}
+                                                            variant="outlined"
+                                                        />
+                                                    ) : (
+                                                        <></>
+                                                    )}
+                                                </span>
+                                                <span
+                                                    className={
+                                                        styles.descriptionText
+                                                    }
+                                                >
+                                                    {member.email}
+                                                </span>
                                             </span>
                                         </span>
+                                        {member.id !== ownerId && (
+                                            <Button
+                                                size={'large'}
+                                                variant="contained"
+                                                color={'error'}
+                                                onClick={() =>
+                                                    handleDeleteMember(
+                                                        member.email
+                                                    )
+                                                }
+                                            >
+                                                REMOVE MEMBER
+                                            </Button>
+                                        )}
                                     </span>
-                                    <Button
-                                        size={'large'}
-                                        variant="contained"
-                                        color={'error'}
-                                        onClick={() =>
-                                            handleDeleteMember(member.email)
-                                        }
-                                    >
-                                        REMOVE MEMBER
-                                    </Button>
-                                </span>
-                            ))}
+                                ))}
                         </div>
                     </>
                 ) : (

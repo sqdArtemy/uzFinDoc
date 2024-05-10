@@ -17,6 +17,7 @@ import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
 import PreviewDocument from '../PreviewDocument/PreviewDocument.tsx';
 import { useNavigate } from 'react-router-dom';
+import userStore from '../../stores/UserStore.ts';
 
 const Translate = observer(() => {
     const [file, setFile] = useState<File | null>(null);
@@ -217,17 +218,19 @@ const Translate = observer(() => {
                                 />
                             </RadioGroup>
                         </FormControl>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={isOrganization}
-                                    onChange={() =>
-                                        setIsOrganization(!isOrganization)
-                                    }
-                                />
-                            }
-                            label="Organization"
-                        />
+                        {userStore.data.organization && (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={isOrganization}
+                                        onChange={() =>
+                                            setIsOrganization(!isOrganization)
+                                        }
+                                    />
+                                }
+                                label="Organization"
+                            />
+                        )}
                     </span>
                 </div>
             </div>
