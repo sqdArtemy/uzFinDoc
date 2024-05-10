@@ -1,11 +1,11 @@
 import styles from './FileList.module.scss';
 import { observer } from 'mobx-react';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import docIcon from '../../assets/doc-icon.png';
 import pdfIcon from '../../assets/pdf-icon.png';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { autorun } from 'mobx';
 import translationsStore from '../../stores/TranslationsStore.ts';
 import { useErrorModal } from '../Error/Error.tsx';
@@ -16,11 +16,16 @@ import translateStore from '../../stores/TranslateStore.ts';
 import userStore from '../../stores/UserStore.ts';
 import moment from 'moment';
 import translationStore from '../../stores/TranslationStore.ts';
+import { DatePicker } from 'antd';
+
+const { RangePicker } = DatePicker;
 
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
     const navigate = useNavigate();
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     useEffect(() => {
         if (organizationId)
@@ -128,9 +133,26 @@ const FileList = observer(({ organizationId }) => {
 
     return (
         <>
-            <span className={styles.bottomContainerHeaderText}>
-                Translation History
-            </span>
+            <Box
+                display={'flex'}
+                alignItems={'center'}
+                justifyContent={'space-between'}
+                sx={{
+                    paddingRight: '5rem',
+                }}
+            >
+                <span className={styles.bottomContainerHeaderText}>
+                    Translation History
+                </span>
+                <RangePicker
+                    onChange={(_date, dateString) => {
+                        setStartDate(dateString[0]);
+                        setEndDate(dateString[1]);
+                        console.log('Start Date:', startDate);
+                        console.log('End Date:', endDate);
+                    }}
+                />
+            </Box>
             <div className={styles.membersListContainer}>
                 {translationsStore.data.map((translation) => {
                     return (
