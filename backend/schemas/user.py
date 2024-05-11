@@ -62,7 +62,7 @@ class UserGetSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         sqla_session = db.session
 
-    organization = fields.Nested("schemas.organization.OrganizationGetSchema", exclude=["owner"], data_key="organization")
+    organization = fields.Nested("schemas.organization.OrganizationGetSchema", data_key="organization")
 
 
 class UserUpdateSchema(ma.SQLAlchemyAutoSchema, UserSchemaMixin):

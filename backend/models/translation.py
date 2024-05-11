@@ -1,6 +1,9 @@
-from db_init import db
+from sqlalchemy import event
 
-from .enums import Language, TranslationStatus
+from db_init import db
+from models.feedback import Feedback
+
+from .enums import TranslationStatus
 
 
 class Translation(db.Model):
@@ -20,12 +23,11 @@ class Translation(db.Model):
         return f"{self.id}-{self.generated_at}"
 
     organization = db.relationship("Organization", backref="translations", lazy=True)
-    feedback = db.relationship(
+    feedbacks = db.relationship(
         "Feedback",
         backref="translation",
         primaryjoin="Translation.id==Feedback.translation_id",
-        lazy="joined",
-        uselist=False
+        lazy="joined"
     )
     input_document = db.relationship(
         "Document",
@@ -45,3 +47,10 @@ class Translation(db.Model):
         primaryjoin="User.id == Translation.creator_id",
         lazy="joined"
     )
+
+
+@event.listens_for(Translation, 'before_delete')
+def delete_related_feedbacks(mapper, connection, target):
+    for feedback in target.feedbacks:
+        db.session.delete(feedback)
+        db.session.flush()
