@@ -36,9 +36,10 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
     @pre_load
     def validate_translation(self, data, **kwargs):
         requester_id = data.get('requester_id', None)
+        requester = User.query.get_or_404(requester_id)
         translation_id = data.get('id', None)
 
-        if not (requester_id and User.query.filter_by(id=requester_id)):
+        if not requester:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", requester_id))
 
         translation = Translation.query.filter_by(id=translation_id).first()
@@ -46,7 +47,7 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         if not translation:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Translation", "id", translation_id))
 
-        if translation.creator_id != requester_id:
+        if translation.creator_id != requester_id and translation.organization_id != requester.organization_id:
             raise PermissionDeniedError(Messages.OBJECT_NOT_FOUND.value.format("Translation", "creator_id", requester_id))
 
         return data

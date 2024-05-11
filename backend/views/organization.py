@@ -122,13 +122,13 @@ class OrganizationMembershipView(Resource):
     @jwt_required()
     def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
-        request_data = {
-            "id": organization_id,
-            "requester_id": requester_id
-        }
-
-        organization = self.organization_get_schema.load(request_data)
+        organization = Organization.query.get_or_404(
+            organization_id, description=Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", organization_id)
+        )
         requester = User.query.filter_by(id=requester_id).first()
+
+        if organization.owner_id != requester_id and requester.email != user_email:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         user = User.query.filter_by(email=user_email).first()
         if not user:
