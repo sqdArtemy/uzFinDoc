@@ -3,17 +3,27 @@ import projectLogo from '../../assets/project-logo.png';
 import { observer } from 'mobx-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import userStore from '../../stores/UserStore.ts';
-import { Avatar, Box, Button } from '@mui/material';
+import { Avatar, Box, Button, IconButton, Menu } from '@mui/material';
 import { stringAvatar } from '../../utils.ts';
 import OrganizationAction from '../OrganizationAction/OrganizationAction.tsx';
 import { useState } from 'react';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const MainLayout = observer(() => {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
+    // const handleClose = () => {
+    //     setAnchorEl(null);
+    // };
 
     function handleClose() {
-        setIsOpen(false);
+        setIsModalOpen(false);
     }
 
     return (
@@ -21,7 +31,12 @@ const MainLayout = observer(() => {
             <span className={styles.topContainer}>
                 <span className={styles.topLeftContainer}>
                     {' '}
-                    <img className={styles.projectLogo} src={projectLogo}></img>
+                    <img
+                        className={styles.projectLogo}
+                        src={projectLogo}
+                        onClick={() => navigate('/main/translate')}
+                        alt={'project logo'}
+                    ></img>
                     <span
                         className={styles.textLarge}
                         onClick={() => navigate('/main/translate')}
@@ -33,7 +48,7 @@ const MainLayout = observer(() => {
                         onClick={() => {
                             if (userStore.storeData.organization?.id)
                                 return navigate('/main/organization');
-                            setIsOpen(true);
+                            setIsModalOpen(true);
                         }}
                     >
                         Organization
@@ -46,17 +61,6 @@ const MainLayout = observer(() => {
                     </span>
                 </span>
                 <span className={styles.topProfileContainer}>
-                    <Button
-                        size={'large'}
-                        variant={'outlined'}
-                        color={'error'}
-                        onClick={() => {
-                            userStore.logout();
-                            navigate('/auth/sign-in');
-                        }}
-                    >
-                        Logout
-                    </Button>
                     <Box
                         display={'flex'}
                         flexDirection={'row'}
@@ -76,13 +80,54 @@ const MainLayout = observer(() => {
                             )}
                         />
                     </Box>
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={open ? 'long-menu' : undefined}
+                        aria-expanded={open ? 'true' : undefined}
+                        aria-haspopup="true"
+                        onClick={(event) => setAnchorEl(event.currentTarget)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        MenuListProps={{
+                            'aria-labelledby': 'long-button',
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={() => setAnchorEl(null)}
+                        slotProps={{
+                            paper: {
+                                style: {
+                                    maxHeight: 60,
+                                    width: '15ch',
+                                },
+                            },
+                        }}
+                    >
+                        <Button
+                            size={'large'}
+                            variant={'text'}
+                            color={'error'}
+                            onClick={() => {
+                                userStore.logout();
+                                navigate('/auth/sign-in');
+                                setAnchorEl(null);
+                            }}
+                            fullWidth
+                        >
+                            Logout
+                        </Button>
+                    </Menu>
                 </span>
             </span>
             <div className={styles.mainContainer}>
                 <Outlet />
             </div>
             <OrganizationAction
-                open={isOpen}
+                open={isModalOpen}
                 handleClose={handleClose}
                 initialData={null}
             />

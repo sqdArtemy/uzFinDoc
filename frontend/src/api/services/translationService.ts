@@ -10,13 +10,15 @@ export type Rating = 0 | 1 | 2 | 3 | 4 | 5;
 export class TranslationService {
     public translateDocument = async (
         outputFormat: 'docx' | 'pdf',
-        file: File
+        file: File,
+        isOrganizational: boolean
     ) => {
         const url = '/translations';
         const formData = new FormData();
         formData.append('output_format', outputFormat);
         formData.append('input_document', file);
         formData.append('language', 'en');
+        formData.append('is_organizational', isOrganizational ? 'true' : '');
 
         return axiosInstance.post<ITranslationResponse>(url, formData);
     };

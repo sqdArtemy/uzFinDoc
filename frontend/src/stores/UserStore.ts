@@ -10,11 +10,7 @@ import { organizationService } from '../api/services/organizationService.ts';
 import { IOrganizationResponse } from '../api/interfaces/responses/organization.ts';
 import { ICreateOrganization } from '../api/interfaces/requests/organization.ts';
 
-type CurrentUserData = ILoginResponse['user'] & { password: string } & {
-    organization: null | {
-        owner?: IGetUserResponse;
-    };
-};
+type CurrentUserData = ILoginResponse['user'];
 
 class UserStore {
     storeData: CurrentUserData = {} as CurrentUserData;
@@ -30,10 +26,7 @@ class UserStore {
     }
 
     get data(): CurrentUserData {
-        if (
-            isNaN(this.storeData?.id) ||
-            isNaN(this.storeData?.organization?.id!)
-        ) {
+        if (isNaN(this.storeData?.id)) {
             console.trace();
             this.fetchCurrentUser();
         }
@@ -55,6 +48,26 @@ class UserStore {
     get errorMsg() {
         return this.errorMessage;
     }
+
+    deleteOrganization(organizationId: number) {
+        this.currentState = 'loading';
+        organizationService
+            .deleteOrganization(organizationId)
+            .then(
+                this.deleteOrganizationSuccess,
+                this.deleteOrganizationFailure
+            );
+    }
+
+    deleteOrganizationSuccess = () => {
+        this.data = {} as CurrentUserData;
+        this.state = 'success';
+    };
+
+    deleteOrganizationFailure = ({ response }: AxiosError<string>) => {
+        this.currentState = 'error';
+        this.errorMsg = response?.data || 'Something went wrong';
+    };
 
     createOrganization(data: ICreateOrganization) {
         this.currentState = 'loading';
@@ -127,17 +140,12 @@ class UserStore {
         userService
             .getCurrentUser()
             .then(this.fetchCurrentUserSuccess, this.fetchCurrentUserFailure);
-        this.currentState = 'success';
     }
 
     fetchCurrentUserSuccess = ({ data }: AxiosResponse<IGetUserResponse>) => {
-        if (!data.organization) {
-            this.currentState = 'success';
-            this.data = { ...this.storeData, ...data };
-            return;
-        }
         this.data = { ...this.storeData, ...data };
-        this.getOrganization(data.organization.id);
+        console.log('data', data.organization);
+        this.currentState = 'success';
     };
 
     fetchCurrentUserFailure = ({ response }: AxiosError<string>) => {
@@ -147,20 +155,16 @@ class UserStore {
 
     login(email: string, password: string) {
         this.currentState = 'loading';
-        this.data.password = password;
         authService
             .login({ email, password })
             .then(this.loginSuccess, this.loginFailure);
     }
 
     loginSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
+        this.reset();
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
-        // this.fetchCurrentUser();
-        this.data = {
-            ...this.storeData,
-            ...data.user,
-        };
+        this.data = data.user;
         console.log('refreshToken', localStorage.getItem('refreshToken'));
         this.currentState = 'success';
     };
@@ -178,7 +182,7 @@ class UserStore {
     logoutSuccess = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        this.data = {} as CurrentUserData;
+        this.reset();
         this.currentState = 'success';
     };
 
@@ -229,14 +233,20 @@ class UserStore {
     }
 
     registerSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
+        this.reset();
         this.data = { ...this.storeData, ...data };
-        this.login(this.storeData.email, this.storeData.password);
     };
 
     registerFailure = ({ response }: AxiosError<string>) => {
         this.currentState = 'error';
         this.errorMsg = response?.data || 'Something went wrong';
     };
+
+    reset() {
+        this.currentState = 'pending';
+        this.errorMsg = '';
+        this.data = {} as CurrentUserData;
+    }
 }
 
 const userStore = new UserStore();

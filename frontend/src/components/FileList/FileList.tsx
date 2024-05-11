@@ -1,6 +1,6 @@
 import styles from './FileList.module.scss';
 import { observer } from 'mobx-react';
-import { Box, IconButton } from '@mui/material';
+import { Badge, Box, IconButton } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import docIcon from '../../assets/doc-icon.png';
@@ -141,9 +141,18 @@ const FileList = observer(({ organizationId }) => {
                     paddingRight: '5rem',
                 }}
             >
-                <span className={styles.bottomContainerHeaderText}>
-                    Translation History
-                </span>
+                <Badge
+                    badgeContent={translationsStore.data.length}
+                    color={'primary'}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                >
+                    <span className={styles.bottomContainerHeaderText}>
+                        Translation History
+                    </span>
+                </Badge>
                 <RangePicker
                     onChange={(_date, dateString) => {
                         setStartDate(dateString[0]);
@@ -153,9 +162,9 @@ const FileList = observer(({ organizationId }) => {
                     }}
                 />
             </Box>
-            <span className={styles.translationCount}>
-                    Number of Translations: {translationsStore.data.length}
-            </span>
+            {/*<span className={styles.translationCount}>*/}
+            {/*        Number of Translations: {translationsStore.data.length}*/}
+            {/*</span>*/}
             <div className={styles.membersListContainer}>
                 {translationsStore.data.map((translation) => {
                     return (
@@ -223,12 +232,12 @@ const FileList = observer(({ organizationId }) => {
                                         )
                                     }
                                 >
-                                    <DownloadIcon/>
+                                    <DownloadIcon />
                                 </IconButton>
                                 <IconButton
                                     onClick={() => handleDelete(translation.id)}
                                 >
-                                    <DeleteIcon/>
+                                    <DeleteIcon />
                                 </IconButton>
                             </span>
                         </span>

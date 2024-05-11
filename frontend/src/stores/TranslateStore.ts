@@ -25,11 +25,15 @@ class TranslateStore {
         this.state = state;
     }
 
-    translate(outputFormat: 'docx' | 'pdf', file: File) {
+    translate(
+        outputFormat: 'docx' | 'pdf',
+        file: File,
+        isOrganizational: boolean
+    ) {
         this.currentState = 'loading';
 
         translationService
-            .translateDocument(outputFormat, file)
+            .translateDocument(outputFormat, file, isOrganizational)
             .then(this.translateSuccess, this.translateFailure);
     }
 

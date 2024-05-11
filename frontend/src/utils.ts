@@ -59,13 +59,28 @@ function stringToColor(string: string) {
 }
 
 export function stringAvatar(name: string) {
-    const initials = name
+    let initials: string | string[] = name
         .split(' ')
         .map((word) => word[0])
         .join('');
+
+    if (name.length > 1) {
+        initials = initials
+            .split('')
+            .slice(0, 2)
+            .map((letter) => letter.toUpperCase())
+            .join('');
+    } else {
+        initials = initials
+            .split('')
+            .map((letter) => letter.toUpperCase())
+            .join('');
+    }
     return {
         sx: {
             bgcolor: stringToColor(name),
+            width: '3.5rem',
+            height: '3.5rem',
         },
         children: initials,
     };

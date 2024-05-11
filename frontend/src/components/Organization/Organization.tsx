@@ -10,6 +10,7 @@ import organizationMembersStore from '../../stores/OrganizationMembersStore.ts';
 import { autorun } from 'mobx';
 import { useErrorModal } from '../Error/Error.tsx';
 import { useLoader } from '../Loader/Loader.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const Organization = observer(() => {
     const [buttonState, setButtonState] = useState('Members');
@@ -20,6 +21,7 @@ const Organization = observer(() => {
     const [ownerId, setOwnerId] = useState<number | undefined>(
         userStore.data.organization?.owner?.id
     );
+    const navigate = useNavigate();
 
     function handleClose() {
         setIsOpen(false);
@@ -40,13 +42,6 @@ const Organization = observer(() => {
                 showLoader();
                 organizationMembersStore.currentState = 'pending';
             } else if (organizationMembersStore.state === 'success') {
-                // setMembers(
-                //     [...organizationMembersStore.data].sort((a, b) => {
-                //         if (a.id === ownerId) return -1;
-                //         if (b.id === ownerId) return 1;
-                //         return 0;
-                //     })
-                // );
                 hideLoader();
                 organizationMembersStore.currentState = 'pending';
             }
@@ -75,6 +70,18 @@ const Organization = observer(() => {
             userStore.data.organization!.id,
             email
         );
+    }
+
+    function handleDelete(isOwner: boolean) {
+        if (isOwner) {
+            userStore.deleteOrganization(userStore.data.organization!.id);
+        } else {
+            organizationMembersStore.deleteMember(
+                userStore.data.organization!.id,
+                userStore.data.email
+            );
+        }
+        navigate('/main/translate');
     }
 
     return (
@@ -166,6 +173,9 @@ const Organization = observer(() => {
                         sx={{
                             marginTop: '3rem',
                         }}
+                        onClick={() =>
+                            handleDelete(userStore.data.id === ownerId)
+                        }
                     >
                         {userStore.data.id === ownerId
                             ? 'Remove Organization'
@@ -261,20 +271,21 @@ const Organization = observer(() => {
                                                 </span>
                                             </span>
                                         </span>
-                                        {member.id !== ownerId && (
-                                            <Button
-                                                size={'large'}
-                                                variant="contained"
-                                                color={'error'}
-                                                onClick={() =>
-                                                    handleDeleteMember(
-                                                        member.email
-                                                    )
-                                                }
-                                            >
-                                                REMOVE MEMBER
-                                            </Button>
-                                        )}
+                                        {member.id !== ownerId &&
+                                            userStore.data.id === ownerId && (
+                                                <Button
+                                                    size={'large'}
+                                                    variant="contained"
+                                                    color={'error'}
+                                                    onClick={() =>
+                                                        handleDeleteMember(
+                                                            member.email
+                                                        )
+                                                    }
+                                                >
+                                                    REMOVE MEMBER
+                                                </Button>
+                                            )}
                                     </span>
                                 ))}
                         </div>

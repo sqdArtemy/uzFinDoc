@@ -36,7 +36,7 @@ const Translate = observer(() => {
         id?: number;
     }>({ name: '', size: 0 });
     const [outputFormat, setOutputFormat] = useState<'pdf' | 'docx'>('pdf');
-    const [isOrganization, setIsOrganization] = useState(false);
+    const [isOrganizational, setIsOrganizational] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -103,7 +103,7 @@ const Translate = observer(() => {
             return;
         }
 
-        translateStore.translate(outputFormat, file);
+        translateStore.translate(outputFormat, file, isOrganizational);
     };
 
     useEffect(() => {
@@ -160,23 +160,19 @@ const Translate = observer(() => {
                 <div className={styles.rightTranslateContainer}>
                     <span className={styles.rightTranslateHeader}>
                         <span className={styles.rightTranslateInfo}>
-                            <span className={styles.textLarge}>
-                                From
-                            </span>
+                            <span className={styles.textLarge}>From</span>
                             <TextField
                                 disabled
-                                defaultValue={'English'}
+                                defaultValue={'Uzbek'}
                                 variant="outlined"
                                 size={'small'}
                             ></TextField>
                         </span>
                         <span className={styles.rightTranslateInfo}>
-                            <span className={styles.textLarge}>
-                                To
-                            </span>
+                            <span className={styles.textLarge}>To</span>
                             <TextField
                                 disabled
-                                defaultValue={'Uzbek'}
+                                defaultValue={'English'}
                                 variant="outlined"
                                 size={'small'}
                             ></TextField>
@@ -222,9 +218,11 @@ const Translate = observer(() => {
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={isOrganization}
+                                        checked={isOrganizational}
                                         onChange={() =>
-                                            setIsOrganization(!isOrganization)
+                                            setIsOrganizational(
+                                                !isOrganizational
+                                            )
                                         }
                                     />
                                 }
