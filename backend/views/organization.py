@@ -3,13 +3,16 @@ from flask_restful import Resource, reqparse
 from marshmallow import ValidationError
 from flask import jsonify, make_response, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
 
 from db_init import db, transaction
 from models import User, Organization
 from schemas import OrganizationUpdateSchema, OrganizationCreateSchema, OrganizationGetSchema, UserGetSchema
 from utilities.enums import Messages
 from utilities.exceptions import PermissionDeniedError
-
+from views.mixins.filter import FilterMixin
+from views.mixins.sort import SortMixin
+from views.parsers.sort_filter import sort_filter_parser
 
 parser = reqparse.RequestParser()
 parser.add_argument("name", location="form")
@@ -119,13 +122,13 @@ class OrganizationMembershipView(Resource):
     @jwt_required()
     def delete(self, organization_id: int, user_email: str) -> Response:
         requester_id = get_jwt_identity()
-        request_data = {
-            "id": organization_id,
-            "requester_id": requester_id
-        }
-
-        organization = self.organization_get_schema.load(request_data)
+        organization = Organization.query.get_or_404(
+            organization_id, description=Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", organization_id)
+        )
         requester = User.query.filter_by(id=requester_id).first()
+
+        if organization.owner_id != requester_id and requester.email != user_email:
+            raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
 
         user = User.query.filter_by(email=user_email).first()
         if not user:
@@ -143,13 +146,16 @@ class OrganizationMembershipView(Resource):
         return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)
 
 
-class OrganizationMembershipListView(Resource):
+class OrganizationMembershipListView(Resource, SortMixin, FilterMixin):
     user_get_schema = UserGetSchema(many=True, exclude=["organization"])
 
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
         organization = User.query.filter_by(id=requester_id).first().organization
+        data = sort_filter_parser.parse_args()
+        sort_by = data.get("sort_by")
+        filters = data.get("filters")
 
         if not organization:
             raise ValidationError(Messages.USER_HAS_NO_ORG.value)
@@ -157,4 +163,18 @@ class OrganizationMembershipListView(Resource):
         if organization.id != organization_id:
             raise PermissionDeniedError(Messages.USER_NOT_A_MEMBER.value)
 
-        return make_response(jsonify(self.user_get_schema.dump(organization.users)), HTTPStatus.OK)
+        users = User.query.filter_by(organization_id=organization.id).options(joinedload(User.organization))
+        if filters:
+            users = self.get_filtered_query(
+                query=users,
+                model=User,
+                filters=filters
+            )
+        if sort_by:
+            users = self.get_sorted_query(
+                query=users,
+                model=User,
+                sort_fields=sort_by
+            )
+
+        return make_response(jsonify(self.user_get_schema.dump(users)), HTTPStatus.OK)

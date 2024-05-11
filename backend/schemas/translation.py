@@ -13,14 +13,14 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "id", "generated_at", "details_status", "details_word_count", "creator", "input_document",
-            "output_document", "organization", "feedback", "process_time", "requester_id", "feedbacks"
+            "output_document", "organization", "feedbacks", "process_time", "requester_id"
         )
         ordered = True
         load_instance = True
         include_relationships = True
         dump_only = [
             "generated_at", "details_status", "details_word_count", "creator", "input_document",
-            "output_document", "organization", "feedback", "process_time"
+            "output_document", "organization", "feedbacks", "process_time"
         ]
         load_only = ["requester_id"]
         sqla_session = db.session
@@ -29,14 +29,17 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
     creator = fields.Nested("schemas.user.UserGetSchema", exclude=["organization"], data_key="creator")
     input_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="input_document")
     output_document = fields.Nested("schemas.document.DocumentGetSchema", data_key="output_document")
-    feedback = fields.Nested("schemas.feedback.FeedbackGetSchema", exclude=["translation"], data_key="feedback")
+    feedbacks = fields.Nested(
+        "schemas.feedback.FeedbackGetSchema", many=True, exclude=["translation"], data_key="feedbacks"
+    )
 
     @pre_load
     def validate_translation(self, data, **kwargs):
         requester_id = data.get('requester_id', None)
+        requester = User.query.get_or_404(requester_id)
         translation_id = data.get('id', None)
 
-        if not (requester_id and User.query.filter_by(id=requester_id)):
+        if not requester:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", requester_id))
 
         translation = Translation.query.filter_by(id=translation_id).first()
@@ -44,7 +47,7 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         if not translation:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Translation", "id", translation_id))
 
-        if translation.creator_id != requester_id:
+        if translation.creator_id != requester_id and translation.organization_id != requester.organization_id:
             raise PermissionDeniedError(Messages.OBJECT_NOT_FOUND.value.format("Translation", "creator_id", requester_id))
 
         return data

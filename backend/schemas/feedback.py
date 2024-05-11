@@ -25,7 +25,7 @@ class FeedbackGetSchema(ma.SQLAlchemyAutoSchema):
     )
     translation = fields.Nested(
         "schemas.translation.TranslationGetSchema",
-        exclude=["feedback", "creator"],
+        exclude=["feedbacks", "creator"],
         data_key="translation"
     )
 
@@ -79,8 +79,9 @@ class FeedbackCreateSchema(ma.SQLAlchemyAutoSchema):
         if not translation:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Translation", "id", translation_id))
 
-        if translation.feedback:
-            raise ValidationError(Messages.ALREADY_REVIEWED.value)
+        for feedback in translation.feedbacks:
+            if feedback.creator_id == creator_id:
+                raise ValidationError(Messages.ALREADY_REVIEWED.value)
 
         if translation.creator_id != creator_id:
             raise PermissionDeniedError(Messages.USER_NOT_TRANSLATION_CREATOR.value)

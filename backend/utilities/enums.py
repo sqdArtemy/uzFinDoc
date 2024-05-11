@@ -8,6 +8,8 @@ class Messages(Enum):
     # Valued validation
     VALUE_RANGE = "Value should be in range from {} to {}"
     VALUE_POSITIVE = "Value should be > 0."
+    INVALID_FILTERS = "Provided filters are invalid."
+    INVALID_SORT = "Provided sorting fields are invalid"
 
     # Object actions
     OBJECT_NOT_FOUND = "{} with {} '{}' does not exist."

@@ -6,12 +6,13 @@ from flask_restful import Resource, reqparse
 from marshmallow import ValidationError
 from flask import jsonify, make_response, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
 
 from db_init import db, transaction
-from models import User, Organization
+from models import User, Organization, Translation
 from models.enums import DocumentType, Language, TranslationStatus
 from schemas import TranslationGetSchema, TranslationCreateSchema, DocumentCreateSchema
 from utilities.functions import save_file, get_text_translation
@@ -21,9 +22,12 @@ from utilities.document_utilities import (
 from utilities.exceptions import PermissionDeniedError
 from utilities.enums import DocumentFormats, Messages
 from app_init import app
+from views.mixins.filter import FilterMixin
+from views.mixins.sort import SortMixin
+from views.parsers.sort_filter import sort_filter_parser
 
 
-class TranslationCreateView(Resource):
+class TranslationCreateView(Resource, SortMixin, FilterMixin):
     translation_create_schema = TranslationCreateSchema()
     translation_get_schema = TranslationGetSchema()
     document_create_schema = DocumentCreateSchema()
@@ -109,9 +113,23 @@ class TranslationCreateView(Resource):
     @jwt_required()
     def get(self) -> Response:
         requester_id = get_jwt_identity()
-        requester = User.query.filter_by(id=requester_id).first()
+        data = sort_filter_parser.parse_args()
+        sort_by = data.get("sort_by")
+        filters = data.get("filters")
 
-        translations = requester.translations
+        translations = Translation.query.filter_by(creator_id=requester_id).options(joinedload(Translation.creator))
+        if filters:
+            translations = self.get_filtered_query(
+                query=translations,
+                model=Translation,
+                filters=filters
+            )
+        if sort_by:
+            translations = self.get_sorted_query(
+                query=translations,
+                model=Translation,
+                sort_fields=sort_by
+            )
 
         return make_response(
             jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedback"]).dump(translations)),
@@ -125,7 +143,6 @@ class DetailedTranslationView(Resource):
     @jwt_required()
     def get(self, translation_id: int) -> Response:
         requester_id = get_jwt_identity()
-
         data = {
             "requester_id": requester_id,
             "id": translation_id
@@ -135,15 +152,32 @@ class DetailedTranslationView(Resource):
 
         return make_response(jsonify(self.get_translation_schema.dump(translation)), HTTPStatus.OK)
 
+    @jwt_required()
+    def delete(self, translation_id: int) -> Response:
+        requester_id = get_jwt_identity()
+        data = {
+            "requester_id": requester_id,
+            "id": translation_id
+        }
 
-class OrganizationTranslationsView(Resource):
-    get_translations_schema = TranslationGetSchema(many=True, exclude=["organization", "feedback"])
+        translation = self.get_translation_schema.load(data)
+        db.session.delete(translation)
+        db.session.commit()
+
+        return make_response(HTTPStatus.NO_CONTENT)
+
+
+class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
+    get_translations_schema = TranslationGetSchema(many=True, exclude=["organization", "feedbacks"])
 
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
         requester = User.query.filter_by(id=requester_id).first()
         organization = Organization.query.filter_by(id=organization_id).first()
+        data = sort_filter_parser.parse_args()
+        sort_by = data.get("sort_by")
+        filters = data.get("filters")
 
         if not organization:
             raise ValidationError(
@@ -153,6 +187,20 @@ class OrganizationTranslationsView(Resource):
         if requester.organization_id != organization_id:
             raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value)
 
-        translations = organization.translations
+        translations = Translation.query.filter_by(
+            organization_id=organization_id
+        ).options(joinedload(Translation.organization))
+        if filters:
+            translations = self.get_filtered_query(
+                query=translations,
+                model=Translation,
+                filters=filters
+            )
+        if sort_by:
+            translations = self.get_sorted_query(
+                query=translations,
+                model=Translation,
+                sort_fields=sort_by
+            )
 
         return make_response(jsonify(self.get_translations_schema.dump(translations)), HTTPStatus.OK)
