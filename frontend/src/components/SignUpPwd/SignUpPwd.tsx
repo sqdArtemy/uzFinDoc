@@ -48,14 +48,13 @@ const SignUpPwd = observer(() => {
             return setError('Both fields should be filled.');
         }
 
-        userStore.data.password = password;
         userStore.register({
             email: userStore.storeData.email,
             phone: userStore.storeData.phone,
             password: password,
             nameFirstName: userStore.storeData.nameFirstName,
             nameLastName: userStore.storeData.nameLastName,
-            nameMiddleName: 'something',
+            nameMiddleName: userStore.storeData.nameMiddleName,
         });
     };
 

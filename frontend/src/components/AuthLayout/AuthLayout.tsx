@@ -1,7 +1,7 @@
-import styles from './AuthLayout.module.scss'
-import projectLogo from '../../assets/project-logo.png'
-import { observer } from 'mobx-react'
-import { Outlet } from 'react-router-dom'
+import styles from './AuthLayout.module.scss';
+import projectLogo from '../../assets/project-logo.svg';
+import { observer } from 'mobx-react';
+import { Outlet } from 'react-router-dom';
 
 const AuthLayout = observer(() => {
     return (
@@ -13,7 +13,7 @@ const AuthLayout = observer(() => {
                 <Outlet />
             </div>
         </div>
-    )
-})
+    );
+});
 
-export default AuthLayout
+export default AuthLayout;

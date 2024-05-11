@@ -71,6 +71,8 @@ const OrganizationModal = observer(({ open, handleClose, initialData }) => {
                     transform: `translate(-50%, -50%)`,
                     bgcolor: 'background.paper',
                     padding: '2rem',
+                    outline: 'none',
+                    borderRadius: '10px',
                 }}
             >
                 <span
@@ -85,24 +87,31 @@ const OrganizationModal = observer(({ open, handleClose, initialData }) => {
                         : 'Update Organization'}
                 </span>
                 <form>
-                    <TextField
-                        label="Organization Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Organization Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
+                    <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        gap={'1rem'}
+                        marginTop={'1rem'}
+                        marginBottom={'1rem'}
+                    >
+                        <TextField
+                            label="Organization Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Organization Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            fullWidth
+                        />
+                    </Box>
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={handleCreateOrUpdate}
+                        fullWidth
                     >
                         {!initialData ? 'Create' : 'Update'}
                     </Button>

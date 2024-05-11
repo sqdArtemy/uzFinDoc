@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     TextField,
-    Button,
     FormControl,
     FormHelperText,
     IconButton,
@@ -29,7 +28,7 @@ const Profile = observer(() => {
         name: 'undefined',
         surname: 'undefined',
         phoneNumber: 'undefined',
-        password: 'undefined',
+        password: '',
         middleName: 'undefined',
     });
 
@@ -81,7 +80,7 @@ const Profile = observer(() => {
                     name: userStore.data.nameFirstName,
                     surname: userStore.data.nameLastName,
                     phoneNumber: userStore.data.phone,
-                    password: userStore.data.password,
+                    password: formData.password,
                     middleName: userStore.data.nameMiddleName,
                 });
                 userStore.currentState = 'pending';
@@ -94,25 +93,14 @@ const Profile = observer(() => {
     }, []);
 
     useEffect(() => {
-        userStore.fetchCurrentUser();
         setFormData({
             name: userStore.data.nameFirstName,
             surname: userStore.data.nameLastName,
             phoneNumber: userStore.data.phone,
-            password: userStore.data.password,
+            password: formData.password,
             middleName: userStore.data.nameMiddleName,
         });
     }, []);
-
-    const handleCancel = () => {
-        setFormData({
-            name: userStore.data.nameFirstName,
-            surname: userStore.data.nameLastName,
-            phoneNumber: userStore.data.phone,
-            password: userStore.data.password,
-            middleName: userStore.data.nameMiddleName,
-        });
-    };
 
     useEffect(() => {}, []);
 
@@ -249,14 +237,6 @@ const Profile = observer(() => {
                 </FormControl>
                 {error && <div className={styles.formError}>{error}</div>}
                 <span className={styles.btnsContainer}>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        style={{ margin: '20px 0' }}
-                        onClick={handleCancel}
-                    >
-                        Cancel
-                    </Button>
                     <LoadingButton
                         type="submit"
                         variant="outlined"

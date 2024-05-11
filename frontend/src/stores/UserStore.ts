@@ -38,7 +38,6 @@ class UserStore {
     }
 
     set errorMsg(error: string) {
-        console.log(error[0]);
         if (error[0] === '{') {
             error = 'Something went wrong.';
         }
@@ -136,6 +135,7 @@ class UserStore {
     };
 
     fetchCurrentUser() {
+        console.trace();
         this.currentState = 'loading';
         userService
             .getCurrentUser()
@@ -144,7 +144,6 @@ class UserStore {
 
     fetchCurrentUserSuccess = ({ data }: AxiosResponse<IGetUserResponse>) => {
         this.data = { ...this.storeData, ...data };
-        console.log('data', data.organization);
         this.currentState = 'success';
     };
 
@@ -235,6 +234,9 @@ class UserStore {
     registerSuccess = ({ data }: AxiosResponse<ILoginResponse>) => {
         this.reset();
         this.data = { ...this.storeData, ...data };
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        this.currentState = 'success';
     };
 
     registerFailure = ({ response }: AxiosError<string>) => {
@@ -246,6 +248,8 @@ class UserStore {
         this.currentState = 'pending';
         this.errorMsg = '';
         this.data = {} as CurrentUserData;
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
     }
 }
 

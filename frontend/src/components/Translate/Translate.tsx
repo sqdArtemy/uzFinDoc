@@ -166,6 +166,11 @@ const Translate = observer(() => {
                                 defaultValue={'Uzbek'}
                                 variant="outlined"
                                 size={'small'}
+                                sx={{
+                                    '& .MuiInputBase-input.Mui-disabled': {
+                                        WebkitTextFillColor: 'rgb(39,39,39)',
+                                    },
+                                }}
                             ></TextField>
                         </span>
                         <span className={styles.rightTranslateInfo}>
@@ -175,6 +180,12 @@ const Translate = observer(() => {
                                 defaultValue={'English'}
                                 variant="outlined"
                                 size={'small'}
+                                fullWidth
+                                sx={{
+                                    '& .MuiInputBase-input.Mui-disabled': {
+                                        WebkitTextFillColor: 'rgb(39,39,39)',
+                                    },
+                                }}
                             ></TextField>
                         </span>
                     </span>
@@ -182,8 +193,11 @@ const Translate = observer(() => {
                         size={'medium'}
                         variant="contained"
                         onClick={handleTranslate}
+                        sx={{
+                            width: '90%',
+                        }}
                     >
-                        Start Translating
+                        Translate
                     </Button>
                     <span className={styles.rightTranslateOptions}>
                         <FormControl>
@@ -214,7 +228,7 @@ const Translate = observer(() => {
                                 />
                             </RadioGroup>
                         </FormControl>
-                        {userStore.data.organization && (
+                        {userStore.storeData.organization && (
                             <FormControlLabel
                                 control={
                                     <Checkbox

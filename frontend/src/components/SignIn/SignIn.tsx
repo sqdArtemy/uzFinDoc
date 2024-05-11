@@ -78,20 +78,6 @@ const SignIn = observer(() => {
         }
 
         userStore.login(email, password);
-
-        // some auth check with api
-        // navigate('/auth/sign-up')
-
-        // showLoader()
-        // try {
-        //     authStore.login(email, password);
-        //
-        //     // some auth check with api
-        //     navigate('/auth/sign-up')
-        // } catch (error) {
-        //     setError('Invalid email or password.')
-        //     hideLoader()
-        // }
     };
 
     return (

@@ -1,5 +1,5 @@
 import styles from './MainLayout.module.scss';
-import projectLogo from '../../assets/project-logo.png';
+import projectLogo from '../../assets/project-logo.svg';
 import { observer } from 'mobx-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import userStore from '../../stores/UserStore.ts';
@@ -14,13 +14,6 @@ const MainLayout = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-
-    // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    //     setAnchorEl(event.currentTarget);
-    // };
-    // const handleClose = () => {
-    //     setAnchorEl(null);
-    // };
 
     function handleClose() {
         setIsModalOpen(false);
@@ -37,28 +30,30 @@ const MainLayout = observer(() => {
                         onClick={() => navigate('/main/translate')}
                         alt={'project logo'}
                     ></img>
-                    <span
-                        className={styles.textLarge}
-                        onClick={() => navigate('/main/translate')}
-                    >
-                        Translate
-                    </span>
-                    <span
-                        className={styles.textLarge}
-                        onClick={() => {
-                            if (userStore.storeData.organization?.id)
-                                return navigate('/main/organization');
-                            setIsModalOpen(true);
-                        }}
-                    >
-                        Organization
-                    </span>
-                    <span
-                        className={styles.textLarge}
-                        onClick={() => navigate('/main/history')}
-                    >
-                        History
-                    </span>
+                    <Box display={'flex'} gap={'5rem'}>
+                        <span
+                            className={styles.textLarge}
+                            onClick={() => navigate('/main/translate')}
+                        >
+                            Translate
+                        </span>
+                        <span
+                            className={styles.textLarge}
+                            onClick={() => {
+                                if (userStore.storeData.organization?.id)
+                                    return navigate('/main/organization');
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            Organization
+                        </span>
+                        <span
+                            className={styles.textLarge}
+                            onClick={() => navigate('/main/history')}
+                        >
+                            History
+                        </span>
+                    </Box>
                 </span>
                 <span className={styles.topProfileContainer}>
                     <Box

@@ -1,3 +1,5 @@
+import { IGetUserResponse } from './users.ts';
+
 export interface ILoginResponse {
     user: {
         id: number;
@@ -11,6 +13,7 @@ export interface ILoginResponse {
             name: string;
             createdAt: string | Date;
             email: string;
+            owner: IGetUserResponse;
         };
     };
     accessToken: string;

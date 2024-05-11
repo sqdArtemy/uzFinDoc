@@ -145,8 +145,8 @@ const Organization = observer(() => {
                                 variant={'text'}
                                 color={
                                     buttonState === 'Documents'
-                                        ? 'success'
-                                        : 'primary'
+                                        ? 'primary'
+                                        : 'inherit'
                                 }
                                 onClick={() => setButtonState('Documents')}
                             >
@@ -157,8 +157,8 @@ const Organization = observer(() => {
                                 variant={'text'}
                                 color={
                                     buttonState === 'Members'
-                                        ? 'success'
-                                        : 'primary'
+                                        ? 'primary'
+                                        : 'inherit'
                                 }
                                 onClick={() => setButtonState('Members')}
                             >
@@ -202,7 +202,7 @@ const Organization = observer(() => {
                             <Button
                                 size={'medium'}
                                 variant="contained"
-                                color={'success'}
+                                color={'primary'}
                                 className={styles.bottomContainerAddButton}
                                 onClick={() => handleAddMember(memberEmail)}
                             >

@@ -42,17 +42,20 @@
       flex-direction: column;
       width: 50%;
       gap: 2rem;
+      align-items: flex-start;
 
       .right-translate-options {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        width:93%;
       }
 
       .right-translate-header {
         display: flex;
         flex-direction: row;
         gap: 2rem;
+        width: 90%;
 
         .right-translate-info {
           display: flex;

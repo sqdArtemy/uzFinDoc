@@ -10,5 +10,6 @@ export interface IGetUserResponse {
         name: string;
         createdAt: string | Date;
         email: string;
+        owner: IGetUserResponse;
     } | null;
 }

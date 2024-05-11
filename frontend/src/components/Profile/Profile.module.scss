@@ -35,8 +35,12 @@
     .btns-container {
       display: flex;
       flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
+      width: 100%;
+
+      button{
+        width: 150px;
+      }
     }
 
     .pwd-input-container {

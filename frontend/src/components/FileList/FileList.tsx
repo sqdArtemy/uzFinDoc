@@ -1,6 +1,6 @@
 import styles from './FileList.module.scss';
 import { observer } from 'mobx-react';
-import { Badge, Box, IconButton } from '@mui/material';
+import { Badge, BadgeProps, Box, IconButton, styled } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import docIcon from '../../assets/doc-icon.png';
@@ -19,6 +19,13 @@ import translationStore from '../../stores/TranslationStore.ts';
 import { DatePicker } from 'antd';
 
 const { RangePicker } = DatePicker;
+
+const StyledBadge = styled(Badge)<BadgeProps>(() => ({
+    '& .MuiBadge-badge': {
+        right: -8,
+        top: '50%',
+    },
+}));
 
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
@@ -138,21 +145,17 @@ const FileList = observer(({ organizationId }) => {
                 alignItems={'center'}
                 justifyContent={'space-between'}
                 sx={{
-                    paddingRight: '5rem',
+                    paddingRight: '2rem',
                 }}
             >
-                <Badge
+                <StyledBadge
                     badgeContent={translationsStore.data.length}
                     color={'primary'}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
                 >
                     <span className={styles.bottomContainerHeaderText}>
                         Translation History
                     </span>
-                </Badge>
+                </StyledBadge>
                 <RangePicker
                     onChange={(_date, dateString) => {
                         setStartDate(dateString[0]);

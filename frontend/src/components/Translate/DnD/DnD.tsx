@@ -66,7 +66,7 @@ export function DnD({ setFile }) {
                     <span>Upload your file</span>
                     <span className={styles.textGrey}>.PDF .DOCX</span>
                     <span className={styles.textGrey}>
-                        *Max file size 300 MB
+                        Max file size 300 MB
                     </span>
                 </div>
             </label>
