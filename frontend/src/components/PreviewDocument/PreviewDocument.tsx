@@ -99,10 +99,11 @@ const PreviewDocument = observer(
                                     width: '50px',
                                     height: '50px',
                                     color: 'white',
-                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    backgroundColor: '#1976d2',
                                     '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                        backgroundColor: '#1565c0',
                                     },
+                                    transition: 'all 0.3s',
                                 }}
                                 onClick={handleDownload}
                             >
@@ -149,7 +150,7 @@ const PreviewDocument = observer(
                                     src={wordIcon}
                                     alt="word-icon"
                                     style={{
-                                        width: '30%',
+                                        width: '25%',
                                         height: '35%',
                                         boxShadow:
                                             '0 0 10px rgba(0, 0, 0, 0.1)',

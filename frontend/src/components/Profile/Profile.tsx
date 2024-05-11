@@ -239,8 +239,8 @@ const Profile = observer(() => {
                 <span className={styles.btnsContainer}>
                     <LoadingButton
                         type="submit"
-                        variant="outlined"
-                        color="success"
+                        variant="contained"
+                        color="primary"
                         style={{ margin: '20px 0' }}
                         loading={loading}
                     >

@@ -64,7 +64,7 @@ export function DnD({ setFile }) {
                 <div className={styles.uploadContentContainer}>
                     <img src={uploadImg} alt="upload" />
                     <span>Upload your file</span>
-                    <span className={styles.textGrey}>.PDF .DOCX</span>
+                    <span className={styles.textGrey}>Only .PDF or .DOCX</span>
                     <span className={styles.textGrey}>
                         Max file size 300 MB
                     </span>

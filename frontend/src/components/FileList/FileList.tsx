@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { Badge, BadgeProps, Box, IconButton, styled } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
-import docIcon from '../../assets/doc-icon.png';
-import pdfIcon from '../../assets/pdf-icon.png';
+import docIcon from '../../assets/doc-icon.svg';
+import pdfIcon from '../../assets/pdf-icon.svg';
 import { useEffect, useState } from 'react';
 import { autorun } from 'mobx';
 import translationsStore from '../../stores/TranslationsStore.ts';
@@ -163,11 +163,11 @@ const FileList = observer(({ organizationId }) => {
                         console.log('Start Date:', startDate);
                         console.log('End Date:', endDate);
                     }}
+                    style={{
+                        fontSize: '1.2rem',
+                    }}
                 />
             </Box>
-            {/*<span className={styles.translationCount}>*/}
-            {/*        Number of Translations: {translationsStore.data.length}*/}
-            {/*</span>*/}
             <div className={styles.membersListContainer}>
                 {translationsStore.data.map((translation) => {
                     return (

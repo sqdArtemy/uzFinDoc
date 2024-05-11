@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { DnD } from './DnD/DnD.tsx';
 import {
+    Box,
     Button,
     Checkbox,
     FormControl,
@@ -200,49 +201,67 @@ const Translate = observer(() => {
                         Translate
                     </Button>
                     <span className={styles.rightTranslateOptions}>
-                        <FormControl>
-                            <RadioGroup row name="row-radio-buttons-group">
-                                <FormControlLabel
-                                    value="pdf"
-                                    control={
-                                        <Radio
-                                            checked={outputFormat === 'pdf'}
-                                            onChange={() =>
-                                                setOutputFormat('pdf')
-                                            }
-                                        />
-                                    }
-                                    label="PDF"
-                                />
-                                <FormControlLabel
-                                    value="docx"
-                                    control={
-                                        <Radio
-                                            checked={outputFormat === 'docx'}
-                                            onChange={() =>
-                                                setOutputFormat('docx')
-                                            }
-                                        />
-                                    }
-                                    label="DOCX"
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        {userStore.storeData.organization && (
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={isOrganizational}
-                                        onChange={() =>
-                                            setIsOrganizational(
-                                                !isOrganizational
-                                            )
+                        <Box
+                            display={'flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'flex-end'}
+                            sx={{
+                                width: '100%',
+                            }}
+                        >
+                            <FormControl>
+                                <label
+                                    style={{
+                                        fontSize: '1.2rem',
+                                    }}
+                                >
+                                    Output Format
+                                </label>
+                                <RadioGroup row name="row-radio-buttons-group">
+                                    <FormControlLabel
+                                        value="pdf"
+                                        control={
+                                            <Radio
+                                                checked={outputFormat === 'pdf'}
+                                                onChange={() =>
+                                                    setOutputFormat('pdf')
+                                                }
+                                            />
                                         }
+                                        label="PDF"
                                     />
-                                }
-                                label="Organizational"
-                            />
-                        )}
+                                    <FormControlLabel
+                                        value="docx"
+                                        control={
+                                            <Radio
+                                                checked={
+                                                    outputFormat === 'docx'
+                                                }
+                                                onChange={() =>
+                                                    setOutputFormat('docx')
+                                                }
+                                            />
+                                        }
+                                        label="DOCX"
+                                    />
+                                </RadioGroup>
+                            </FormControl>
+                            {userStore.storeData.organization && (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={isOrganizational}
+                                            onChange={() =>
+                                                setIsOrganizational(
+                                                    !isOrganizational
+                                                )
+                                            }
+                                        />
+                                    }
+                                    label="Organizational"
+                                />
+                            )}
+                        </Box>
                     </span>
                 </div>
             </div>

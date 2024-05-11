@@ -86,9 +86,6 @@ const SignUp = observer(() => {
                     autoComplete="phoneNumber"
                     autoFocus
                     defaultValue={userStore.storeData.phone}
-                    // error={!!emailErrorText}
-                    // helperText={emailErrorText}
-                    // onChange={(e) => validateEmail(e.target.value, setEmailErrorText)}
                 />
                 {error && <div className={styles.formError}>{error}</div>}
                 <span className={styles.btnsContainer}>
@@ -104,7 +101,7 @@ const SignUp = observer(() => {
                     </Button>
                     <Button
                         type="submit"
-                        variant="text"
+                        variant="contained"
                         color="primary"
                         style={{ margin: '15px 0' }}
                         endIcon={<ArrowForwardIos />}

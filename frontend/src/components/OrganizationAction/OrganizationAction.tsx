@@ -111,6 +111,10 @@ const OrganizationModal = observer(({ open, handleClose, initialData }) => {
                         variant="contained"
                         color="primary"
                         onClick={handleCreateOrUpdate}
+                        sx={{
+                            height: '3rem',
+                            fontSize: '1.1rem',
+                        }}
                         fullWidth
                     >
                         {!initialData ? 'Create' : 'Update'}

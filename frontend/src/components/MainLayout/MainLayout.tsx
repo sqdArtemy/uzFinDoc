@@ -23,37 +23,34 @@ const MainLayout = observer(() => {
         <div className={styles.bodyContainer}>
             <span className={styles.topContainer}>
                 <span className={styles.topLeftContainer}>
-                    {' '}
                     <img
                         className={styles.projectLogo}
                         src={projectLogo}
                         onClick={() => navigate('/main/translate')}
                         alt={'project logo'}
                     ></img>
-                    <Box display={'flex'} gap={'5rem'}>
-                        <span
-                            className={styles.textLarge}
-                            onClick={() => navigate('/main/translate')}
-                        >
-                            Translate
-                        </span>
-                        <span
-                            className={styles.textLarge}
-                            onClick={() => {
-                                if (userStore.storeData.organization?.id)
-                                    return navigate('/main/organization');
-                                setIsModalOpen(true);
-                            }}
-                        >
-                            Organization
-                        </span>
-                        <span
-                            className={styles.textLarge}
-                            onClick={() => navigate('/main/history')}
-                        >
-                            History
-                        </span>
-                    </Box>
+                    <span
+                        className={styles.textLarge}
+                        onClick={() => navigate('/main/translate')}
+                    >
+                        Translate
+                    </span>
+                    <span
+                        className={styles.textLarge}
+                        onClick={() => {
+                            if (userStore.storeData.organization?.id)
+                                return navigate('/main/organization');
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        Organization
+                    </span>
+                    <span
+                        className={styles.textLarge}
+                        onClick={() => navigate('/main/history')}
+                    >
+                        History
+                    </span>
                 </span>
                 <span className={styles.topProfileContainer}>
                     <Box

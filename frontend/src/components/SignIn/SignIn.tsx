@@ -86,12 +86,6 @@ const SignIn = observer(() => {
                 <span className={styles.formTextLarge}>
                     Log in to your account
                 </span>
-                <span className={styles.formTextRegular}>
-                    Don't have an account?{' '}
-                    <Link to="../initial" relative="path">
-                        Sign up
-                    </Link>
-                </span>
             </div>
             <div className={styles.formInputContainer}>
                 <TextField
@@ -142,9 +136,24 @@ const SignIn = observer(() => {
                     variant="contained"
                     color="primary"
                     style={{ margin: '15px 0' }}
+                    size={'large'}
+                    sx={{
+                        fontSize: '1.2rem',
+                    }}
                 >
                     Continue
                 </Button>
+                <span
+                    className={styles.formTextRegular}
+                    style={{
+                        paddingLeft: '0.1rem',
+                    }}
+                >
+                    Don't have an account?{' '}
+                    <Link to="../initial" relative="path">
+                        Sign up
+                    </Link>
+                </span>
             </div>
         </form>
     );

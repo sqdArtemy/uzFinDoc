@@ -15,8 +15,8 @@ import { autorun } from 'mobx';
 import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
 import { useErrorModal } from '../Error/Error.tsx';
-import pdfIcon from '../../assets/pdf-icon.png';
-import docIcon from '../../assets/doc-icon.png';
+import pdfIcon from '../../assets/pdf-icon.svg';
+import docIcon from '../../assets/doc-icon.svg';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import feedbackStore from '../../stores/FeedbackStore.ts';
@@ -162,7 +162,12 @@ const HistoryPreview = observer(() => {
                             {locationState.name}
                         </span>
                     </span>
-                    <span className={[styles.descriptionText].join(' ')}>
+                    <span
+                        className={[styles.descriptionText].join(' ')}
+                        style={{
+                            paddingLeft: '2.5rem',
+                        }}
+                    >
                         Translated at:{' '}
                         {moment(locationState.generatedAt).format(
                             'MMMM Do YYYY, h:mm:ss a'
@@ -171,6 +176,9 @@ const HistoryPreview = observer(() => {
                     <span
                         key={locationState.inputDocument.id}
                         className={styles.memberContainer}
+                        style={{
+                            marginLeft: '2.1rem',
+                        }}
                     >
                         <span className={styles.memberLeftContainer}>
                             <img
@@ -238,6 +246,10 @@ const HistoryPreview = observer(() => {
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
                         disabled={!!translationStore.data.feedback}
+                        style={{
+                            marginLeft: '2.5rem',
+                            fontSize: '1.2rem',
+                        }}
                     />
                     <Box
                         display={'flex'}
@@ -246,6 +258,7 @@ const HistoryPreview = observer(() => {
                         width={'100%'}
                         justifyContent={'flex-end'}
                         alignItems={'center'}
+                        marginLeft={'2.5rem'}
                     >
                         <Rating
                             name="simple-controlled"
@@ -254,11 +267,20 @@ const HistoryPreview = observer(() => {
                                 setRating(newValue as 0 | 1 | 2 | 3 | 4 | 5);
                             }}
                             readOnly={!!translationStore.data.feedback}
+                            size={'large'}
+                            style={{
+                                fontSize: '2.4rem',
+                            }}
                         />
                         {!translationStore.data.feedback && (
                             <Button
                                 variant="contained"
                                 onClick={handleSendFeedback}
+                                size={'large'}
+                                style={{
+                                    fontSize: '1.2rem',
+                                    width: '15rem',
+                                }}
                             >
                                 Send Feedback
                             </Button>

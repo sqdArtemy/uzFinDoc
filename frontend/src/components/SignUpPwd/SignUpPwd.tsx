@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SignUpPwd.module.scss';
 import {
     Button,
@@ -196,6 +196,10 @@ const SignUpPwd = observer(() => {
                     variant="contained"
                     color="primary"
                     style={{ margin: '15px 0' }}
+                    size={'large'}
+                    sx={{
+                        fontSize: '1.2rem',
+                    }}
                 >
                     Create account
                 </Button>

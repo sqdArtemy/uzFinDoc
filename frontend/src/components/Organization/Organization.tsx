@@ -112,21 +112,32 @@ const Organization = observer(() => {
                                     userStore.data.organization?.name ?? ''
                                 )}
                                 variant={'square'}
-                                sx={{ width: 90, height: 90 }}
+                                sx={{
+                                    width: 120,
+                                    height: 120,
+                                    borderRadius: '4px',
+                                    fontSize: '2.5rem',
+                                }}
                             />
                             <div
                                 className={
                                     styles.organizationInfoRightContainer
                                 }
                             >
-                                <span className={styles.headerText}>
-                                    {userStore.data.organization?.name ??
-                                        'undefined'}
-                                </span>
-                                <span className={styles.descriptionText}>
-                                    {userStore.data.organization?.email ??
-                                        'undefined'}
-                                </span>
+                                <Box
+                                    display={'flex'}
+                                    flexDirection={'column'}
+                                    gap={'0.5rem'}
+                                >
+                                    <span className={styles.headerText}>
+                                        {userStore.data.organization?.name ??
+                                            'undefined'}
+                                    </span>
+                                    <span className={styles.descriptionText}>
+                                        {userStore.data.organization?.email ??
+                                            'undefined'}
+                                    </span>
+                                </Box>
                                 <Button
                                     variant={'outlined'}
                                     size={'small'}
@@ -141,7 +152,9 @@ const Organization = observer(() => {
 
                         <span className={styles.upperButtonsContainer}>
                             <Button
-                                size={'small'}
+                                sx={{
+                                    fontSize: '1.2rem',
+                                }}
                                 variant={'text'}
                                 color={
                                     buttonState === 'Documents'
@@ -153,7 +166,9 @@ const Organization = observer(() => {
                                 Documents
                             </Button>
                             <Button
-                                size={'small'}
+                                sx={{
+                                    fontSize: '1.2rem',
+                                }}
                                 variant={'text'}
                                 color={
                                     buttonState === 'Members'

@@ -24,7 +24,9 @@ body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
 }
-
+.ant-picker .ant-picker-input >input{
+    font-size: 1.2rem;
+}
 /**
  * Render the `main` element consistently in IE.
  */
