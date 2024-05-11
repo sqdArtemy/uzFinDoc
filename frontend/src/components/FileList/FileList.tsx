@@ -5,7 +5,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import docIcon from '../../assets/doc-icon.svg';
 import pdfIcon from '../../assets/pdf-icon.svg';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { autorun } from 'mobx';
 import translationsStore from '../../stores/TranslationsStore.ts';
 import { useErrorModal } from '../Error/Error.tsx';
@@ -27,19 +27,20 @@ const StyledBadge = styled(Badge)<BadgeProps>(() => ({
     },
 }));
 
+const filters = {
+    created_at_gte: '',
+    created_at_lte: '',
+};
+
 const FileList = observer(({ organizationId }) => {
     const { showErrorModal } = useErrorModal();
     const { hideLoader, showLoader } = useLoader();
     const navigate = useNavigate();
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
 
     useEffect(() => {
         if (organizationId)
             translationsStore.getOrganizationTranslations(organizationId);
         else translationsStore.getTranslations();
-
-        console.log(translationsStore.storeData);
     }, [organizationId]);
 
     useEffect(() => {
@@ -86,6 +87,27 @@ const FileList = observer(({ organizationId }) => {
             }
         });
     }, []);
+
+    const handleDateChange = async (dates) => {
+        if (!dates || dates.length === 0) {
+            return translationsStore.getTranslations();
+        }
+        if (dates[0] && dates[0]['$d']) {
+            filters.created_at_gte = moment(dates[0]['$d']).format(
+                'YYYY-MM-DD'
+            );
+        }
+
+        if (dates[1] && dates[1]['$d']) {
+            filters.created_at_lte = moment(dates[1]['$d']).format(
+                'YYYY-MM-DD'
+            );
+        }
+        translationsStore.filterByDate(
+            filters.created_at_gte,
+            filters.created_at_lte
+        );
+    };
 
     function navigateToPreview(translation: ITranslationResponse) {
         translateStore.previewDocument(translation.outputDocument.id);
@@ -157,12 +179,7 @@ const FileList = observer(({ organizationId }) => {
                     </span>
                 </StyledBadge>
                 <RangePicker
-                    onChange={(_date, dateString) => {
-                        setStartDate(dateString[0]);
-                        setEndDate(dateString[1]);
-                        console.log('Start Date:', startDate);
-                        console.log('End Date:', endDate);
-                    }}
+                    onChange={handleDateChange}
                     style={{
                         fontSize: '1.2rem',
                     }}
@@ -186,6 +203,7 @@ const FileList = observer(({ organizationId }) => {
                                             ? pdfIcon
                                             : docIcon
                                     }
+                                    alt="file icon"
                                 />
                                 <span className={styles.memberTextContainer}>
                                     <span

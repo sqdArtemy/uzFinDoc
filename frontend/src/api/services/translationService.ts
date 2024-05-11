@@ -47,6 +47,7 @@ export class TranslationService {
     ) => {
         const url = `/translation/${translationId}/feedbacks`;
         const data = { rating, review };
+        console.log('post', data);
         return axiosInstance.post<ICreateFeedbackResponse>(url, data);
     };
 

@@ -66,6 +66,13 @@ class TranslationsStore {
         this.currentState = 'error';
         this.errorMessage = response?.data || 'Something went wrong';
     };
+
+    filterByDate(startDate: string, endDate: string) {
+        this.data = this.storeData.filter((item) => {
+            const date = new Date(item.generatedAt);
+            return date >= new Date(startDate) && date <= new Date(endDate);
+        });
+    }
 }
 
 const translationsStore = new TranslationsStore();

@@ -99,6 +99,7 @@ const HistoryPreview = observer(() => {
 
     useEffect(() => {
         translationStore.getTranslationById(locationState.translationId);
+        console.log(translationStore.storeData);
         return autorun(() => {
             if (translationStore.state === 'error') {
                 showErrorModal(translationStore.errorMessage);
@@ -109,8 +110,11 @@ const HistoryPreview = observer(() => {
                 translationStore.currentState = 'pending';
             } else if (translationStore.state === 'success') {
                 hideLoader();
-                setRating(translationStore.data.feedback?.rating || 0);
-                setFeedbackText(translationStore.data.feedback?.review || '');
+                if (!translationStore.data.feedbacks) return;
+                setRating(translationStore.data.feedbacks[0].rating || 0);
+                setFeedbackText(
+                    translationStore.data.feedbacks[0].review || ''
+                );
                 translationStore.currentState = 'pending';
             }
         });
@@ -121,7 +125,6 @@ const HistoryPreview = observer(() => {
     }
 
     function handleDelete(id: number) {
-        //translateStore.deleteDocument(id);
         console.log('Delete', id);
     }
 
@@ -131,7 +134,7 @@ const HistoryPreview = observer(() => {
             feedbackText,
             locationState.translationId
         );
-        window.location.reload();
+        // window.location.reload();
     }
 
     return (
@@ -245,7 +248,7 @@ const HistoryPreview = observer(() => {
                         placeholder="Enter your feedback here"
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
-                        disabled={!!translationStore.data.feedback}
+                        disabled={translationStore.data.feedbacks?.length !== 0}
                         style={{
                             marginLeft: '2.5rem',
                             fontSize: '1.2rem',
@@ -266,13 +269,15 @@ const HistoryPreview = observer(() => {
                             onChange={(_event, newValue) => {
                                 setRating(newValue as 0 | 1 | 2 | 3 | 4 | 5);
                             }}
-                            readOnly={!!translationStore.data.feedback}
+                            readOnly={
+                                translationStore.data.feedbacks?.length !== 0
+                            }
                             size={'large'}
                             style={{
                                 fontSize: '2.4rem',
                             }}
                         />
-                        {!translationStore.data.feedback && (
+                        {translationStore.data.feedbacks?.length === 0 && (
                             <Button
                                 variant="contained"
                                 onClick={handleSendFeedback}

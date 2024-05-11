@@ -14,6 +14,7 @@ const MainLayout = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const [selectedPage, setSelectedPage] = useState('translate');
 
     function handleClose() {
         setIsModalOpen(false);
@@ -31,23 +32,49 @@ const MainLayout = observer(() => {
                     ></img>
                     <span
                         className={styles.textLarge}
-                        onClick={() => navigate('/main/translate')}
+                        onClick={() => {
+                            setSelectedPage('translate');
+                            navigate('/main/translate');
+                        }}
+                        style={{
+                            color:
+                                selectedPage === 'translate'
+                                    ? '#1976d2'
+                                    : 'black',
+                        }}
                     >
                         Translate
                     </span>
                     <span
                         className={styles.textLarge}
                         onClick={() => {
-                            if (userStore.storeData.organization?.id)
+                            if (userStore.storeData.organization?.id) {
+                                setSelectedPage('organization');
                                 return navigate('/main/organization');
+                            }
                             setIsModalOpen(true);
+                        }}
+                        style={{
+                            color:
+                                selectedPage === 'organization'
+                                    ? '#1976d2'
+                                    : 'black',
                         }}
                     >
                         Organization
                     </span>
                     <span
                         className={styles.textLarge}
-                        onClick={() => navigate('/main/history')}
+                        onClick={() => {
+                            setSelectedPage('history');
+                            navigate('/main/history');
+                        }}
+                        style={{
+                            color:
+                                selectedPage === 'history'
+                                    ? '#1976d2'
+                                    : 'black',
+                        }}
                     >
                         History
                     </span>

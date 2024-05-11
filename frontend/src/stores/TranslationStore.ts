@@ -38,6 +38,7 @@ class TranslationStore {
         data,
     }: AxiosResponse<ITranslationResponse>) => {
         this.currentState = 'success';
+        console.log(data);
         this.data = data;
     };
 

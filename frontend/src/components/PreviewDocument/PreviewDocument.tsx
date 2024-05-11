@@ -181,10 +181,9 @@ const PreviewDocument = observer(
                                         width: '50px',
                                         height: '50px',
                                         color: 'white',
-                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                        backgroundColor: '#1976d2',
                                         '&:hover': {
-                                            backgroundColor:
-                                                'rgba(0, 0, 0, 0.9)',
+                                            backgroundColor: '#1565c0',
                                         },
                                     }}
                                     onClick={handleDownload}
