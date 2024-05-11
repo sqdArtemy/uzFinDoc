@@ -152,6 +152,20 @@ class DetailedTranslationView(Resource):
 
         return make_response(jsonify(self.get_translation_schema.dump(translation)), HTTPStatus.OK)
 
+    @jwt_required()
+    def delete(self, translation_id: int) -> Response:
+        requester_id = get_jwt_identity()
+        data = {
+            "requester_id": requester_id,
+            "id": translation_id
+        }
+
+        translation = self.get_translation_schema.load(data)
+        db.session.delete(translation)
+        db.session.commit()
+
+        return make_response(HTTPStatus.NO_CONTENT)
+
 
 class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
     get_translations_schema = TranslationGetSchema(many=True, exclude=["organization", "feedbacks"])
