@@ -31,8 +31,8 @@ class UserStore {
 
     get data(): CurrentUserData {
         if (
-            isNaN(this.storeData.id) ||
-            isNaN(this.storeData.organization!.id)
+            isNaN(this.storeData?.id) ||
+            isNaN(this.storeData?.organization?.id!)
         ) {
             console.trace();
             this.fetchCurrentUser();
@@ -127,6 +127,7 @@ class UserStore {
         userService
             .getCurrentUser()
             .then(this.fetchCurrentUserSuccess, this.fetchCurrentUserFailure);
+        this.currentState = 'success';
     }
 
     fetchCurrentUserSuccess = ({ data }: AxiosResponse<IGetUserResponse>) => {

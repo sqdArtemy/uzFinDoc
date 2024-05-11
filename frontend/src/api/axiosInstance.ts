@@ -39,7 +39,10 @@ axiosInstance.interceptors.response.use(
         if (
             error.response?.status === 401 &&
             !error.config?.url?.includes('/token/refresh') &&
-            !error.config?.url?.includes('/user/logout')
+            !error.config?.url?.includes('/user/logout') &&
+            !error.config?.url?.includes('/user/login') &&
+            !error.config?.url?.includes('/user/register') &&
+            !error.config?.url?.includes('/me')
         ) {
             const refreshToken = localStorage.getItem('refreshToken');
             console.log('1', refreshToken);

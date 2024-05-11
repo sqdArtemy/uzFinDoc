@@ -161,22 +161,22 @@ const Translate = observer(() => {
                     <span className={styles.rightTranslateHeader}>
                         <span className={styles.rightTranslateInfo}>
                             <span className={styles.textLarge}>
-                                Source Language
+                                From
                             </span>
                             <TextField
                                 disabled
-                                defaultValue={'Uzbek'}
+                                defaultValue={'English'}
                                 variant="outlined"
                                 size={'small'}
                             ></TextField>
                         </span>
                         <span className={styles.rightTranslateInfo}>
                             <span className={styles.textLarge}>
-                                Target Language
+                                To
                             </span>
                             <TextField
                                 disabled
-                                defaultValue={'English'}
+                                defaultValue={'Uzbek'}
                                 variant="outlined"
                                 size={'small'}
                             ></TextField>
@@ -228,7 +228,7 @@ const Translate = observer(() => {
                                         }
                                     />
                                 }
-                                label="Organization"
+                                label="Organizational"
                             />
                         )}
                     </span>

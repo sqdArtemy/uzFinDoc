@@ -153,6 +153,9 @@ const FileList = observer(({ organizationId }) => {
                     }}
                 />
             </Box>
+            <span className={styles.translationCount}>
+                    Number of Translations: {translationsStore.data.length}
+            </span>
             <div className={styles.membersListContainer}>
                 {translationsStore.data.map((translation) => {
                     return (
@@ -220,12 +223,12 @@ const FileList = observer(({ organizationId }) => {
                                         )
                                     }
                                 >
-                                    <DownloadIcon />
+                                    <DownloadIcon/>
                                 </IconButton>
                                 <IconButton
                                     onClick={() => handleDelete(translation.id)}
                                 >
-                                    <DeleteIcon />
+                                    <DeleteIcon/>
                                 </IconButton>
                             </span>
                         </span>

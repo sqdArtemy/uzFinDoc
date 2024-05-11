@@ -40,7 +40,7 @@ const OrganizationModal = observer(({ open, handleClose, initialData }) => {
                     showLoader();
                     userStore.currentState = 'pending';
                 } else if (userStore.state === 'success') {
-                    handleClose();
+                    //handleClose();
                     hideLoader();
                     userStore.currentState = 'pending';
                 }
