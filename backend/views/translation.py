@@ -35,6 +35,7 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
     parser = reqparse.RequestParser()
     parser.add_argument("input_document", type=FileStorage, location="files", required=True)
     parser.add_argument("output_format", type=str, required=True, location="form")
+    parser.add_argument("is_organizational", type=bool, required=True, location="form")
 
     @jwt_required()
     async def post(self) -> Response:
@@ -42,6 +43,7 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
         data = self.parser.parse_args()
         user = User.query.filter_by(id=requester_id).first()
         available_formats = DocumentFormats.AVAILABLE_FORMATS.value
+        is_organizational = data.get("is_organizational")
 
         input_document = data.get("input_document")
         output_format = data.get("output_format")
@@ -103,7 +105,8 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "process_time": end_time-start_time,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "output_document_id": out_document.id,
-                "organization_id": user.organization_id
+                "organization_id": user.organization_id,
+                "is_organizational": is_organizational
             })
 
             db.session.add(translation)
@@ -132,7 +135,7 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
             )
 
         return make_response(
-            jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedback"]).dump(translations)),
+            jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedbacks"]).dump(translations)),
             HTTPStatus.OK
         )
 

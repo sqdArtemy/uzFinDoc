@@ -1,4 +1,4 @@
-from marshmallow import fields, validates, ValidationError, EXCLUDE, post_dump, pre_load
+from marshmallow import fields, validates, ValidationError, EXCLUDE, post_dump, pre_load, pre_dump, post_load
 
 from models import User, Organization, Document, Translation
 from app_init import ma
@@ -63,8 +63,9 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
         model = Translation
         fields = (
             "details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id",
-            "organization_id", "process_time", "generated_at"
+            "organization_id", "process_time", "generated_at", "is_organizational"
         )
+        load_only = ["is_organizational"]
         unknown = EXCLUDE
         ordered = True
         load_instance = True
@@ -78,6 +79,16 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     input_document_id = fields.Int(required=True)
     output_document_id = fields.Int(required=True)
     organization_id = fields.Int(required=True)
+    is_organizational = fields.Bool(required=True)
+
+    @post_load()
+    def document_organization_handler(self, data: dict, **kwargs) -> dict:
+        is_organizational = data.get("is_organizational", None)
+        print(is_organizational)
+        if not is_organizational:
+            data["organization_id"] = None
+
+        return data
 
     @validates("process_time")
     def validate_creator_id(self, value: int) -> None:
@@ -91,7 +102,7 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("organization_id")
     def validate_organization_id(self, value: int) -> None:
-        if not Organization.query.filter_by(id=value).first():
+        if value and not Organization.query.filter_by(id=value).first():
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", value))
 
     @validates("input_document_id")
