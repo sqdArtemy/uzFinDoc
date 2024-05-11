@@ -132,7 +132,7 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
             )
 
         return make_response(
-            jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedback"]).dump(translations)),
+            jsonify(TranslationGetSchema(many=True, exclude=["creator", "feedbacks"]).dump(translations)),
             HTTPStatus.OK
         )
 

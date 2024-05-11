@@ -37,6 +37,7 @@ class Messages(Enum):
     # Document validation
     USER_NOT_UPLOADED_THIS_DOCUMENT = "User is not uploaded this document."
     DOCUMENT_HAS_NO_TRANSLATIONS = "Document has no translations."
+    USER_CANNOT_SEE_THIS_DOCUMENT = " User cannot see this document."
 
 
 class DocumentFormats(Enum):
