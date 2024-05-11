@@ -149,7 +149,7 @@ const PreviewDocument = observer(
                                     src={wordIcon}
                                     alt="word-icon"
                                     style={{
-                                        width: '35%',
+                                        width: '30%',
                                         height: '35%',
                                         boxShadow:
                                             '0 0 10px rgba(0, 0, 0, 0.1)',
