@@ -20,12 +20,11 @@ class Translation(db.Model):
         return f"{self.id}-{self.generated_at}"
 
     organization = db.relationship("Organization", backref="translations", lazy=True)
-    feedback = db.relationship(
+    feedbacks = db.relationship(
         "Feedback",
         backref="translation",
         primaryjoin="Translation.id==Feedback.translation_id",
-        lazy="joined",
-        uselist=False
+        lazy="joined"
     )
     input_document = db.relationship(
         "Document",

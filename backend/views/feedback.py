@@ -27,7 +27,6 @@ class FeedbackViewSet(Resource):
         data["creator_id"] = requester_id
 
         feedback = self.create_feedback_schema.load(data)
-
         db.session.add(feedback)
         db.session.commit()
 
@@ -44,4 +43,4 @@ class FeedbackViewSet(Resource):
         self.get_feedback_schema.load(data)
         translation = Translation.query.filter_by(id=translation_id).first()
 
-        return make_response(jsonify(self.get_feedbacks_schema.dump(translation.feedback)), HTTPStatus.OK)
+        return make_response(jsonify(self.get_feedbacks_schema.dump(translation.feedbacks)), HTTPStatus.OK)
