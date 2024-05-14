@@ -9,6 +9,24 @@ from .enums import TranslationStatus
 class Translation(db.Model):
     __tablename__ = 'Translation'
 
+    """
+    CREATE TABLE Translation (
+    id SERIAL PRIMARY KEY,
+    generated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    details_status TEXT DEFAULT 'PROCESSING' NOT NULL,
+    details_word_count INTEGER NOT NULL,
+    creator_id INTEGER NOT NULL,
+    process_time FLOAT NOT NULL DEFAULT 0,
+    input_document_id INTEGER NOT NULL,
+    output_document_id INTEGER NOT NULL,
+    organization_id INTEGER,
+    CONSTRAINT fk_creator_id FOREIGN KEY (creator_id) REFERENCES "User"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_input_document_id FOREIGN KEY (input_document_id) REFERENCES Document(id) ON DELETE CASCADE,
+    CONSTRAINT fk_output_document_id FOREIGN KEY (output_document_id) REFERENCES Document(id) ON DELETE CASCADE,
+    CONSTRAINT fk_organization_id FOREIGN KEY (organization_id) REFERENCES Organization(id) ON DELETE SET NULL
+    );
+    """
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     generated_at = db.Column(db.DateTime, nullable=False)
     details_status = db.Column(db.Enum(TranslationStatus), default=TranslationStatus.PROCESSING, nullable=False)

@@ -73,9 +73,9 @@ Mention out team members contacts:
   - Email: Email_here
 
 - Name: Komiljon Yuldashev
-  - LinkedIn: dolbayob, telegramda blokda tortib ol
+  - LinkedIn: [Komiljon Yuldashev](https://www.linkedin.com/in/komiljon-yuldashev-006549222)  
   - Telegram: [JohnnyKoshev](https://t.me/JohnnyKoshev)
-  - Email: Email_here
+  - Email: komilzonu5@gmail.com
 ## Project status
 WIP - Work In Progress
 
