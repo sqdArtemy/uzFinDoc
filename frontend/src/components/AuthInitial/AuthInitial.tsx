@@ -3,7 +3,7 @@ import styles from './AuthInitial.module.scss';
 import { Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils';
 
@@ -22,8 +22,8 @@ const AuthInitial = observer(() => {
         }
         setError('');
 
-        authStore.data = {
-            ...authStore.storeData,
+        userStore.data = {
+            ...userStore.storeData,
             email: email,
         };
         navigate('/auth/sign-up');
@@ -33,12 +33,6 @@ const AuthInitial = observer(() => {
         <form className={styles.formContainer} onSubmit={handleSubmit}>
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>Sign Up</span>
-                <span className={styles.formTextRegular}>
-                    Already have an account?{' '}
-                    <Link to="../sign-in" relative="path">
-                        Log in
-                    </Link>
-                </span>
             </div>
             <div className={styles.formInputContainer}>
                 <TextField
@@ -50,7 +44,7 @@ const AuthInitial = observer(() => {
                     name="email"
                     autoComplete="email"
                     autoFocus
-                    defaultValue={authStore.storeData.email}
+                    defaultValue={userStore.storeData.email}
                     onChange={(e) =>
                         validateEmail(e.target.value, setInputErrorText)
                     }
@@ -63,10 +57,20 @@ const AuthInitial = observer(() => {
                     fullWidth
                     variant="contained"
                     color="primary"
-                    style={{ margin: '15px 0' }}
+                    style={{ margin: '10px 0' }}
+                    size={'large'}
+                    sx={{
+                        fontSize: '1.2rem',
+                    }}
                 >
                     Continue
                 </Button>
+                <span className={styles.formTextRegular}>
+                    Already have an account?{' '}
+                    <Link to="../sign-in" relative="path">
+                        Log in
+                    </Link>
+                </span>
             </div>
         </form>
     );

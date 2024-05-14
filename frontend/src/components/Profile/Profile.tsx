@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import styles from './Profile.module.scss';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     TextField,
-    Button,
     FormControl,
     FormHelperText,
     IconButton,
     InputAdornment,
     InputLabel,
     OutlinedInput,
+    Avatar,
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { validatePwd } from '../../utils';
+import { stringAvatar, validatePwd } from '../../utils';
 import { autorun } from 'mobx';
 
 const Profile = observer(() => {
@@ -25,11 +25,11 @@ const Profile = observer(() => {
     const [pwdErrorText, setPwdErrorText] = useState('');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        name: authStore.data.nameFirstName,
-        surname: authStore.data.nameLastName,
-        phoneNumber: authStore.data.phone,
-        password: authStore.data.password,
-        middleName: authStore.data.nameMiddleName,
+        name: 'undefined',
+        surname: 'undefined',
+        phoneNumber: 'undefined',
+        password: '',
+        middleName: 'undefined',
     });
 
     const handleMouseDownPassword = (
@@ -50,61 +50,73 @@ const Profile = observer(() => {
         const surname: string = data.get('surname') as string;
         const middleName: string = data.get('middleName') as string;
 
-        if (pwdErrorText) {
+        if (password && pwdErrorText) {
             return;
-        } else if (!password || !phoneNumber || !name || !surname) {
+        } else if (!phoneNumber || !name || !surname || !middleName) {
             return setError('All fields are required.');
         }
 
-        console.log(authStore.data);
+        console.log(userStore.data);
         console.log(phoneNumber, name, surname);
-        authStore.updateUser({
+        userStore.updateUser(userStore.storeData.id, {
             phone: phoneNumber,
             nameFirstName: name,
             nameLastName: surname,
             nameMiddleName: middleName,
+            password: password,
         });
     };
 
     useEffect(() => {
-        autorun(() => {
-            if (authStore.state === 'error') {
-                setError(authStore.errorMessage);
+        return autorun(() => {
+            if (userStore.state === 'error') {
+                setError(userStore.errorMsg);
                 setLoading(false);
-            } else if (authStore.state === 'success') {
-                navigate('/profile');
+                userStore.currentState = 'pending';
+            } else if (userStore.state === 'success') {
+                navigate('/main/profile');
                 setLoading(false);
-            } else if (authStore.state === 'loading') {
+                setFormData({
+                    name: userStore.data.nameFirstName,
+                    surname: userStore.data.nameLastName,
+                    phoneNumber: userStore.data.phone,
+                    password: formData.password,
+                    middleName: userStore.data.nameMiddleName,
+                });
+                userStore.currentState = 'pending';
+            } else if (userStore.state === 'loading') {
                 setError('');
                 setLoading(true);
+                userStore.currentState = 'pending';
             }
-            setFormData({
-                name: authStore.data.nameFirstName,
-                surname: authStore.data.nameLastName,
-                phoneNumber: authStore.data.phone,
-                password: authStore.data.password,
-                middleName: authStore.data.nameMiddleName,
-            });
         });
     }, []);
 
-    const handleCancel = () => {
+    useEffect(() => {
         setFormData({
-            name: authStore.data.nameFirstName,
-            surname: authStore.data.nameLastName,
-            phoneNumber: authStore.data.phone,
-            password: authStore.data.password,
-            middleName: authStore.data.nameMiddleName,
+            name: userStore.data.nameFirstName,
+            surname: userStore.data.nameLastName,
+            phoneNumber: userStore.data.phone,
+            password: formData.password,
+            middleName: userStore.data.nameMiddleName,
         });
-    };
+    }, []);
 
     useEffect(() => {}, []);
 
     return (
         <form className={styles.formContainer} onSubmit={handleUpdate}>
             <div className={styles.formTopContainer}>
-                <span className={styles.formTextLarge}>
-                    Profile of {authStore.data.email}
+                <span className={styles.formTextLarge}>Profile</span>
+                <span className={styles.profileContainer}>
+                    <Avatar
+                        {...stringAvatar(
+                            `${userStore.data.nameFirstName} ${userStore.data.nameLastName}`
+                        )}
+                    />
+                    <span className={styles.formTextRegular}>
+                        {userStore.data.email ?? 'example@gmail.com'}
+                    </span>
                 </span>
             </div>
             <div className={styles.formInputContainer}>
@@ -116,7 +128,7 @@ const Profile = observer(() => {
                     name="name"
                     autoComplete="name"
                     autoFocus
-                    value={formData.name || ''}
+                    value={formData.name}
                     onChange={(e) => {
                         setError('');
                         setFormData({ ...formData, name: e.target.value });
@@ -130,7 +142,7 @@ const Profile = observer(() => {
                     name="surname"
                     autoComplete="surname"
                     autoFocus
-                    value={formData.surname || ''}
+                    value={formData.surname}
                     onChange={(e) => {
                         setError('');
                         setFormData({ ...formData, surname: e.target.value });
@@ -144,7 +156,7 @@ const Profile = observer(() => {
                     name="middleName"
                     autoComplete="middleName"
                     autoFocus
-                    value={formData.middleName || ''}
+                    value={formData.middleName}
                     onChange={(e) => {
                         setError('');
                         setFormData({
@@ -161,7 +173,7 @@ const Profile = observer(() => {
                     name="phoneNumber"
                     autoComplete="phoneNumber"
                     autoFocus
-                    value={formData.phoneNumber || ''}
+                    value={formData.phoneNumber}
                     onChange={(e) => {
                         setError('');
                         setFormData({
@@ -181,7 +193,7 @@ const Profile = observer(() => {
                         htmlFor="outlined-adornment-password"
                         error={!!pwdErrorText}
                     >
-                        Password *
+                        Password
                     </InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
@@ -196,6 +208,7 @@ const Profile = observer(() => {
                                 password: e.target.value,
                             });
                         }}
+                        fullWidth
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
@@ -224,20 +237,11 @@ const Profile = observer(() => {
                 </FormControl>
                 {error && <div className={styles.formError}>{error}</div>}
                 <span className={styles.btnsContainer}>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        style={{ margin: '20px 0' }}
-                        onClick={handleCancel}
-                    >
-                        Cancel
-                    </Button>
                     <LoadingButton
                         type="submit"
-                        variant="outlined"
-                        color="success"
+                        variant="contained"
+                        color="primary"
                         style={{ margin: '20px 0' }}
-                        // onClick={() => setLoading(true)}
                         loading={loading}
                     >
                         Update

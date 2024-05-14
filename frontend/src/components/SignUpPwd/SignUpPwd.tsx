@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SignUpPwd.module.scss';
 import {
     Button,
@@ -10,7 +10,7 @@ import {
     OutlinedInput,
 } from '@mui/material';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useLoader } from '../Loader/Loader';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -48,28 +48,30 @@ const SignUpPwd = observer(() => {
             return setError('Both fields should be filled.');
         }
 
-        authStore.data.password = password;
-        authStore.register({
-            email: authStore.storeData.email,
-            phone: authStore.storeData.phone,
+        userStore.register({
+            email: userStore.storeData.email,
+            phone: userStore.storeData.phone,
             password: password,
-            nameFirstName: authStore.storeData.nameFirstName,
-            nameLastName: authStore.storeData.nameLastName,
-            nameMiddleName: 'something',
+            nameFirstName: userStore.storeData.nameFirstName,
+            nameLastName: userStore.storeData.nameLastName,
+            nameMiddleName: userStore.storeData.nameMiddleName,
         });
     };
 
     useEffect(() => {
         autorun(() => {
-            if (authStore.state === 'error') {
-                setError(authStore.errorMessage);
+            if (userStore.state === 'error') {
+                setError(userStore.errorMsg);
                 hideLoader();
-            } else if (authStore.state === 'success') {
-                navigate('/profile');
+                userStore.currentState = 'pending';
+            } else if (userStore.state === 'success') {
+                navigate('/main');
                 hideLoader();
-            } else if (authStore.state === 'loading') {
+                userStore.currentState = 'pending';
+            } else if (userStore.state === 'loading') {
                 setError('');
                 showLoader();
+                userStore.currentState = 'pending';
             }
         });
     }, []);
@@ -194,6 +196,10 @@ const SignUpPwd = observer(() => {
                     variant="contained"
                     color="primary"
                     style={{ margin: '15px 0' }}
+                    size={'large'}
+                    sx={{
+                        fontSize: '1.2rem',
+                    }}
                 >
                     Create account
                 </Button>

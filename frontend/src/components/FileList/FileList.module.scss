@@ -1,0 +1,85 @@
+.bottom-container-header-text {
+  font-size: 1.8rem;
+  font-weight: 400;
+  padding: 0.5rem;
+}
+
+.translationCount {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333; /* Or any color you prefer */
+}
+
+.members-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-y: auto;
+
+
+  .member-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.4rem 0.5rem 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+
+    .action-buttons-container {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .member-left-container {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      align-items: center;
+      flex:  1;
+
+      img {
+        width: 4rem;
+        height: 4rem;
+      }
+    }
+
+
+    .member-text-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      .member-name-container {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+
+
+      }
+
+      .description-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+    }
+  }
+}
+
+.header-text {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.description-text {
+  font-size: 1.1rem;
+  color: rgb(153 153 153);
+}
+

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import authStore from '../../stores/AuthStore';
+import userStore from '../../stores/UserStore.ts';
 import { useLoader } from '../Loader/Loader';
 import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
@@ -29,15 +29,27 @@ const SignIn = observer(() => {
     useEffect(
         () =>
             autorun(() => {
-                if (authStore.state === 'error') {
-                    setError(authStore.errorMessage);
+                if (userStore.state === 'error') {
+                    setError(userStore.errorMsg);
                     hideLoader();
-                } else if (authStore.state === 'success') {
-                    navigate('/profile');
+                    userStore.currentState = 'pending';
+                } else if (
+                    userStore.state === 'success' &&
+                    localStorage.getItem('accessToken')
+                ) {
+                    navigate('/main');
                     hideLoader();
-                } else if (authStore.state === 'loading') {
+                    userStore.currentState = 'pending';
+                } else if (
+                    userStore.state === 'success' &&
+                    !localStorage.getItem('accessToken')
+                ) {
+                    hideLoader();
+                    userStore.currentState = 'pending';
+                } else if (userStore.state === 'loading') {
                     setError('');
                     showLoader();
+                    userStore.currentState = 'pending';
                 }
             }),
         []
@@ -65,21 +77,7 @@ const SignIn = observer(() => {
             return setError('Both password and email must be entered.');
         }
 
-        authStore.login(email, password);
-
-        // some auth check with api
-        // navigate('/auth/sign-up')
-
-        // showLoader()
-        // try {
-        //     authStore.login(email, password);
-        //
-        //     // some auth check with api
-        //     navigate('/auth/sign-up')
-        // } catch (error) {
-        //     setError('Invalid email or password.')
-        //     hideLoader()
-        // }
+        userStore.login(email, password);
     };
 
     return (
@@ -87,12 +85,6 @@ const SignIn = observer(() => {
             <div className={styles.formTopContainer}>
                 <span className={styles.formTextLarge}>
                     Log in to your account
-                </span>
-                <span className={styles.formTextRegular}>
-                    Don't have an account?{' '}
-                    <Link to="../initial" relative="path">
-                        Sign up
-                    </Link>
                 </span>
             </div>
             <div className={styles.formInputContainer}>
@@ -144,9 +136,24 @@ const SignIn = observer(() => {
                     variant="contained"
                     color="primary"
                     style={{ margin: '15px 0' }}
+                    size={'large'}
+                    sx={{
+                        fontSize: '1.2rem',
+                    }}
                 >
                     Continue
                 </Button>
+                <span
+                    className={styles.formTextRegular}
+                    style={{
+                        paddingLeft: '0.1rem',
+                    }}
+                >
+                    Don't have an account?{' '}
+                    <Link to="../initial" relative="path">
+                        Sign up
+                    </Link>
+                </span>
             </div>
         </form>
     );
