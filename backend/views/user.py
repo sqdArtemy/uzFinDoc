@@ -31,6 +31,12 @@ class UserRegisterView(Resource):
         try:
             with transaction():
                 user = self.user_create_schema.load(data)
+
+                """
+                INSERT INTO "User" ("email", "name_first_name", "name_last_name", "name_middle_name", "phone", "password")
+                VALUES ("email@gmail.com", "Ravshan", "Ubaydullaev", "Rakhimovich", "998912345678", "qwerty12345_")
+                """
+
                 db.session.add(user)
                 db.session.flush()
 
@@ -53,6 +59,12 @@ class UserLoginView(Resource):
         login_parser.add_argument("email", location="form", required=True)
         login_parser.add_argument("password", location="form", required=True)
         data = login_parser.parse_args()
+
+        """
+        SELECT * 
+        FROM "User"
+        WHERE email = "some@mail.com"
+        """
 
         user = User.query.filter_by(email=data['email']).first()
 
@@ -90,6 +102,13 @@ class UserDetailedViewSet(Resource):
 
     @jwt_required()
     def get(self, user_id: int) -> Response:
+
+        """
+        SELECT *
+        FROM "User"
+        WHERE id = 6;
+        """
+
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
 
         return make_response(jsonify(self.user_get_schema.dump(user)), HTTPStatus.OK)
@@ -99,6 +118,12 @@ class UserDetailedViewSet(Resource):
         with transaction():
             if user_id != get_jwt_identity():
                 raise PermissionDeniedError(Messages.FORBIDDEN.value)
+
+            """
+            SELECT * 
+            FROM "User" 
+            WHERE id = 6;
+            """
 
             user = User.query.get_or_404(
                 user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id)
@@ -119,6 +144,11 @@ class UserDetailedViewSet(Resource):
     def delete(self, user_id: int) -> Response:
         if user_id != get_jwt_identity():
             raise PermissionDeniedError(Messages.FORBIDDEN.value)
+
+        """
+        DELETE FROM "User" 
+        WHERE id = 6;
+        """
 
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
         db.session.delete(user)

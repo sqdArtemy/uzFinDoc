@@ -25,6 +25,12 @@ class UnknownWordView(Resource):
         data["reporter_id"] = requester_id
 
         unknown_word = self.get_unknown_word_schema.load(data)
+
+        """
+        INSERT INTO "UnknownWord" ("written_form","document_id", "reporter_id", "possible_translation") 
+        VALUES ("Harip", 6, 4, "Tourist");
+        """
+
         db.session.add(unknown_word)
         db.session.commit()
 

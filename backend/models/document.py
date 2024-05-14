@@ -7,6 +7,19 @@ from .enums import DocumentType, Language
 class Document(db.Model):
     __tablename__ = "Document"
 
+    """
+    CREATE TABLE Document (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        format VARCHAR(20) NOT NULL,
+        text TEXT NOT NULL,
+        uploaded_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        link VARCHAR(255) NOT NULL UNIQUE,
+        type VARCHAR NOT NULL,
+        language VARCHAR NOT NULL
+    );
+    """
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     format = db.Column(db.String(20), nullable=False)

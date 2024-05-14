@@ -41,6 +41,13 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
     async def post(self) -> Response:
         requester_id = get_jwt_identity()
         data = self.parser.parse_args()
+
+        """
+        SELECT *
+        FROM "User"
+        WHERE id = 6;
+        """
+
         user = User.query.filter_by(id=requester_id).first()
         available_formats = DocumentFormats.AVAILABLE_FORMATS.value
         is_organizational = data.get("is_organizational")
@@ -72,6 +79,12 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "type": DocumentType.INPUT_FILE,
                 "language": Language.UZ
             })
+
+            """
+            INSERT INTO "Document" ("name", "format", "text", "uploded_at", "link", "type", "language")
+            VALUES ("Name", "DOCX", "Text to be translated", CURRENT_TIME, "D:\DB_project", "INPUT_FILE", "UZ");
+            """
+
             db.session.add(in_document)
             db.session.flush()
 
@@ -94,6 +107,11 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "language": Language.ENG
             })
 
+            """
+            INSERT INTO "Document" ("name", "format", "text", "uploded_at", "link", "type", "language")
+            VALUES ("Name_translated", "DOCX", "Text to be translated", CURRENT_TIME, "D:\DB_project", "OUTPUT_FILE", "ENG");
+            """
+
             db.session.add(out_document)
             db.session.flush()
 
@@ -109,6 +127,11 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "is_organizational": is_organizational
             })
 
+            """
+            INSERT INTO "Translation" ("details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id", "organization_id", "is_organizational")
+            VALUES ("Done", 4, 6, 7, 7, 4, TRUE);
+            """
+
             db.session.add(translation)
 
         return make_response(jsonify(self.translation_get_schema.dump(translation)), HTTPStatus.OK)
@@ -119,6 +142,12 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
         data = sort_filter_parser.parse_args()
         sort_by = data.get("sort_by")
         filters = data.get("filters")
+
+        """
+        SELECT * 
+        FROM "Translation"
+        WHERE creator_id = 6;
+        """
 
         translations = Translation.query.filter_by(creator_id=requester_id).options(joinedload(Translation.creator))
         if filters:
@@ -151,6 +180,12 @@ class DetailedTranslationView(Resource):
             "id": translation_id
         }
 
+        """
+        SELECT * 
+        FROM "Translation"
+        WHERE id = 6;
+        """
+
         translation = self.get_translation_schema.load(data)
 
         return make_response(jsonify(self.get_translation_schema.dump(translation)), HTTPStatus.OK)
@@ -162,7 +197,10 @@ class DetailedTranslationView(Resource):
             "requester_id": requester_id,
             "id": translation_id
         }
-
+        """
+        DELETE FROM "Translation"
+        WHERE id = 6 AND creator_id = 6;
+        """
         translation = self.get_translation_schema.load(data)
         db.session.delete(translation)
         db.session.commit()
@@ -176,7 +214,21 @@ class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
+
+        """
+        SELECT * 
+        FROM "User"
+        WHERE id = 6;
+        """
+
         requester = User.query.filter_by(id=requester_id).first()
+
+        """
+        SELECT * 
+        FROM "Organization"
+        WHERE id = 6;
+        """
+
         organization = Organization.query.filter_by(id=organization_id).first()
         data = sort_filter_parser.parse_args()
         sort_by = data.get("sort_by")
@@ -189,6 +241,13 @@ class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
 
         if requester.organization_id != organization_id:
             raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value)
+
+
+        """
+        SELECT * 
+        FROM "Translation"
+        WHERE organization_id = 6;
+        """
 
         translations = Translation.query.filter_by(
             organization_id=organization_id

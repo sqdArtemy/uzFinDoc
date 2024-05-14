@@ -3,6 +3,16 @@ from sqlalchemy.dialects.postgresql import ENUM
 
 from .enums import Language
 
+"""
+CREATE TABLE WordSense (
+    word_id VARCHAR(255),
+    sense_id VARCHAR(100),
+    FOREIGN KEY (word_id) REFERENCES Word(id),
+    FOREIGN KEY (sense_id) REFERENCES Sense(id),
+    PRIMARY KEY (word_id, sense_id)
+);
+"""
+
 
 word_sense = db.Table(
     "WordSense",
@@ -13,6 +23,15 @@ word_sense = db.Table(
 
 class Word(db.Model):
     __tablename__ = 'Word'
+
+    """
+    CREATE TABLE Word (
+    id VARCHAR(255) PRIMARY KEY,
+    written_form VARCHAR(255) NOT NULL,
+    part_of_speech VARCHAR(50) NOT NULL,
+    language VARCHAR NOT NULL
+    );
+    """
 
     id = db.Column(db.String(255), primary_key=True)
     written_form = db.Column(db.String(255), nullable=False)

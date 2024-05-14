@@ -26,6 +26,13 @@ class OrganizationListView(Resource):
     @jwt_required()
     def post(self) -> Response:
         user_id = get_jwt_identity()
+
+        """
+        SELECT * 
+        FROM "User"
+        WHERE id = 6;
+        """
+
         user = User.query.filter_by(id=user_id).first()
 
         if user.organization:
@@ -38,6 +45,12 @@ class OrganizationListView(Resource):
             organization = OrganizationCreateSchema().load(data)
             db.session.add(organization)
             db.session.flush()
+
+            """
+            UPDATE "User"
+            SET organization_id = 6
+            WHERE id = 6;
+            """
 
             user.organization_id = organization.id
             db.session.add(user)
@@ -55,6 +68,13 @@ class OrganizationDetailedView(Resource):
             "id": organization_id,
             "requester_id": get_jwt_identity()
         }
+
+        """
+        SELECT * 
+        FROM "Organization"
+        WHERE id = 6;
+        """
+
         organization = self.organization_get_schema.load(request_data)
 
         return make_response(jsonify(self.organization_get_schema.dump(organization)), HTTPStatus.OK)
@@ -66,6 +86,11 @@ class OrganizationDetailedView(Resource):
             "requester_id": get_jwt_identity()
         }
         organization = self.organization_get_schema.load(request_data)
+
+        """
+        DELETE FROM "Organization"
+        WHERE id = 6;
+        """
 
         db.session.delete(organization)
         db.session.commit()
@@ -89,6 +114,11 @@ class OrganizationDetailedView(Resource):
         for key, value in data.items():
             setattr(organization, key, value)
 
+        """
+        INSERT INTO "Organization" ("name", "email", "owner_id")
+        VALUES ("Some organization", "organization email", 6);
+        """
+
         db.session.add(organization)
         db.session.commit()
 
@@ -106,6 +136,13 @@ class OrganizationMembershipView(Resource):
             "requester_id": get_jwt_identity()
         }
         organization = self.organization_get_schema.load(request_data)
+
+        """
+        SELECT *
+        FROM "User"
+        WHERE email = "mail@gmail.com";
+        """
+
         user = User.query.filter_by(email=user_email).first()
 
         if not user:
@@ -113,6 +150,12 @@ class OrganizationMembershipView(Resource):
 
         if user.organization_id:
             raise ValidationError(Messages.USER_ALREADY_HAVE_ORG.value.format("email", user_email))
+
+        """
+        UPDATE "User"
+        SET organization_id = 6
+        WHERE email = "mail@gmail.com";
+        """
 
         user.organization_id = organization_id
         db.session.commit()
@@ -125,10 +168,23 @@ class OrganizationMembershipView(Resource):
         organization = Organization.query.get_or_404(
             organization_id, description=Messages.OBJECT_NOT_FOUND.value.format("Organization", "id", organization_id)
         )
+
+        """
+        SELECT *
+        FROM "User"
+        WHERE id = 6;
+        """
+
         requester = User.query.filter_by(id=requester_id).first()
 
         if organization.owner_id != requester_id and requester.email != user_email:
             raise PermissionDeniedError(Messages.USER_NOT_OWNER.value)
+
+        """
+        SELECT *
+        FROM "User"
+        WHERE email = "mail@gmail.com";
+        """
 
         user = User.query.filter_by(email=user_email).first()
         if not user:
@@ -139,6 +195,12 @@ class OrganizationMembershipView(Resource):
 
         if user.organization_id != organization_id:
             raise ValidationError(Messages.USER_NOT_A_MEMBER.value)
+
+        """
+        UPDATE "User"
+        SET organization_id = NULL
+        WHERE email = "mail@gmail.com" OR id = 6;
+        """
 
         user.organization_id = None
         db.session.commit()
@@ -152,6 +214,14 @@ class OrganizationMembershipListView(Resource, SortMixin, FilterMixin):
     @jwt_required()
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
+
+        """
+        SELECT "Organization".*
+        FROM "User"
+        JOIN "Organization" ON "User".organization_id = "Organization".id
+        WHERE "User".id = 6;
+        """
+
         organization = User.query.filter_by(id=requester_id).first().organization
         data = sort_filter_parser.parse_args()
         sort_by = data.get("sort_by")
@@ -162,6 +232,13 @@ class OrganizationMembershipListView(Resource, SortMixin, FilterMixin):
 
         if organization.id != organization_id:
             raise PermissionDeniedError(Messages.USER_NOT_A_MEMBER.value)
+
+        """
+        SELECT "User".*
+        FROM "User"
+        JOIN "Organization" ON "User".organization_id = "Organization".id
+        WHERE "Organization".id = 6;
+        """
 
         users = User.query.filter_by(organization_id=organization.id).options(joinedload(User.organization))
         if filters:

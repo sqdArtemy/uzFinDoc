@@ -27,6 +27,12 @@ class FeedbackViewSet(Resource):
         data["creator_id"] = requester_id
 
         feedback = self.create_feedback_schema.load(data)
+
+        """
+        INSERT INTO "Feedback" ("rating", "review", "translation_id", "creator_id")
+        Values (5, "Some review", 5, 1)
+        """
+
         db.session.add(feedback)
         db.session.commit()
 
@@ -41,6 +47,14 @@ class FeedbackViewSet(Resource):
             "creator_id": requester_id
         }
         self.get_feedback_schema.load(data)
+
+        """
+        SELECT * 
+        FROM "Feedback" 
+        JOIN "Translation" ON Translation.translation_id = Feedback.translation_id
+        WHERE Translation.translation_id = 5;
+        """
+
         translation = Translation.query.filter_by(id=translation_id).first()
 
         return make_response(jsonify(self.get_feedbacks_schema.dump(translation.feedbacks)), HTTPStatus.OK)

@@ -25,8 +25,20 @@ class UnknownWordSchema(ma.SQLAlchemyAutoSchema):
         reporter_id = data.get("reporter_id", None)
         document_id = data.get("document_id", None)
 
+        """
+        SELECT * 
+        FROM "User"
+        WHERE id = 6;
+        """
+
         if not (reporter_id or User.query.filter_by(id=reporter_id).first()):
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", reporter_id))
+
+        """
+        SELECT * 
+        FROM "Document"
+        WHERE id = 6;
+        """
 
         document = Document.query.filter_by(id=document_id).first()
 
@@ -40,4 +52,3 @@ class UnknownWordSchema(ma.SQLAlchemyAutoSchema):
 
         if document_translations[0].creator_id != reporter_id:
             raise PermissionDeniedError(Messages.USER_NOT_UPLOADED_THIS_DOCUMENT.value)
-

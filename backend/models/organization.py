@@ -6,6 +6,17 @@ from db_init import db
 class Organization(db.Model):
     __tablename__ = 'Organization'
 
+    """
+    CREATE TABLE Organization (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(80) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    owner_id INTEGER NOT NULL,
+    CONSTRAINT fk_owner_id FOREIGN KEY (owner_id) REFERENCES "User"(id) ON DELETE CASCADE
+    );
+    """
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc).isoformat())
