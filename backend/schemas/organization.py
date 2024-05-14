@@ -46,6 +46,13 @@ class OrganizationCreateSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("name")
     def is_name_unique(self, value: str) -> None:
+
+        f"""
+        SELECT *
+        FROM "Organization"
+        WHERE name = {value};
+        """
+
         if Organization.query.filter_by(name=value).first():
             raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
 
@@ -67,10 +74,22 @@ class OrganizationUpdateSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("name")
     def is_name_unique(self, value: str) -> None:
+
+        f"""
+        SELECT *
+        FROM "Organization"
+        WHERE name = {value};
+        """
+
         if Organization.query.filter_by(name=value).first():
             raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "name", value))
 
     @validates("email")
     def is_name_unique(self, value: str) -> None:
+        f"""
+        SELECT *
+        FROM "Organization"
+        WHERE email = {value};
+        """
         if Organization.query.filter_by(email=value).first():
             raise ValidationError(Messages.OBJECT_ALREADY_EXISTS.value.format("organization", "email", value))

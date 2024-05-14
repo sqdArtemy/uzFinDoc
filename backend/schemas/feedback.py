@@ -71,8 +71,20 @@ class FeedbackCreateSchema(ma.SQLAlchemyAutoSchema):
         creator_id = data.get("creator_id", None)
         translation_id = data.get("translation_id", None)
 
+        f"""
+        SELECT *
+        FROM "User"
+        WHERE id = {creator_id};
+        """
+
         if not (creator_id and User.query.filter_by(id=creator_id).first()):
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", creator_id))
+
+        f"""
+        SELECT * 
+        FROM "Translation"
+        WHERE id = {translation_id};
+        """
 
         translation = Translation.query.filter_by(id=translation_id).first()
 

@@ -17,11 +17,11 @@ class DocumentDownloadView(Resource):
         requester = User.query.filter_by(id=requester_id).first()
         document = Document.query.get_or_404(document_id)
 
-        """
+        f"""
         SELECT id
         FROM "Document"
         JOIN "Translation" on ("Translation".output_document_id = "Document".id OR "Translation".input_document_id = "Document".id)
-        WHERE "Translation".creator_id = 20 OR "Translation".organization_id = 6;
+        WHERE "Translation".creator_id = {requester_id} OR "Translation".organization_id = {requester.organization_id};
         """
         document_ids = db.session.query(Document.id) \
             .join(Translation, or_(Translation.input_document_id == Document.id, Translation.output_document_id == Document.id)) \
