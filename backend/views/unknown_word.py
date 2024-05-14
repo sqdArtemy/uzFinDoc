@@ -26,9 +26,9 @@ class UnknownWordView(Resource):
 
         unknown_word = self.get_unknown_word_schema.load(data)
 
-        """
+        f"""
         INSERT INTO "UnknownWord" ("written_form","document_id", "reporter_id", "possible_translation") 
-        VALUES ("Harip", 6, 4, "Tourist");
+        VALUES ({unknown_word.written_form}, {unknown_word.document_id}, {unknown_word.reoprter_id}, {unknown_word.possible_translation});
         """
 
         db.session.add(unknown_word)

@@ -32,9 +32,9 @@ class UserRegisterView(Resource):
             with transaction():
                 user = self.user_create_schema.load(data)
 
-                """
+                f"""
                 INSERT INTO "User" ("email", "name_first_name", "name_last_name", "name_middle_name", "phone", "password")
-                VALUES ("email@gmail.com", "Ravshan", "Ubaydullaev", "Rakhimovich", "998912345678", "qwerty12345_")
+                VALUES ({user.email}, {user.name_first_name}, {user.name_last_name}, {user.name_middle_name}, {user.phone}, {user.password})
                 """
 
                 db.session.add(user)
@@ -60,10 +60,10 @@ class UserLoginView(Resource):
         login_parser.add_argument("password", location="form", required=True)
         data = login_parser.parse_args()
 
-        """
+        f"""
         SELECT * 
         FROM "User"
-        WHERE email = "some@mail.com"
+        WHERE email = {data['email']}
         """
 
         user = User.query.filter_by(email=data['email']).first()
@@ -103,10 +103,10 @@ class UserDetailedViewSet(Resource):
     @jwt_required()
     def get(self, user_id: int) -> Response:
 
-        """
+        f"""
         SELECT *
         FROM "User"
-        WHERE id = 6;
+        WHERE id = {user_id};
         """
 
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))
@@ -119,10 +119,10 @@ class UserDetailedViewSet(Resource):
             if user_id != get_jwt_identity():
                 raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-            """
+            f"""
             SELECT * 
             FROM "User" 
-            WHERE id = 6;
+            WHERE id = {user_id};
             """
 
             user = User.query.get_or_404(
@@ -145,9 +145,9 @@ class UserDetailedViewSet(Resource):
         if user_id != get_jwt_identity():
             raise PermissionDeniedError(Messages.FORBIDDEN.value)
 
-        """
+        f"""
         DELETE FROM "User" 
-        WHERE id = 6;
+        WHERE id = {user_id};
         """
 
         user = User.query.get_or_404(user_id, description=Messages.OBJECT_NOT_FOUND.value.format("User", "id", user_id))

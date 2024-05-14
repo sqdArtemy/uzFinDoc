@@ -42,10 +42,10 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
         requester_id = get_jwt_identity()
         data = self.parser.parse_args()
 
-        """
+        f"""
         SELECT *
         FROM "User"
-        WHERE id = 6;
+        WHERE id = {requester_id};
         """
 
         user = User.query.filter_by(id=requester_id).first()
@@ -80,9 +80,9 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "language": Language.UZ
             })
 
-            """
+            f"""
             INSERT INTO "Document" ("name", "format", "text", "uploded_at", "link", "type", "language")
-            VALUES ("Name", "DOCX", "Text to be translated", CURRENT_TIME, "D:\DB_project", "INPUT_FILE", "UZ");
+            VALUES ({in_document.name}, {in_document.format}, {in_document.text}, {in_document.uploaded_at}, {in_document.link}, {in_document.type}, {in_document.language});
             """
 
             db.session.add(in_document)
@@ -107,9 +107,9 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "language": Language.ENG
             })
 
-            """
+            f"""
             INSERT INTO "Document" ("name", "format", "text", "uploded_at", "link", "type", "language")
-            VALUES ("Name_translated", "DOCX", "Text to be translated", CURRENT_TIME, "D:\DB_project", "OUTPUT_FILE", "ENG");
+            VALUES ({out_document.name}, {out_document.format}, {out_document.text}, {out_document.uploaded_at}, {out_document.link}, {out_document.type}, {out_document.language});
             """
 
             db.session.add(out_document)
@@ -127,9 +127,9 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
                 "is_organizational": is_organizational
             })
 
-            """
+            f"""
             INSERT INTO "Translation" ("details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id", "organization_id", "is_organizational")
-            VALUES ("Done", 4, 6, 7, 7, 4, TRUE);
+            VALUES ({translation.details_status}, {translation.details_word_count}, {translation.creator_id}, {translation.input_document_id}, {translation.output_document_id}, {translation.organization_id}, {translation.is_organizational});
             """
 
             db.session.add(translation)
@@ -143,10 +143,10 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
         sort_by = data.get("sort_by")
         filters = data.get("filters")
 
-        """
+        f"""
         SELECT * 
         FROM "Translation"
-        WHERE creator_id = 6;
+        WHERE creator_id = {requester_id};
         """
 
         translations = Translation.query.filter_by(creator_id=requester_id).options(joinedload(Translation.creator))
@@ -180,10 +180,10 @@ class DetailedTranslationView(Resource):
             "id": translation_id
         }
 
-        """
+        f"""
         SELECT * 
         FROM "Translation"
-        WHERE id = 6;
+        WHERE id = {translation_id};
         """
 
         translation = self.get_translation_schema.load(data)
@@ -197,9 +197,9 @@ class DetailedTranslationView(Resource):
             "requester_id": requester_id,
             "id": translation_id
         }
-        """
+        f"""
         DELETE FROM "Translation"
-        WHERE id = 6 AND creator_id = 6;
+        WHERE id = {translation_id} AND creator_id = {requester_id};
         """
         translation = self.get_translation_schema.load(data)
         db.session.delete(translation)
@@ -215,18 +215,18 @@ class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
     def get(self, organization_id: int) -> Response:
         requester_id = get_jwt_identity()
 
-        """
+        f"""
         SELECT * 
         FROM "User"
-        WHERE id = 6;
+        WHERE id = {requester_id};
         """
 
         requester = User.query.filter_by(id=requester_id).first()
 
-        """
+        f"""
         SELECT * 
         FROM "Organization"
-        WHERE id = 6;
+        WHERE id = {organization_id};
         """
 
         organization = Organization.query.filter_by(id=organization_id).first()
@@ -243,10 +243,10 @@ class OrganizationTranslationsView(Resource, SortMixin, FilterMixin):
             raise PermissionDeniedError(Messages.USER_HAS_NO_ACCESS_TO_ORG.value)
 
 
-        """
+        f"""
         SELECT * 
         FROM "Translation"
-        WHERE organization_id = 6;
+        WHERE organization_id = {organization_id};
         """
 
         translations = Translation.query.filter_by(

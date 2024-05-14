@@ -28,9 +28,9 @@ class FeedbackViewSet(Resource):
 
         feedback = self.create_feedback_schema.load(data)
 
-        """
+        f"""
         INSERT INTO "Feedback" ("rating", "review", "translation_id", "creator_id")
-        Values (5, "Some review", 5, 1)
+        Values ({data['rating']}, {data['review']}, {data['translation_id']}, {data['creator_id']})
         """
 
         db.session.add(feedback)
@@ -48,11 +48,11 @@ class FeedbackViewSet(Resource):
         }
         self.get_feedback_schema.load(data)
 
-        """
+        f"""
         SELECT * 
         FROM "Feedback" 
         JOIN "Translation" ON Translation.translation_id = Feedback.translation_id
-        WHERE Translation.translation_id = 5;
+        WHERE Translation.translation_id = {data['translation_id']};
         """
 
         translation = Translation.query.filter_by(id=translation_id).first()

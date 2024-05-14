@@ -25,19 +25,19 @@ class UnknownWordSchema(ma.SQLAlchemyAutoSchema):
         reporter_id = data.get("reporter_id", None)
         document_id = data.get("document_id", None)
 
-        """
+        f"""
         SELECT * 
         FROM "User"
-        WHERE id = 6;
+        WHERE id = {reporter_id};
         """
 
         if not (reporter_id or User.query.filter_by(id=reporter_id).first()):
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", reporter_id))
 
-        """
+        f"""
         SELECT * 
         FROM "Document"
-        WHERE id = 6;
+        WHERE id = {document_id};
         """
 
         document = Document.query.filter_by(id=document_id).first()

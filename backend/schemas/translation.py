@@ -42,10 +42,10 @@ class TranslationGetSchema(ma.SQLAlchemyAutoSchema):
         if not requester:
             raise ValidationError(Messages.OBJECT_NOT_FOUND.value.format("User", "id", requester_id))
 
-        """
+        f"""
         SELECT * 
         FROM "Translation"
-        WHERE id = 6;
+        WHERE id = {translation_id};
         """
 
         translation = Translation.query.filter_by(id=translation_id).first()
@@ -104,10 +104,10 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("creator_id")
     def validate_creator_id(self, value: int) -> None:
 
-        """
+        f"""
         SELECT *
         FROM "User"
-        WHERE id = 6;
+        WHERE id = {value};
         """
 
         if not User.query.filter_by(id=value).first():
@@ -116,10 +116,10 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("organization_id")
     def validate_organization_id(self, value: int) -> None:
 
-        """
+        f"""
         SELECT *
         FROM "Organization"
-        WHERE id = 6;
+        WHERE id = {value};
         """
 
         if value and not Organization.query.filter_by(id=value).first():
@@ -128,10 +128,10 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("input_document_id")
     def validate_input_document_id(self, value: int) -> None:
 
-        """
+        f"""
         SELECT *
         FROM "Document"
-        WHERE id = 6;
+        WHERE id = {value};
         """
 
         if not Document.query.filter_by(id=value).first():
@@ -140,10 +140,10 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     @validates("output_document_id")
     def validate_document_id(self, value: int) -> None:
 
-        """
+        f"""
         SELECT *
         FROM "Document"
-        WHERE id = 6;
+        WHERE id = {value};
         """
 
         if not Document.query.filter_by(id=value).first():
