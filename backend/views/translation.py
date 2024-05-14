@@ -128,8 +128,8 @@ class TranslationCreateView(Resource, SortMixin, FilterMixin):
             })
 
             f"""
-            INSERT INTO "Translation" ("details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id", "organization_id", "is_organizational")
-            VALUES ({translation.details_status}, {translation.details_word_count}, {translation.creator_id}, {translation.input_document_id}, {translation.output_document_id}, {translation.organization_id}, {translation.is_organizational});
+            INSERT INTO "Translation" ("details_status", "details_word_count", "creator_id", "input_document_id", "output_document_id", "organization_id")
+            VALUES ({translation.details_status}, {translation.details_word_count}, {translation.creator_id}, {translation.input_document_id}, {translation.output_document_id}, {translation.organization_id});
             """
 
             db.session.add(translation)
