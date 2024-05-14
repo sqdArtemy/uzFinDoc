@@ -84,12 +84,13 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
     process_time = fields.Int(required=True)
     input_document_id = fields.Int(required=True)
     output_document_id = fields.Int(required=True)
-    organization_id = fields.Int(required=True)
+    organization_id = fields.Int(required=False, allow_none=True)
     is_organizational = fields.Bool(required=True)
 
     @post_load()
     def document_organization_handler(self, data: dict, **kwargs) -> dict:
         is_organizational = data.get("is_organizational", None)
+        print("cchh")
         print(is_organizational)
         if not is_organizational:
             data["organization_id"] = None
@@ -115,6 +116,7 @@ class TranslationCreateSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("organization_id")
     def validate_organization_id(self, value: int) -> None:
+        print("VAAAAL", value)
 
         f"""
         SELECT *
