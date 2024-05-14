@@ -115,9 +115,9 @@ Mention out team members contacts:
   - Email: sqd.artemy@gmail.com
 
 - Name: Ravshan Ubaydullayev
-  - LinkedIn: [Ravshan Ubaydullayev](LinkedIn_URL_here)
+  - LinkedIn: [Dalbayob bez linkedin](LinkedIn_URL_here)
   - Telegram: [MostValuablePlayer](https://t.me/MostValuablePlayer)
-  - Email: Email_here
+  - Email: ravshanltd@gmail.com
 
 - Name: Saidjon Khaydar-Zade
   - LinkedIn: [Saidjon Khaydar-Zade](LinkedIn_URL_here)
