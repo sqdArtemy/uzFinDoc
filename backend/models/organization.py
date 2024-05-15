@@ -12,7 +12,7 @@ class Organization(db.Model):
     name VARCHAR(80) UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(100) UNIQUE NOT NULL,
-    owner_id INTEGER NOT NULL,
+    owner_id INTEGER UNIQUE NOT NULL,
     CONSTRAINT fk_owner_id FOREIGN KEY (owner_id) REFERENCES "User"(id) ON DELETE CASCADE
     );
     """
@@ -21,7 +21,7 @@ class Organization(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc).isoformat())
     email = db.Column(db.String(100), unique=True, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('User.id', ondelete="CASCADE"), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('User.id', ondelete="CASCADE"), unique=True, nullable=False)
 
     def __repr__(self) -> str:
         return f"{self.name}"
