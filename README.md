@@ -96,6 +96,40 @@ In order to install the project as a docker image you should perform, following 
     6) Run the application with by entering (flask run) command in the command line.
        *NOTE: application could be accessed by default on the local address: http://127.0.0.1:5000 *
 
+## Frontend installation
+
+# 1. Install Node.js
+
+* Node.js is essential for running JavaScript outside of a web browser. Think of it as the engine that powers the React application.
+* **Download:** Get the latest version of Node.js from [https://nodejs.org/](https://nodejs.org/) and install it on your computer.
+
+
+# 2. Enter The Project Directory
+
+* In your terminal, type:
+  ```bash
+  cd frontend
+  ```
+
+# 3. Install Dependencies
+
+* Dependencies are like building blocks for your project.
+* Run this command:
+  ```bash
+  npm install
+  ```
+
+# 4. Start the Server
+
+* This command launches the React application:
+  ```bash
+  npm run dev
+  ```
+
+# 5. Open The Project in a Web Browser
+
+* Vite will provide you with a URL, usually `http://localhost:5173/`. Copy and paste this URL into your web browser to see your running React application!
+
 ## Usage
  *To be filled out*
 
