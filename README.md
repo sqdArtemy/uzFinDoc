@@ -103,7 +103,8 @@ In order to install the project as a docker image you should perform, following 
 
 Components are the fundamental building blocks of the React application. They represent reusable UI elements, encapsulating 
 both visual presentation (using JSX in `.tsx` files) and styling (often using CSS preprocessors like Sass in `.scss` files).
-* Each component has a specific responsibility, handling its own state and logic. Components can be nested to create complex UI hierarchies.
+* Each component has a specific responsibility, handling its own state and logic. 
+Components can be nested to create complex UI hierarchies.
 * Examples of components: header, navigation bar, card, form, button, etc.
 
 2) [ Services ]
@@ -118,8 +119,10 @@ This separation of concerns promotes maintainability and testability.
 
 Stores are centralized state management containers that hold application-wide data. In this example,
 MobX is used to provide reactive updates, ensuring components automatically re-render whenever the data in the store changes.
-* Stores manage data access and mutations. Components can access data from stores using MobX observables and react to changes through computed properties.
-* By using MobX, a clear separation between UI and data logic can be established, making the components more predictable and easier to reason about.
+* Stores manage data access and mutations. Components can access data from stores using MobX observables 
+and react to changes through computed properties.
+* By using MobX, a clear separation between UI and data logic can be established, 
+making the components more predictable and easier to reason about.
 ```
 
 ## Frontend Installation
