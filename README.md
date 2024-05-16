@@ -101,19 +101,23 @@ In order to install the project as a docker image you should perform, following 
 ```
 1) [ Components ]
 
-Components are the fundamental building blocks of the React application. They represent reusable UI elements, encapsulating both visual presentation (using JSX in `.tsx` files) and styling (often using CSS preprocessors like Sass in `.scss` files).
+Components are the fundamental building blocks of the React application. They represent reusable UI elements, encapsulating 
+both visual presentation (using JSX in `.tsx` files) and styling (often using CSS preprocessors like Sass in `.scss` files).
 * Each component has a specific responsibility, handling its own state and logic. Components can be nested to create complex UI hierarchies.
 * Examples of components: header, navigation bar, card, form, button, etc.
 
 2) [ Services ]
 
-Services are responsible for fetching and managing data from external sources, typically APIs. They often utilize libraries like `axios` to make network requests and handle responses.
-* Services encapsulate the logic for interacting with APIs, keeping your components clean and focused on UI. This separation of concerns promotes maintainability and testability.
+Services are responsible for fetching and managing data from external sources, typically APIs. 
+They often utilize libraries like `axios` to make network requests and handle responses.
+* Services encapsulate the logic for interacting with APIs, keeping your components clean and focused on UI. 
+This separation of concerns promotes maintainability and testability.
 * Services can provide methods for fetching data, creating, updating, and deleting resources on the server.
 
 3) [ Stores ]
 
-Stores are centralized state management containers that hold application-wide data. In this example, MobX is used to provide reactive updates, ensuring components automatically re-render whenever the data in the store changes.
+Stores are centralized state management containers that hold application-wide data. In this example,
+MobX is used to provide reactive updates, ensuring components automatically re-render whenever the data in the store changes.
 * Stores manage data access and mutations. Components can access data from stores using MobX observables and react to changes through computed properties.
 * By using MobX, a clear separation between UI and data logic can be established, making the components more predictable and easier to reason about.
 ```
