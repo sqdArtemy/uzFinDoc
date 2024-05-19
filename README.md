@@ -178,7 +178,6 @@ Mention out team members contacts:
   - Email: sqd.artemy@gmail.com
 
 - Name: Ravshan Ubaydullayev
-  - LinkedIn: [Dalbayob bez linkedin](LinkedIn_URL_here)
   - Telegram: [MostValuablePlayer](https://t.me/MostValuablePlayer)
   - Email: ravshanltd@gmail.com
 
