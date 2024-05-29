@@ -22,7 +22,13 @@ class TranslationsStore {
     }
 
     get data() {
-        return this.storeData;
+        console.log(localStorage.getItem('blacklist'));
+        return this.storeData.filter((item) => {
+            return !localStorage
+                .getItem('blacklist')
+                ?.split(',')
+                .includes(item.id.toString());
+        });
     }
 
     getOrganizationTranslations(organizationId: number) {

@@ -156,8 +156,9 @@ const FileList = observer(({ organizationId }) => {
     }
 
     function handleDelete(translationId: number) {
-        // translateStore.deleteTranslation(translationId);
+        translateStore.deleteTranslation(translationId);
         console.log('Delete', translationId);
+        translationsStore.getTranslations();
     }
 
     return (

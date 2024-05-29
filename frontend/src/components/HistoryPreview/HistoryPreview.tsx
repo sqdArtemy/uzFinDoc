@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import PreviewDocument from '../PreviewDocument/PreviewDocument.tsx';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { autorun } from 'mobx';
 import translateStore from '../../stores/TranslateStore.ts';
 import { useLoader } from '../Loader/Loader.tsx';
@@ -58,6 +58,7 @@ const HistoryPreview = observer(() => {
     });
     const [rating, setRating] = useState<0 | 1 | 2 | 3 | 4 | 5 | null>(0);
     const [feedbackText, setFeedbackText] = useState<string>('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         setFileDetails({
@@ -126,6 +127,8 @@ const HistoryPreview = observer(() => {
 
     function handleDelete(id: number) {
         console.log('Delete', id);
+        translateStore.deleteTranslation(id);
+        navigate('/main/history');
     }
 
     function handleSendFeedback() {
@@ -232,8 +235,11 @@ const HistoryPreview = observer(() => {
                                 <DownloadIcon />
                             </IconButton>
                             <IconButton
-                                onClick={() =>
-                                    handleDelete(locationState.inputDocument.id)
+                                onClick={
+                                    () =>
+                                        handleDelete(
+                                            locationState.translationId
+                                        ) // locationState.inputDocument.id
                                 }
                             >
                                 <DeleteIcon />

@@ -14,7 +14,9 @@ const MainLayout = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const [selectedPage, setSelectedPage] = useState('translate');
+    const [selectedPage, setSelectedPage] = useState(
+        window.location.pathname.split('/')[2] ?? 'translate'
+    );
 
     function handleClose() {
         setIsModalOpen(false);

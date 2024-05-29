@@ -111,6 +111,14 @@ class TranslateStore {
         this._translationData = {} as ITranslationResponse;
         // this._documentData = '';
     }
+
+    deleteTranslation(documentId: number) {
+        let blacklist = localStorage.getItem('blacklist')?.split(',');
+        if (!blacklist) blacklist = [];
+        if (!blacklist?.includes(documentId.toString()))
+            blacklist?.push(documentId.toString());
+        localStorage.setItem('blacklist', blacklist.join(','));
+    }
 }
 
 const translateStore = new TranslateStore();
