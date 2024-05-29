@@ -86,6 +86,18 @@ const SignUp = observer(() => {
                     autoComplete="phoneNumber"
                     autoFocus
                     defaultValue={userStore.storeData.phone}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        for (let i = 0; i < value.length; i++) {
+                            if (isNaN(parseInt(value[i]))) {
+                                e.target.value = value.slice(0, i);
+                                break;
+                            }
+                        }
+                        if (value.length > 12) {
+                            e.target.value = value.slice(0, 12);
+                        }
+                    }}
                 />
                 {error && <div className={styles.formError}>{error}</div>}
                 <span className={styles.btnsContainer}>
