@@ -6,7 +6,7 @@ import userStore from '../../stores/UserStore.ts';
 import { Avatar, Box, Button, IconButton, Menu } from '@mui/material';
 import { stringAvatar } from '../../utils.ts';
 import OrganizationAction from '../OrganizationAction/OrganizationAction.tsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const MainLayout = observer(() => {
@@ -21,6 +21,10 @@ const MainLayout = observer(() => {
     function handleClose() {
         setIsModalOpen(false);
     }
+
+    useEffect(() => {
+        setSelectedPage(window.location.pathname.split('/')[2]);
+    }, [window.location.pathname]);
 
     return (
         <div className={styles.bodyContainer}>
